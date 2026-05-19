@@ -1,0 +1,289 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-05-18",
+  "corpus_path": "data/",
+  "summary": {
+    "total_info_json": 1115,
+    "usable": 1115,
+    "malformed": 0,
+    "quarantined": 0
+  },
+  "genre_taxonomy": {
+    "Gothic": 674,
+    "Neural": 591,
+    "Neon": 575,
+    "Void": 417,
+    "Skeletal Gold": 357,
+    "Casino": 181,
+    "Obsidian": 177,
+    "Farkle": 144,
+    "Cyberpunk": 142,
+    "Horror": 123,
+    "Roguelike": 109,
+    "Rhythm": 105,
+    "Match-3": 17,
+    "Puzzle": 7
+  },
+  "items": [
+    {
+      "id": "mp981pc1oj760u",
+      "basename": "mp981pc1oj760u",
+      "w": 768,
+      "h": 768,
+      "mime": "image/jpeg",
+      "tags": [
+        "Gothic",
+        "Casino",
+        "Horror",
+        "Roguelike",
+        "Rhythm"
+      ],
+      "top_motifs": [
+        [
+          "gothic",
+          1
+        ],
+        [
+          "holographic",
+          1
+        ],
+        [
+          "casino",
+          1
+        ]
+      ],
+      "prompt_hash": 1791251608,
+      "seed_input": "mp981pc1oj760u768768"
+    },
+    {
+      "id": "mp981rjrz2mo81",
+      "basename": "mp981rjrz2mo81",
+      "w": 768,
+      "h": 768,
+      "mime": "image/jpeg",
+      "tags": [
+        "Gothic"
+      ],
+      "top_motifs": [
+        [
+          "gothic",
+          1
+        ]
+      ],
+      "prompt_hash": 481172074,
+      "seed_input": "mp981rjrz2mo81768768"
+    },
+    {
+      "id": "mp981smv5388y2",
+      "basename": "mp981smv5388y2",
+      "w": 768,
+      "h": 768,
+      "mime": "image/jpeg",
+      "tags": [
+        "Gothic"
+      ],
+      "top_motifs": [
+        [
+          "gothic",
+          1
+        ]
+      ],
+      "prompt_hash": 481172074,
+      "seed_input": "mp981smv5388y2768768"
+    },
+    {
+      "id": "mp981u89x1c8wg",
+      "basename": "mp981u89x1c8wg",
+      "w": 768,
+      "h": 768,
+      "mime": "image/jpeg",
+      "tags": [
+        "Gothic",
+        "Neon",
+        "Horror",
+        "Roguelike",
+        "Void"
+      ],
+      "top_motifs": [
+        [
+          "lattice",
+          1
+        ],
+        [
+          "gothic",
+          1
+        ],
+        [
+          "cathedral",
+          1
+        ]
+      ],
+      "prompt_hash": 632430671,
+      "seed_input": "mp981u89x1c8wg768768"
+    },
+    {
+      "id": "mp981zicd0eh00",
+      "basename": "mp981zicd0eh00",
+      "w": 768,
+      "h": 768,
+      "mime": "image/jpeg",
+      "tags": [
+        "Gothic",
+        "Neon",
+        "Horror",
+        "Roguelike",
+        "Void"
+      ],
+      "top_motifs": [
+        [
+          "lattice",
+          1
+        ],
+        [
+          "gothic",
+          1
+        ],
+        [
+          "cathedral",
+          1
+        ]
+      ],
+      "prompt_hash": 632430671,
+      "seed_input": "mp981zicd0eh00768768"
+    },
+    {
+      "id": "mp9820yo8vbyvu",
+      "basename": "mp9820yo8vbyvu",
+      "w": 768,
+      "h": 768,
+      "mime": "image/jpeg",
+      "tags": [
+        "Gothic",
+        "Neon",
+        "Horror",
+        "Roguelike",
+        "Void"
+      ],
+      "top_motifs": [
+        [
+          "lattice",
+          1
+        ],
+        [
+          "gothic",
+          1
+        ],
+        [
+          "cathedral",
+          1
+        ]
+      ],
+      "prompt_hash": 632430671,
+      "seed_input": "mp9820yo8vbyvu768768"
+    },
+    {
+      "id": "mp98223ywr83p1",
+      "basename": "mp98223ywr83p1",
+      "w": 768,
+      "h": 768,
+      "mime": "image/jpeg",
+      "tags": [
+        "Gothic",
+        "Neon",
+        "Horror",
+        "Roguelike",
+        "Void"
+      ],
+      "top_motifs": [
+        [
+          "lattice",
+          1
+        ],
+        [
+          "gothic",
+          1
+        ],
+        [
+          "cathedral",
+          1
+        ]
+      ],
+      "prompt_hash": 632430671,
+      "seed_input": "mp98223ywr83p1768768"
+    },
+    {
+      "id": "mp9829w5venr3u",
+      "basename": "mp9829w5venr3u",
+      "w": 768,
+      "h": 768,
+      "mime": "image/jpeg",
+      "tags": [
+        "Gothic"
+      ],
+      "top_motifs": [
+        [
+          "gothic",
+          1
+        ]
+      ],
+      "prompt_hash": 481172074,
+      "seed_input": "mp9829w5venr3u768768"
+    },
+    {
+      "id": "mp982ljdqz83if",
+      "basename": "mp982ljdqz83if",
+      "w": 768,
+      "h": 768,
+      "mime": "image/jpeg",
+      "tags": [
+        "Gothic",
+        "Neon",
+        "Horror",
+        "Roguelike",
+        "Void"
+      ],
+      "top_motifs": [
+        [
+          "lattice",
+          1
+        ],
+        [
+          "gothic",
+          1
+        ],
+        [
+          "cathedral",
+          1
+        ]
+      ],
+      "prompt_hash": 632430671,
+      "seed_input": "mp982ljdqz83if768768"
+    },
+    {
+      "id": "mp982qasj2s3x7",
+      "basename": "mp982qasj2s3x7",
+      "w": 768,
+      "h": 768,
+      "mime": "image/jpeg",
+      "tags": [
+        "Match-3"
+      ],
+      "top_motifs": [
+        [
+          "cascade",
+          1
+        ],
+        [
+          "phantom",
+          1
+        ],
+        [
+          "lattice",
+          1
+        ]
+      ],
+      "prompt_hash": 1059911223,
+      "seed_input": "mp982qasj2s3x7768768"
+    }
+  ]
+}
