@@ -1,3 +1,58 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://startup"]
 
-[node name="root" type="Node3D" unique_id=472648601]
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.02, 0, 0.031, 1)
+ambient_light_color = Color(0.02, 0, 0.031, 1)
+ambient_light_energy = 0.0
+
+[sub_resource type="WorldEnvironment" id="WorldEnvironment_1"]
+environment = SubResource("Environment_1")
+
+[node name="Root" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = null
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0, 0.031, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/VBox"]
+layout_mode = 2
+text = "FARKLE FRENZY"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.941, 0.784, 0.376, 1)
+theme_override_font_sizes/font_size = 28
+
+[node name="SubLabel" type="Label" parent="CenterContainer/VBox"]
+layout_mode = 2
+text = "INITIALIZING…"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.91, 0.835, 0.639, 0.35)
+theme_override_font_sizes/font_size = 11
