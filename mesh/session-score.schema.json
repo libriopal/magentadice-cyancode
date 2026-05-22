@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://libriopal.dev/schemas/session-score.json",
+  "title": "Session Score",
+  "description": "8-dimension session score record for FAR_NZY / magentadice-cyancode. Produced by audit-cell-06-failure-taxonomist after every tier session.",
+  "type": "object",
+  "required": [
+    "session_id",
+    "tier",
+    "branch",
+    "timestamp",
+    "score_total",
+    "dimensions",
+    "flags",
+    "escalation_level",
+    "verdict",
+    "audit_signature"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "pattern": "^tier/T[0-9]+-[a-z0-9-]+-[0-9]{8}(-[0-9]+)?$",
+      "description": "Git branch name for this session. Pattern: tier/TN-name-YYYYMMDD"
+    },
+    "tier": {
+      "type": "string",
+      "enum": ["T0", "T1A", "T1B", "T1C", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9"]
+    },
+    "branch": {
+      "type": "string",
+      "description": "Full git branch name"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "score_total": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 105,
+      "description": "Sum of all dimension scores (100 base + 5 bonus max)"
+    },
+    "dimensions": {
+      "type": "object",
+      "required": [
+        "mathematical_purity",
+        "sacred_core_integrity",
+        "performance_delta",
+        "grade_elevation",
+        "regression_count",
+        "tier_gate_progress"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "mathematical_purity": {
+          "type": "object",
+          "required": ["score", "max", "fixed_point_check", "float_violations"],
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 20 },
+            "max": { "type": "number", "const": 20 },
+            "fixed_point_check": { "type": "string", "enum": ["PASS", "FAIL", "NOT_APPLICABLE"] },
+            "float_violations": { "type": "integer", "minimum": 0 },
+            "notes": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "sacred_core_integrity": {
+          "type": "object",
+          "required": ["score", "max", "violations"],
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 20 },
+            "max": { "type": "number", "const": 20 },
+            "violations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["file", "type", "severity"],
+                "properties": {
+                  "file": { "type": "string" },
+                  "type": { "type": "string" },
+                  "severity": { "type": "string", "enum": ["L1", "L2", "L3", "L4"] }
+                },
+                "additionalProperties": false
+              }
+            },
+            "notes": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "performance_delta": {
+          "type": "object",
+          "required": ["score", "max"],
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 20 },
+            "max": { "type": "number", "const": 20 },
+            "frame_time_before_ms": { "type": "number" },
+            "frame_time_after_ms": { "type": "number" },
+            "heap_allocations_added": { "type": "integer" },
+            "profiler_trace_path": { "type": "string" },
+            "notes": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "grade_elevation": {
+          "type": "object",
+          "required": ["score", "max", "transitions"],
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 15 },
+            "max": { "type": "number", "const": 15 },
+            "transitions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["file", "from", "to"],
+                "properties": {
+                  "file": { "type": "string" },
+                  "from": { "type": "string", "enum": ["C", "B", "A"] },
+                  "to": { "type": "string", "enum": ["B", "A"] }
+                },
+                "additionalProperties": false
+              }
+            },
+            "notes": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "regression_count": {
+          "type": "object",
+          "required": ["score", "max", "bugs_fixed", "bugs_introduced"],
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 10 },
+            "max": { "type": "number", "const": 10 },
+            "bugs_fixed": { "type": "integer", "minimum": 0 },
+            "bugs_introduced": { "type": "integer", "minimum": 0 },
+            "notes": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "tier_gate_progress": {
+          "type": "object",
+          "required": ["score", "max", "gates_advanced"],
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 10 },
+            "max": { "type": "number", "const": 10 },
+            "gates_advanced": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "notes": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "evidence_coverage": {
+          "type": "object",
+          "description": "Bonus dimension — max 3 points",
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 3 },
+            "max": { "type": "number", "const": 3 },
+            "corpus_citations": { "type": "integer", "minimum": 0 },
+            "notes": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "mcp_utilization": {
+          "type": "object",
+          "description": "Bonus dimension — max 2 points",
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 2 },
+            "max": { "type": "number", "const": 2 },
+            "mcps_used": { "type": "array", "items": { "type": "string" } },
+            "mcps_misused": { "type": "array", "items": { "type": "string" } },
+            "notes": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "flags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["level", "tag", "cell", "description"],
+        "properties": {
+          "level": { "type": "integer", "minimum": 0, "maximum": 4 },
+          "tag": { "type": "string" },
+          "cell": { "type": "string" },
+          "description": { "type": "string" },
+          "file_affected": { "type": "string" },
+          "resolved": { "type": "boolean" },
+          "resolution": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "escalation_level": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4,
+      "description": "Highest escalation level reached in this session"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["PASS_PROPOSE_COMMIT", "PAUSE_ASK", "SCRAP_RECOMMENDED", "HALTED_L3", "HALTED_L4"]
+    },
+    "learning": {
+      "type": "string",
+      "description": "What was learned if scrapped — used to seed next session"
+    },
+    "audit_signature": {
+      "type": "object",
+      "required": ["pathway_deps", "current_grade", "entropy_vector", "fixed_point_check"],
+      "properties": {
+        "pathway_deps": { "type": "array", "items": { "type": "string" } },
+        "current_grade": { "type": "string", "enum": ["Grade A", "Grade B", "Grade C"] },
+        "entropy_vector": { "type": "string" },
+        "fixed_point_check": { "type": "string", "enum": ["PASS", "FAIL", "NOT_APPLICABLE"] }
+      },
+      "additionalProperties": false
+    }
+  }
+}
