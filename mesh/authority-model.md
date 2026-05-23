@@ -40,11 +40,11 @@ Exclusive actions — no other level may perform these:
 ### Constitutional Authority
 
 Holders: These documents, in order:
-1. `authority-model.md` (this file)
-2. `sacred-core-spec.md`
-3. `rng-lineage-spec.md`
-4. `threat-model.md`
-5. `hashing-strategy.md`
+1. `mesh/authority-model.md` (this file)
+2. `mesh/sacred-core-spec.md`
+3. `mesh/rng-lineage-spec.md`
+4. `mesh/threat-model.md`
+5. `mesh/hashing-strategy.md`
 6. `3libras/the_visual_layer.md`
 
 Actions:
