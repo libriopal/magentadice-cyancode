@@ -38,8 +38,9 @@
     "score_total": {
       "type": "number",
       "minimum": 0,
-      "maximum": 105,
-      "description": "Sum of all dimension scores (100 base + 5 bonus max)"
+      "maximum": 100,
+      "description": "Sum of all dimension scores (95 base from 6 dimensions + 5 bonus from evidence_coverage and mcp_utilization = 100 max)",
+      "$comment": "Score-to-verdict mapping: score >= 70 → PASS_PROPOSE_COMMIT; 50–69 → PAUSE_ASK; < 50 → SCRAP_RECOMMENDED. Violation flags are independent: L2 violations pause the session regardless of score; L3/L4 violations halt the session regardless of score. AUDIT::FIXED_POINT_CHECK FAIL is an L3 trigger — it forces HALTED_L3 even if score >= 70. Violations override score-based continuation; score cannot rescue a flagged session."
     },
     "dimensions": {
       "type": "object",
@@ -115,7 +116,7 @@
                 "required": ["file", "from", "to"],
                 "properties": {
                   "file": { "type": "string" },
-                  "from": { "type": "string", "enum": ["C", "B", "A"] },
+                  "from": { "type": "string", "enum": ["C", "B"] },
                   "to": { "type": "string", "enum": ["B", "A"] }
                 },
                 "additionalProperties": false

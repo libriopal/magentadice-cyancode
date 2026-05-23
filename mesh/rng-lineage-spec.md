@@ -18,16 +18,19 @@ but how every derived value traces back to a single genesis root.
 
 ## The Four-Level Lineage
 
-```
-GENESIS
-  ↓ HMAC-SHA256(ServerSecret, "genesis")
+```text
+GENESIS (ServerSecret — never leaves HSM)
+  ↓ HMAC-SHA256(ServerSecret, RoomID ∥ TimestampMs)
 SESSION
-  ↓ HMAC-SHA256(SessionSeed, RoomID ∥ Timestamp)
+  ↓ HMAC-SHA256(SessionSeed, RoundNumber ∥ MatchPhase)
 GAME
-  ↓ HMAC-SHA256(GameSeed, RoundNumber ∥ MatchPhase)
+  ↓ HMAC-SHA256(GameSeed, EventIndex ∥ EventType)
 EVENT
-  ↓ HMAC-SHA256(EventSeed, EventIndex ∥ EventType)
 ```
+
+Note: diagram matches the detailed derivation formulas in the sections below.
+The GENESIS level is the raw ServerSecret; its derivation arrow shows how
+SESSION is produced (not a derivation of GENESIS itself).
 
 Every derived value at every level is deterministically reconstructable
 from the level above it, given the same inputs.
@@ -38,7 +41,7 @@ from the level above it, given the same inputs.
 
 ### GENESIS — Server Root Secret
 
-```
+```text
 Owner:      Server (HSM or equivalent secure enclave)
 Storage:    Never in code, never in logs, never in transit
 Rotation:   On security incident only (requires full audit)
@@ -53,7 +56,7 @@ Any code that claims to need the GENESIS value is a Sacred Core violation.
 
 ### SESSION — Per-Match Seed
 
-```
+```text
 Derivation: HMAC-SHA256(GenesisSecret, RoomID ∥ TimestampMs)
 Owner:      Server — generated before match starts
 Committed:  To PDX ledger before any player input is accepted
@@ -61,7 +64,7 @@ Storage:    In replay log as encrypted field
 Visibility: Players may verify after match (provably fair disclosure)
 ```
 
-```
+```typescript
 Seed_Session = HMAC-SHA256(ServerSecret, RoomID ∥ Timestamp)
 ```
 
@@ -71,14 +74,14 @@ Players receive the SESSION seed after match completion for verification.
 
 ### GAME — Per-Round Seed
 
-```
+```text
 Derivation: HMAC-SHA256(SessionSeed, RoundNumber ∥ MatchPhase)
 Owner:      Execution Runtime (derived deterministically)
 Storage:    In replay log per round
 Visibility: Included in full replay disclosure
 ```
 
-```
+```typescript
 Seed_Game = HMAC-SHA256(Seed_Session, RoundNumber ∥ MatchPhase)
 ```
 
@@ -89,14 +92,14 @@ This is what makes cross-device replay deterministic.
 
 ### EVENT — Per-Action Value
 
-```
+```text
 Derivation: HMAC-SHA256(GameSeed, EventIndex ∥ EventType)
 Owner:      Execution Runtime (derived per event)
 Storage:    In replay log per event
 Visibility: Verifiable from GAME seed by any party with full replay
 ```
 
-```
+```typescript
 Seed_Event = HMAC-SHA256(Seed_Game, EventIndex ∥ EventType)
 Value = Seed_Event mod DomainSize
 ```
@@ -111,7 +114,7 @@ Every EVENT value is verifiable from the SESSION seed without revealing GENESIS.
 
 For any match to be considered auditable:
 
-```
+```text
 1. SESSION seed committed to ledger BEFORE match start ✓
 2. SESSION seed matches: HMAC-SHA256(ServerSecret, RoomID ∥ Timestamp) ✓
 3. All GAME seeds derivable from SESSION seed + round inputs ✓
@@ -147,7 +150,7 @@ Any `false` in this record triggers a Level 3 Critical Violation.
 
 ## Prohibited Patterns
 
-```
+```typescript
 // PROHIBITED: Math.random() in any scoring or event path
 const tileType = Math.floor(Math.random() * 6);  // ← HALT
 

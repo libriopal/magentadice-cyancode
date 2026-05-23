@@ -21,7 +21,7 @@ sacred_core:
 
   rng:
     files:
-      - packages/farkle-engine/src/csprng.ts
+      - core/packages/farkle-engine/src/csprng.ts
     protected_elements:
       - HMAC-SHA256 seed generation algorithm
       - seed derivation chain (genesis → session → game → event)
@@ -32,9 +32,9 @@ sacred_core:
 
   payout_math:
     files:
-      - packages/farkle-engine/src/farkleScorer.ts
-      - packages/farkle-engine/src/rtpConfig.ts
-      - packages/farkle-engine/src/monteCarlo.ts
+      - core/packages/farkle-engine/src/farkleScorer.ts
+      - core/packages/farkle-engine/src/rtpConfig.ts
+      - core/packages/farkle-engine/src/monteCarlo.ts
     protected_elements:
       - all scoring functions and their Q32.32 implementations
       - RTP target values and variance bounds
@@ -82,8 +82,8 @@ sacred_core:
 
   game_state_authority:
     files:
-      - core/apps/web/src/store/farkleStore.ts
-      - core/apps/web/src/store/gameStore.ts
+      - core/packages/farkle-engine/src/farkleStore.ts
+      - core/packages/farkle-engine/src/gameStore.ts
     protected_elements:
       - authoritative game state shape
       - state transition logic
@@ -143,7 +143,7 @@ not_sacred:
 
 ## Change Process for Sacred Core
 
-```
+```text
 1. Identify proposed change
 2. Execution Runtime writes proposal (PROPOSE ONLY — no implementation)
 3. Contradiction Hunter reviews for constitutional conflicts

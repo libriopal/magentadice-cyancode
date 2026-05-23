@@ -19,7 +19,7 @@ This is the design equivalent of the SHA-256 event chain.
 
 ## ADR Storage
 
-```
+```text
 docs/
 └── adr/
     ├── ADR-000-adr-governance.md       (this document, bootstrapped)
@@ -44,7 +44,7 @@ A deprecated ADR is marked superseded, not deleted.
 # ADR-NNN: [Short Imperative Title]
 
 Date: YYYY-MM-DD
-Status: Proposed | Accepted | Deprecated | Superseded by ADR-MMM
+Status: Proposed | Accepted | Rejected | Deprecated | Superseded by ADR-MMM
 Tier Affected: T0–T9 (or "Constitutional")
 Authority Required: Human | Human + ADR | Human + ADR + Monte Carlo
 
@@ -117,7 +117,7 @@ The following changes REQUIRE an ADR before implementation:
 
 ## ADR Lifecycle
 
-```
+```text
 1. Agent Output proposes ADR (draft in docs/adr/ADR-NNN-title.md)
 2. Contradiction Hunter reviews for conflicts with existing ADRs
 3. Governance Auditor reviews for constitutional alignment
@@ -144,8 +144,9 @@ An ADR becomes constitutional only when status is "Accepted" and Human has signe
 | ADR-005 | Snapshot Strategy v1.0.0 | Pending Human Review | Constitutional |
 | ADR-006 | Agent Escalation Model v1.0.0 | Pending Human Review | Constitutional |
 | ADR-007 | Threat Model v1.0.0 | Pending Human Review | Constitutional |
+| ADR-008 | Hashing Strategy v1.0.0 | Pending Human Review | Constitutional |
 
-All ADR-001 through ADR-007 are pending the PASS decision on the master audit.
+All ADR-001 through ADR-008 are pending the PASS decision on the master audit.
 Upon PASS, all are marked Accepted with the date of approval.
 
 ---

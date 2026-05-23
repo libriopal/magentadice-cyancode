@@ -116,14 +116,16 @@ All event readers MUST handle:
 
 ```typescript
 // REQUIRED: Default handling for missing optional fields
-const scoreMultiplier = event.payload.score_multiplier ?? 1.0;
+// Fixed-point constant: 1.0 represented as Q32.32 fixed-point integer
+const DEFAULT_SCORE_MULTIPLIER_FIXED = 0x100000000; // 1.0 in Q32.32
+const scoreMultiplierFixed = event.payload.score_multiplier_fixed ?? DEFAULT_SCORE_MULTIPLIER_FIXED;
 ```
 
 ### Migration Strategy
 
 When a MAJOR version increment is unavoidable:
 
-```
+```text
 1. Write migration adapter: IEventStore.migrate(oldEvent) → newEvent
 2. Test adapter on 100% of historical event dataset
 3. Dual-write period: write both old and new version simultaneously
@@ -153,6 +155,10 @@ When a MAJOR version increment is unavoidable:
 
 ## IEventStore Interface
 
+> **Source of Truth:** The canonical frozen contract is `mesh/IEventStore.v1.md` (v1.0.0).
+> The interface reproduced here is informational only and must not diverge from the frozen contract.
+> See also: `mesh/ReplayEvent.v1.md`, `mesh/Snapshot.v1.md`.
+
 ```typescript
 interface IEventStore {
   // Write a new event — signs and hashes automatically
@@ -181,7 +187,8 @@ without changing the interface or the event schema.
 ## Version
 
 event-versioning-spec.md v1.0.0
-Effective: at plan approval
+Effective: 2026-05-22
+Last confirmed as constitutional baseline: 2026-05-22 (session: feat/godot-deprecation-20260522).
 MAJOR changes: ADR + Human approval + migration test
 MINOR changes: ADR + Human approval
 PATCH changes: no special process
