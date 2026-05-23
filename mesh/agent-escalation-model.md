@@ -190,8 +190,11 @@ session architecture. Full stop. Constitutional review required.
 | Determinism Verifier | ✓ | ✓ | ✓ (FIXED_POINT concern) | ✓ (FIXED_POINT FAIL) | ✓ |
 | Failure Taxonomist | ✓ | ✓ | ✓ (post-mortem) | ✓ (post-mortem) | ✓ |
 
-All cells can raise (report) to any level.
-Only Governance Auditor and Determinism Verifier can trigger (enact) L4 unilaterally.
+**raise** = report or nominate an escalation level (any cell may do this for any level).
+**trigger** = unilaterally enact the consequences of that level (authority-restricted).
+
+Any cell may raise (nominate) an L4 candidate.
+Only Governance Auditor and Determinism Verifier can trigger L4 unilaterally.
 Other cells require two concurrent L3 findings to trigger L4.
 
 ---
