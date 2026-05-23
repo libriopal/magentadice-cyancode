@@ -40,6 +40,12 @@ Exclusive actions — no other level may perform these:
 ### Constitutional Authority
 
 Holders: These documents, in order:
+1. `mesh/authority-model.md` (this file)
+2. `mesh/sacred-core-spec.md`
+3. `mesh/rng-lineage-spec.md`
+4. `mesh/threat-model.md`
+5. `mesh/hashing-strategy.md`
+6. `3libras/the_visual_layer.md`
 1. `authority-model.md` (this file)
 2. `sacred-core-spec.md`
 3. `rng-lineage-spec.md`
@@ -60,6 +66,7 @@ Limitations:
 
 ### Audit Runtime Authority
 
+Holders: The 6 Virtual Audit Cells (sequential, defined in `mesh/audit-cells-all-six.md`; escalation levels defined in `mesh/agent-escalation-model.md`)
 Holders: The 6 Virtual Audit Cells (sequential; see mesh/EXECUTE.md and mesh/session-runner.md)
 
 Actions:
@@ -86,6 +93,7 @@ Actions:
 - Draft PRs (Proposal Only — requires Human approval to merge)
 - Run tests and scripts
 - Install packages within approved tier scope
+- Write to `core/art/profiling/`, `core/art/manifest/`, `runs/`, `sessions/`, `handoff/`
 - Write to `core/art/profiling/`, `core/art/manifest/`, `handoff/`, `runs/`, `sessions/`
 
 Limitations:
@@ -122,7 +130,6 @@ Limitations:
 | Audit halt conflicts with Execution progress | Audit wins. Session halted until Human decides. |
 | Execution output conflicts with Agent proposal | Execution wins. Agent proposal is advisory only. |
 | Two constitutional documents conflict | Higher position in precedence list wins. |
-| Sacred Core spec conflicts with DELTA-VERIFY | Sacred Core spec wins (more specific). |
 
 ---
 
@@ -150,6 +157,8 @@ Limitations:
 ## Amendment Process
 
 1. Agent Output proposes amendment with evidence
+2. Contradiction Hunter (audit-cell-04) reviews for constitutional conflicts
+3. Governance Auditor (audit-cell-03) endorses or flags
 2. Contradiction Hunter (audit cell 04; see mesh/audit-cell-04-contradiction-hunter.md) reviews for constitutional conflicts
 3. Governance Auditor (audit cell 03; see mesh/audit-cell-03-governance-auditor.md) endorses or flags
 4. Human approves or vetoes
@@ -161,5 +170,13 @@ Limitations:
 ## Version
 
 authority-model.md v1.0.0
-Effective: at plan approval
+Effective: 2026-05-22
 Next review: at any constitutional amendment
+
+---
+
+## Session Confirmation
+
+Confirmed as constitutional baseline during session `feat/godot-deprecation-20260522` (2026-05-22).
+No amendments required — ADR-009 is compliant with authority hierarchy.
+Human Constitutional Directive `full-godot-removal.md` received and acted upon per authority levels above.

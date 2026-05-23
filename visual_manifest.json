@@ -1526,7 +1526,7 @@
       "recommendations": [
         {
           "label": "implement_now",
-          "text": "Create a global BPM shader uniform in the Godot project that the ERK conductor updates each frame. All synaptic-throb-pulse materials should sample this uniform."
+          "text": "Create a global BPM shader uniform in the Three.js scene that the ERK conductor updates each frame. All synaptic-throb-pulse materials should sample this uniform."
         },
         {
           "label": "prototype_next",

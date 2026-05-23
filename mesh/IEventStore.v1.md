@@ -28,7 +28,8 @@ Implementations may extend it but may not narrow it.
 // contracts/IEventStore.ts
 // Frozen v1.0.0 — do not modify without IEventStore.v2.md
 
-import type { GameEvent, EventFilter, ChainVerificationResult, EventSnapshot } from './ReplayEvent.v1';
+import type { GameEvent, EventFilter, ChainVerificationResult } from './ReplayEvent.v1';
+import type { EventSnapshot } from './Snapshot.v1';
 
 export interface IEventStore {
 
@@ -169,9 +170,11 @@ export interface ReplayResult {
 IEventStore is intentionally storage-agnostic.
 Concrete implementations for Phase 1C:
 
-    InMemoryEventStore   — testing only, never ships
-    SupabaseEventStore   — FD casual (NoSQL compatible subset)
-    PostgresEventStore   — PDX real-money (serializable ACID required)
+```text
+InMemoryEventStore   — testing only, never ships
+SupabaseEventStore   — FD casual (NoSQL compatible subset)
+PostgresEventStore   — PDX real-money (serializable ACID required)
+```
 
 Implementations must satisfy all method contracts.
 The abstract interface is the governance layer.

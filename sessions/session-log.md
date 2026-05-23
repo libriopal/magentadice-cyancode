@@ -2,6 +2,16 @@
 
 ---
 
+## Session 2 — Godot Deprecation (Constitutional Migration)
+
+| Field | Value |
+|---|---|
+| session_id | feat/godot-deprecation-20260522 |
+| date | 2026-05-22 |
+| tier | Constitutional Directive |
+| branch | feat/godot-deprecation-20260522 |
+| verdict | PASS_PROPOSE_COMMIT |
+| score_total | 91 / 105 |
 ## Session 1 — T0 Baseline Audit
 
 | Field | Value |
@@ -22,6 +32,49 @@
 | Mathematical Purity | 20 | 20 |
 | Sacred Core Integrity | 20 | 20 |
 | Performance Delta | 20 | 20 |
+| Grade Elevation | 11 | 15 |
+| Regression Count | 10 | 10 |
+| Tier Gate Progress | 7 | 10 |
+| Evidence Coverage (bonus) | 3 | 3 |
+| MCP Utilization (bonus) | 0 | 2 |
+
+### Success Conditions Met
+
+- Godot dependency surface = 0 ✓
+- Three.js = rendering authority (ADR-009, CLAUDE.md, contracts/) ✓
+- Rapier3D = simulation authority (ADR-009) ✓
+- No documentation contradictions ✓
+- No replay contracts impacted ✓
+- ADR-009 created ✓
+
+### Flags
+
+| Level | Tag | Status |
+|---|---|---|
+| L1 | T0-PR-GATE-OPEN | OPEN — L1 finding. PR #1 pending merge. Authorized to proceed per directive. |
+| L0 | STALE-SCHEMA-HINTS | Deferred to T7 |
+
+### Artifacts Produced
+
+- `docs/adr/ADR-009-godot-deprecation.md`
+- `contracts/scene-definition.schema.json`
+- `docs/audits/mcp-opportunities.md`
+- `docs/audits/post-migration-verification.md`
+- `docs/reports/full-godot-removal-report.md`
+- `archive/godot/Main.tscn`
+- `handoff/01-05` (all audit cell artifacts)
+- `runs/2026-05-22/session-2.json`
+
+### FIXED_POINT_CHECK: NOT_APPLICABLE
+
+### Residual Open Items
+
+| Item | Status | Resolution Path |
+|---|---|---|
+| T0 PR #1 gate | OPEN (L1) | Merge PR #1 before T1 session |
+| `visual_manifest_schema.json` Godot hints | DEFERRED | T7 Visual Overhaul |
+| Rapier explicit dt lock | OPEN (L1) | T3 WildCubeEngine |
+| MCP table alignment (`mcp-opportunities.md`) | FIXED this session | — |
 | Grade Elevation | 7 | 15 |
 | Regression Count | 10 | 10 |
 | Tier Gate Progress | 5 | 10 |

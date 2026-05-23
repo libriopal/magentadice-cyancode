@@ -488,7 +488,7 @@
       <file id="C09" name="hashing-strategy.md" version="1.0.0" immutable="true"/>
     </layer>
 
-    <layer name="contracts" destination="mesh/contracts/">
+    <layer name="contracts" destination="contracts/">
       <file id="K01" name="IEventStore.v1.md" version="1.0.0" frozen="true"/>
       <file id="K02" name="ReplayEvent.v1.md" version="1.0.0" frozen="true"/>
       <file id="K03" name="Snapshot.v1.md" version="1.0.0" frozen="true"/>

@@ -19,7 +19,7 @@ This makes replay practical at any scale.
 
 ## Three-Layer Architecture
 
-```
+```text
 Event Stream
   ↓ (every event, chained)
 Checkpoint Snapshots
@@ -106,7 +106,7 @@ This is practical for years of operation.
 
 ## Reconstruction Protocol
 
-```
+```text
 1. Identify target event (by event_id or event_index)
 2. Find the nearest snapshot BEFORE the target event
 3. Load snapshot state
@@ -127,7 +127,7 @@ just as tampering with an event breaks the event chain.
 
 Both chains must be valid for a match to be considered verified:
 
-```
+```text
 Valid state = valid event chain ∧ valid snapshot chain ∧ hashes match
 ```
 
@@ -181,6 +181,7 @@ When event schema has a MAJOR version bump:
 ## Version
 
 snapshot-strategy.md v1.0.0
-Effective: at plan approval
+Effective: 2026-05-22
 Change authority: Human only
 ADR required for checkpoint frequency changes or state format changes
+Last confirmed as constitutional baseline: 2026-05-22 (session: feat/godot-deprecation-20260522). No amendments required.

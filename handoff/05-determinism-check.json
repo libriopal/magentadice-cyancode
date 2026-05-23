@@ -1,4 +1,6 @@
 {
+  "session_id": "feat/godot-deprecation-20260522",
+  "fixed_point_check": "NOT_APPLICABLE",
   "session_id": "tier/T0-baseline-audit-20260522",
   "fixed_point_check": "NOT_APPLICABLE",
   "fixed_point_rationale": "T0 produced zero TypeScript or JavaScript code. All session output is documentation (ADRs, LEGAL.md), JSON artifacts (runs/T0/, visual_manifest.json), and Markdown assessments. FIXED_POINT_CHECK is NOT_APPLICABLE — no scoring paths were created or modified.",
@@ -7,6 +9,13 @@
   "date_now_violations": [],
   "new_float32array_violations": [],
   "rng_lineage_compliant": true,
+  "hashing_strategy_compliant": true,
+  "rapier_dt_enforced_system_state": false,
+  "rapier_dt_enforced_session_impact": "not_applicable",
+  "rapier_dt_l1_finding_location": "runs/T0/current-grade-assessment.md",
+  "rapier_dt_resolution_path": "T3 WildCubeEngine — explicit dt lock required before Tier 3 pass gate. Tracked as open L1 finding.",
+  "escalation_raised": "L1 — rapier_dt_enforced false; WildCubeEngine.ts uses implicit dt. Formal fix deferred to T3.",
+  "notes": "No TypeScript or JavaScript files were modified. All changes are documentation (*.md), configuration (.mcp.json), JSON schemas, and a scene archive. FIXED_POINT_CHECK is NOT_APPLICABLE. No scanning required. rapier_dt_enforced: false — WildCubeEngine.ts uses Rapier implicit dt (1/60); explicit lock not set in any session to date (L1 finding, documented in runs/T0/current-grade-assessment.md)."
   "rng_lineage_notes": "No RNG code created or modified. csprng.ts untouched. Math.random() prohibition comments in existing files are warnings, not violations — confirmed in audit cell 01.",
   "hashing_strategy_compliant": true,
   "hashing_notes": "No hashing code created. ADR-008 documents SHA-256/BLAKE3 strategy. No new code contradicts the strategy.",

@@ -2,7 +2,7 @@
 ## FAR_NZY / magentadice-cyancode — Complete Build Plan
 ### Document Control: MPVA-2026-R2
 ### Previous Status: CONDITIONAL VETO (10 issues)
-### Current Status: RESUBMITTED FOR REVIEW — ALL VETO ITEMS RESOLVED
+### Current Status: PASS_PROPOSE_COMMIT — Session 2 Score: 91/105 (2026-05-22)
 
 ---
 
@@ -218,6 +218,7 @@ Pass gate: 2-player match deterministic + PostHog events active + Play Store che
 
 ---
 
+## SECTION 5 — THE 28-FILE ARCHITECTURE
 ## SECTION 5 — THE 27-FILE ARCHITECTURE
 ### Updated: 9 constitutional documents added to infrastructure
 
@@ -231,6 +232,8 @@ Pass gate: 2-player match deterministic + PostHog events active + Play Store che
     snapshot-strategy.md
     agent-escalation-model.md
     hashing-strategy.md
+    adr-governance.md
+    (requires docs/adr/ directory populated with ADR-000 through ADR-008 as supporting governance records — not included in the 9-file count)
     adr-governance.md (+ docs/adr/ directory with ADR-000 through ADR-008)
 
 ### Tier Prompts (11 files)
@@ -462,18 +465,35 @@ Remaining 2–3%: Concrete storage implementation of IEventStore
 
     ┌─────────────────────────────────────────────┐
     │                                             │
-    │   RESUBMITTED FOR REVIEW — v2               │
+    │   APPROVED — v2 plan executed               │
     │                                             │
+    │   T0 Baseline Audit: 87/105                 │
+    │   Verdict: PASS_PROPOSE_COMMIT              │
+    │   Date: 2026-05-22                          │
+    │   Branch: tier/T0-baseline-audit-20260522   │
+    │   PR #1: open (pending Human merge)         │
     │   All 10 veto items resolved.               │
     │   9 constitutional documents created.       │
     │   Phase 1 split into 1A / 1B / 1C.         │
     │   PR authority changed to Proposal Only.    │
     │                                             │
-    │   Mark verdict:                             │
-    │                                             │
-    │   PASS  → execution begins at T0            │
-    │   VETO  → specify changes, resubmit as v3  │
+    │   Evidence: runs/2026-05-22/session-1.json  │
+    │             sessions/session-log.md         │
     │                                             │
     └─────────────────────────────────────────────┘
 
-Awaiting your review.
+---
+
+## Session 2 — Execution Summary
+
+| Field | Value |
+|---|---|
+| Date | 2026-05-22 |
+| Directive | `full-godot-removal.md` (Human-authorized) |
+| Branch | `feat/godot-deprecation-20260522` |
+| Score | 91/105 |
+| Verdict | PASS_PROPOSE_COMMIT |
+| Escalation | L1 — T0 PR #1 gate open |
+| Deferred | `visual_manifest_schema.json` Godot hints → T7 |
+| Result | Godot dependency surface = 0. Three.js declared rendering authority. Rapier3D declared simulation authority. ADR-009 recorded. |
+| PR | PR #2 proposed for merge. |

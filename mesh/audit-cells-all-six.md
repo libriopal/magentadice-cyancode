@@ -1,7 +1,7 @@
 # AUDIT CELL PROMPTS — ALL SIX
 ## FAR_NZY / magentadice-cyancode
 ## These are six separate files combined here for delivery.
-## In the repo: prompts/infrastructure/audit-cell-0N-name.md
+## In the repo: mesh/prompts/infrastructure/audit-cell-0N-name.md
 
 ---
 

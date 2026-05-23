@@ -18,7 +18,7 @@ while keeping Human authority supreme.
 
 ## The Five Escalation Levels
 
-```
+```text
 Level 0: OBSERVATION
   ↓
 Level 1: FINDING
@@ -88,12 +88,12 @@ Session pauses. Claude Code presents findings. Human decides.
 
 **Triggers:**
 - Propose-only file approached for direct edit (Sacred Core boundary reached)
-- AUDIT::FIXED_POINT_CHECK concern (float detected near scoring path, not confirmed in it)
+- AUDIT::FIXED_POINT_CHECK concern (float detected near scoring path, not confirmed in it) — see `event-versioning-spec.md` for fixed-point rules
 - Performance regression above 10% (frame time increased by >1.6ms)
 - Event schema change without corresponding ADR draft
 - RNG lineage path modified without Human pre-approval
 - PR opened without Proposal Only flag
-- Session score in range 50–69
+- Session score in range 50–69 (see `prompts/session-score.schema.json` for threshold definitions)
 
 **Actions:**
 - Immediately pause Execution Runtime
@@ -190,7 +190,14 @@ session architecture. Full stop. Constitutional review required.
 | Determinism Verifier | ✓ | ✓ | ✓ (FIXED_POINT concern) | ✓ (FIXED_POINT FAIL) | ✓ |
 | Failure Taxonomist | ✓ | ✓ | ✓ (post-mortem) | ✓ (post-mortem) | ✓ |
 
-All cells can raise to any level.
+**raise** = report or nominate an escalation level (any cell may do this for any level).
+**trigger** = unilaterally enact the consequences of that level (authority-restricted).
+
+Example — raise: Contradiction Hunter finds a potential Sacred Core boundary conflict and writes `[L4-CANDIDATE]` to handoff/04-contradictions.md. The session continues pending review; no halt is enacted.
+
+Example — trigger: Governance Auditor detects a confirmed Sacred Core file modification and immediately halts the session with `[L3-CRITICAL-VIOLATION]` — no secondary approval needed.
+
+Any cell may raise (nominate) an L4 candidate.
 Only Governance Auditor and Determinism Verifier can trigger L4 unilaterally.
 Other cells require two concurrent L3 findings to trigger L4.
 

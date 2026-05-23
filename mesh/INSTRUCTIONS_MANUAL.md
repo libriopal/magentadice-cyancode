@@ -130,7 +130,7 @@ The file order in this manual is the execution order.
 
 ---
 
-## Layer 4: Prompts (8 files)
+## Layer 4A — Authorized Prompts (4 files)
 ## Destination: prompts/tiers/
 
     21. prompt-00-baseline-audit.md
@@ -151,6 +151,24 @@ The file order in this manual is the execution order.
 
     Note: Files 22–24 were delivered as prompt-01abc-phase1.md
     and should be split into 3 separate files when placing in the repo.
+
+## Layer 4B — Deferred Tier Prompts (10 files, not yet authorized)
+## Destination: prompts/tiers/ (do not place until authorized by Phase 1C PASS)
+## See PART 12 for full list. Tier labels match PART 12.
+
+    T1: prompt-02-mathematical-foundation.md
+    T2: prompt-03-security-compliance.md
+    T3: prompt-01-spawn-physics-fix.md
+    T4: prompt-04-ledger-replay.md
+    T5: prompt-05-core-loop-excellence.md
+    T6: prompt-06-content-pipeline.md
+    T7: prompt-07-visual-overhaul.md
+    T7: prompt-08-audio-pipeline.md
+    T8: prompt-09-economy-farnzy.md
+    T9: prompt-10-social-platform-liveops.md
+
+    These prompts exist in the mesh/ corpus but are not yet authorized.
+    Each requires the preceding tier gate to PASS before execution.
 
 ---
 
@@ -252,13 +270,17 @@ magentadice-cyancode/
 ├── authority-model.md           ← file 1
 ├── sacred-core-spec.md          ← file 2
 ├── rng-lineage-spec.md          ← file 3
-├── threat-model.md              ← file 4 (use threat-model-v2.md content)
+├── threat-model.md              ← file 4 (source: mesh/threat-model-v2.md, v1.1.0 / VERSION 2)
 ├── event-versioning-spec.md     ← file 5
 ├── snapshot-strategy.md         ← file 6
 ├── agent-escalation-model.md    ← file 7
 ├── adr-governance.md            ← file 8
 └── hashing-strategy.md          ← file 9
 ```
+
+> **threat-model.md workflow:** Copy `mesh/threat-model-v2.md` to repo root as `threat-model.md`
+> (overwriting the existing v1). Commit the replacement. The original `mesh/threat-model.md` is
+> superseded by `threat-model-v2.md` (v1.1.0); mark it superseded or rename to `mesh/threat-model-v1.md`.
 
 ## Step 2 — Contracts Directory
 

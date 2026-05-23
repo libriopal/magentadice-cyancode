@@ -10,8 +10,6 @@ This is the **dream-core-integration** monorepo — the integration layer for tw
 - **`dream/`** — AGROS (Adaptive Generative Research Operating System): a browser-native emotional music engine that converts FAR_NZY game state into procedural audio via the ERK pipeline
 - **`data/`** — Image corpus submodule (~1550 assets with `.info.json` metadata)
 - **`3libras/`** — Visual layer design specs (non-code; authoritative design law)
-- **`scenes/`** — Godot 4.3 project (Main.tscn) for scene/visual work via MCP
-- **`godot-mcp/`** — MCP server for Godot editor integration
 
 Initialize submodules: `git submodule update --init --recursive core dream data`
 
@@ -98,6 +96,6 @@ The authoritative visual design law for FAR_NZY is in `3libras/the_visual_layer.
 
 ## Integration Points
 
-The Godot project in `scenes/` uses the `mcp__godot__*` MCP tools for live scene editing. The `.mcp.json` at root configures: `brightdata`, `godot`, `filesystem`, `memory`, `context7`, `sequential-thinking`.
+The `.mcp.json` at root configures: `brightdata`, `filesystem`, `memory`, `context7`, `sequential-thinking`.
 
 AGROS connects to FAR_NZY via game-state events; the ERK conductor profiles live in `dream/apps/frontend/src/` and map gameplay output to the 8-state emotional model.
