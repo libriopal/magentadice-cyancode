@@ -174,6 +174,7 @@ When event schema has a MAJOR version bump:
 ## Version
 
 snapshot-strategy.md v1.0.0
-Effective: at plan approval
+Effective: 2026-05-22
 Change authority: Human only
 ADR required for checkpoint frequency changes or state format changes
+Last confirmed as constitutional baseline: 2026-05-22 (session: feat/godot-deprecation-20260522). No amendments required.

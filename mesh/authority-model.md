@@ -160,5 +160,13 @@ Limitations:
 ## Version
 
 authority-model.md v1.0.0
-Effective: at plan approval
+Effective: 2026-05-22
 Next review: at any constitutional amendment
+
+---
+
+## Session Confirmation
+
+Confirmed as constitutional baseline during session `feat/godot-deprecation-20260522` (2026-05-22).
+No amendments required — ADR-009 is compliant with authority hierarchy.
+Human Constitutional Directive `full-godot-removal.md` received and acted upon per authority levels above.

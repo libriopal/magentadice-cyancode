@@ -11,21 +11,24 @@ AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 
 ---
 
-## Currently Active MCPs
+## MCP Status (Root Config vs Environment)
 
-**Authoritative source:** root `.mcp.json` (gitignored) + claude.ai platform integrations.
+| MCP | Status | Purpose |
+|---|---|---|
+| `brightdata` | Active (root .mcp.json) | Competitive research, web scraping |
+| `filesystem` | Active (root .mcp.json) | Local file read/write access |
+| `memory` | Active (root .mcp.json) | Session state knowledge graph |
+| `context7` | Active (root .mcp.json) | Library documentation lookup |
+| `sequential-thinking` | Active (root .mcp.json) | Structured reasoning chains |
+| `supabase` | Environment-specific | Database schema/query access |
+| `github` | Environment-specific | PR management, code search |
+| `pixellab` | Environment-specific | Pixel art generation |
+| `postgres` | Environment-specific | Direct SQL access |
 
-| MCP | Source | Status | Purpose |
-|---|---|---|---|
-| `brightdata` | `.mcp.json` | Active | Competitive research, web scraping |
-| `filesystem` | `.mcp.json` | Active | Local file read/write access |
-| `memory` | `.mcp.json` | Active | Session state knowledge graph |
-| `context7` | `.mcp.json` | Active | Library documentation lookup |
-| `sequential-thinking` | `.mcp.json` | Active | Structured reasoning chains |
-| `supabase` | claude.ai platform | Active | Database schema/query access |
-| `github` | claude.ai platform | Active | PR management, code search |
-| `pixellab` | claude.ai platform | Active | Pixel art generation |
-| `postgres` | claude.ai platform | Active | Direct SQL access |
+> Root `.mcp.json` currently configures: `brightdata`, `filesystem`, `memory`,
+> `context7`, and `sequential-thinking`.
+> Environment-specific MCPs are available via developer tooling but are not
+> declared in the root config.
 
 **Removed:** `godot` — deprecated per ADR-009.
 

@@ -154,6 +154,10 @@ When a MAJOR version increment is unavoidable:
 
 ## IEventStore Interface
 
+> **Source of Truth:** The canonical frozen contract is `mesh/IEventStore.v1.md` (v1.0.0).
+> The interface reproduced here is informational only and must not diverge from the frozen contract.
+> See also: `mesh/ReplayEvent.v1.md`, `mesh/Snapshot.v1.md`.
+
 ```typescript
 interface IEventStore {
   // Write a new event — signs and hashes automatically
@@ -182,7 +186,8 @@ without changing the interface or the event schema.
 ## Version
 
 event-versioning-spec.md v1.0.0
-Effective: at plan approval
+Effective: 2026-05-22
+Last confirmed as constitutional baseline: 2026-05-22 (session: feat/godot-deprecation-20260522).
 MAJOR changes: ADR + Human approval + migration test
 MINOR changes: ADR + Human approval
 PATCH changes: no special process

@@ -1,13 +1,13 @@
 {
   "session_id": "feat/godot-deprecation-20260522",
   "snapshot_timestamp": "2026-05-22T00:00:00.000Z",
-  "git_head": "de4dfb1d2aebbe26099b8097188ce2146c52dd3d (main — pre-commit)",
-  "files_modified_count": 8,
+  "git_head": "8790a3bf14f4c172314d5a46581d4b3ea49eb126 (feat/godot-deprecation-20260522 — post-commit)",
+  "files_modified_count": 30,
   "memory_state_hash": "FAR_NZY_Session_State: T0=PASS_PROPOSE_COMMIT, score=91/105",
   "chain_head_valid": true,
   "chain_head_event_id": null,
   "rng_lineage_intact": true,
   "session_seed_committed_before_events": true,
-  "escalation_raised": null,
+  "escalation_raised": "L1 — T0 PR #1 gate open; documented per session-runner escalation protocol",
   "notes": "Branch feat/godot-deprecation-20260522 created from main (de4dfb1). T0 PR #1 still OPEN — L1-FINDING logged in session planning. No chain break — T4 ledger not yet implemented. All changes are documentation and configuration only."
 }

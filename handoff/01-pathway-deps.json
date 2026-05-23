@@ -8,19 +8,18 @@
     "contracts/scene-definition.schema.json",
     "docs/audits/mcp-opportunities.md",
     "docs/audits/post-migration-verification.md",
-    "docs/reports/full-godot-removal-report.md",
-    "core/art/manifest/visual_manifest.json"
+    "docs/reports/full-godot-removal-report.md"
   ],
   "dependency_map": {
     "CLAUDE.md": [],
-    "visual_manifest.json": ["core/art/manifest/visual_manifest.json"],
+    "visual_manifest.json": [],
     "archive/godot/Main.tscn": [],
     "docs/adr/ADR-009-godot-deprecation.md": [],
     "contracts/scene-definition.schema.json": []
   },
   "dependency_notes": {
     "CLAUDE.md": "no downstream code consumers — documentation only",
-    "visual_manifest.json": "core/art/manifest/visual_manifest.json is the canonical copy — root copy is stale",
+    "visual_manifest.json": "root copy is a known stale duplicate; canonical is core/art/manifest/visual_manifest.json. Reconciliation deferred to T7 per ADR-009 §Consequences. Not a Sacred Core item.",
     "archive/godot/Main.tscn": "no consumers — Godot never integrated with Three.js runtime",
     "docs/adr/ADR-009-godot-deprecation.md": "referenced by docs/adr/ index",
     "contracts/scene-definition.schema.json": "future Three.js scene loader — not yet implemented"
@@ -30,6 +29,6 @@
   "wasm_layer_risk": false,
   "bridge_overhead_risk": false,
   "gc_spike_risk": false,
-  "escalation_raised": null,
-  "notes": "Documentation-only migration. No source code in core/ or dream/ submodules was touched. core submodule pointer bumped from c07675db to 9282d804; only core/art/manifest/visual_manifest.json changed (art asset, not source code). Godot had no runtime integration — removal has zero downstream impact on build, test, or production execution."
+  "escalation_raised": "L1",
+  "notes": "Documentation-only migration. No source code in core/ or dream/ submodules was touched. core submodule pointer bumped from c07675db to 9282d804; only core/art/manifest/visual_manifest.json changed (art asset, not source code). Godot had no runtime integration — removal has zero downstream impact on build, test, or production execution. L1: T0 PR #1 gate is OPEN — Human directive authorized proceeding."
 }

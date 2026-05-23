@@ -41,7 +41,7 @@
 
 | Level | Tag | Status |
 |---|---|---|
-| L1 | T0-PR-GATE-OPEN | Resolved — Human directive authorized |
+| L1 | T0-PR-GATE-OPEN | OPEN — L1 finding. PR #1 pending merge. Authorized to proceed per directive. |
 | L0 | STALE-SCHEMA-HINTS | Deferred to T7 |
 
 ### Artifacts Produced
@@ -56,5 +56,14 @@
 - `runs/2026-05-22/session-2.json`
 
 ### FIXED_POINT_CHECK: NOT_APPLICABLE
+
+### Residual Open Items
+
+| Item | Status | Resolution Path |
+|---|---|---|
+| T0 PR #1 gate | OPEN (L1) | Merge PR #1 before T1 session |
+| `visual_manifest_schema.json` Godot hints | DEFERRED | T7 Visual Overhaul |
+| Rapier explicit dt lock | OPEN (L1) | T3 WildCubeEngine |
+| MCP table alignment (`mcp-opportunities.md`) | FIXED this session | — |
 
 ---

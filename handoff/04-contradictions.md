@@ -32,3 +32,17 @@ None. No hash chain records exist (T4 not yet implemented). NOT_APPLICABLE.
 ### Escalations Raised
 L1: T0 PR gate override per Human directive — logged in handoff/03.
 L0: Stale `visual_manifest_schema.json` hint text — deferred to T7.
+
+---
+
+### Deferred Items Registry
+
+These items were identified during this session and explicitly deferred. Each has a resolution path. None are unresolved contradictions.
+
+| Item | Scope | Deferred To | Authority | Status |
+|---|---|---|---|---|
+| `visual_manifest_schema.json` Godot hint text ("Godot StandardMaterial3D" in optional description fields) | schema descriptions only | T7 Visual Overhaul | ADR-009 §Consequences | NOT a contradiction — description hints are non-binding per schema design |
+| Root `visual_manifest.json` stale copy | art asset | T7 Visual Overhaul | ADR-009 §Consequences | NOT a Sacred Core item; canonical at `core/art/manifest/visual_manifest.json` |
+| T0 PR `#1` open gate | gate status | Pending Human merge | Human Constitutional Directive `full-godot-removal.md` | L1 finding; not a contradiction. Human directive authorizes proceeding. |
+
+All deferred items have explicit ADR-009 or Human-directive authority. Zero unresolved contradictions remain.
