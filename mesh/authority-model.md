@@ -42,10 +42,10 @@ Exclusive actions — no other level may perform these:
 Holders: These documents, in order:
 1. `authority-model.md` (this file)
 2. `sacred-core-spec.md`
-3. `DELTA-VERIFY DVP-2026-R72-NEXUS`
-4. `dream/shared/source-of-truth/organic-vegas/design_tokens.json`
-5. `dream/shared/source-of-truth/organic-vegas/performance_budget.md`
-6. `dream/shared/source-of-truth/organic-vegas/unified_lattice.json`
+3. `rng-lineage-spec.md`
+4. `event-versioning-spec.md`
+5. `snapshot-strategy.md`
+6. `threat-model.md`
 
 Actions:
 - Define what is sacred and what is not
@@ -60,10 +60,10 @@ Limitations:
 
 ### Audit Runtime Authority
 
-Holders: The 6 Virtual Audit Cells (sequential)
+Holders: The 6 Virtual Audit Cells (sequential; see mesh/EXECUTE.md and mesh/session-runner.md)
 
 Actions:
-- Halt a session (Levels 2–4 per escalation model)
+- Halt a session (Levels 2–4 per escalation model; see mesh/agent-escalation-model.md and docs/adr/ADR-006-agent-escalation.md)
 - Flag violations in handoff artifacts
 - Propose fixes (cannot implement them)
 - Score sessions against 8-dimension rubric
@@ -86,7 +86,7 @@ Actions:
 - Draft PRs (Proposal Only — requires Human approval to merge)
 - Run tests and scripts
 - Install packages within approved tier scope
-- Write to `core/art/profiling/`, `core/art/manifest/`, `runs/`, `sessions/`
+- Write to `core/art/profiling/`, `core/art/manifest/`, `handoff/`, `runs/`, `sessions/`
 
 Limitations:
 - PRs are proposals, not actions. Cannot self-merge.
@@ -150,8 +150,8 @@ Limitations:
 ## Amendment Process
 
 1. Agent Output proposes amendment with evidence
-2. Contradiction Hunter reviews for constitutional conflicts
-3. Governance Auditor endorses or flags
+2. Contradiction Hunter (audit cell 04; see mesh/audit-cell-04-contradiction-hunter.md) reviews for constitutional conflicts
+3. Governance Auditor (audit cell 03; see mesh/audit-cell-03-governance-auditor.md) endorses or flags
 4. Human approves or vetoes
 5. If approved: ADR written, document updated, version bumped
 6. New version referenced in memory MCP

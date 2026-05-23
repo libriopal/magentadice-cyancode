@@ -115,7 +115,7 @@
                 "required": ["file", "from", "to"],
                 "properties": {
                   "file": { "type": "string" },
-                  "from": { "type": "string", "enum": ["C", "B", "A"] },
+                  "from": { "type": "string", "enum": ["C", "B"] },
                   "to": { "type": "string", "enum": ["B", "A"] }
                 },
                 "additionalProperties": false

@@ -44,7 +44,7 @@ A deprecated ADR is marked superseded, not deleted.
 # ADR-NNN: [Short Imperative Title]
 
 Date: YYYY-MM-DD
-Status: Proposed | Accepted | Deprecated | Superseded by ADR-MMM
+Status: Proposed | Accepted | Rejected | Deprecated | Superseded by ADR-MMM
 Tier Affected: T0–T9 (or "Constitutional")
 Authority Required: Human | Human + ADR | Human + ADR + Monte Carlo
 

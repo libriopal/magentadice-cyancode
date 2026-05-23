@@ -131,12 +131,12 @@ Deliverables:
 - `rng-lineage-spec.md` committed to repo root
 - `threat-model.md` committed to repo root
 - `adr-governance.md` committed to docs/adr/
-- ADR-000 through ADR-007 committed and marked Accepted
+- ADR-000 through ADR-008 committed and marked Accepted
 - `session-runner.md` operational
 - `session-score.schema.json` validated
 - memory MCP schema initialized with tier_gate_status map
 
-Pass gate: All constitutional documents committed + ADR-000 through ADR-007 Accepted + session runner produces valid session record on test run
+Pass gate: All constitutional documents committed + ADR-000 through ADR-008 Accepted + session runner produces valid session record on test run
 
 ### Phase 1B — Audit Runtime
 **New — extracted from old Phase 1**
@@ -219,9 +219,9 @@ Pass gate: 2-player match deterministic + PostHog events active + Play Store che
 ---
 
 ## SECTION 5 — THE 27-FILE ARCHITECTURE
-### Updated: 8 constitutional documents added to infrastructure
+### Updated: 9 constitutional documents added to infrastructure
 
-### Constitutional Documents (8 new files — repo root + docs/adr/)
+### Constitutional Documents (9 new files — repo root + docs/adr/)
 
     authority-model.md
     sacred-core-spec.md
@@ -230,7 +230,8 @@ Pass gate: 2-player match deterministic + PostHog events active + Play Store che
     event-versioning-spec.md
     snapshot-strategy.md
     agent-escalation-model.md
-    adr-governance.md (+ docs/adr/ directory with ADR-000 through ADR-007)
+    hashing-strategy.md
+    adr-governance.md (+ docs/adr/ directory with ADR-000 through ADR-008)
 
 ### Tier Prompts (11 files)
 
@@ -260,7 +261,7 @@ Pass gate: 2-player match deterministic + PostHog events active + Play Store che
     session-runner.md
     session-score.schema.json
 
-### Total: 27 files (up from 19 — 8 constitutional documents added)
+### Total: 28 files (up from 19 — 9 constitutional documents added)
 
 ### Status: PENDING HUMAN REVIEW
 
@@ -464,7 +465,7 @@ Remaining 2–3%: Concrete storage implementation of IEventStore
     │   RESUBMITTED FOR REVIEW — v2               │
     │                                             │
     │   All 10 veto items resolved.               │
-    │   8 constitutional documents created.       │
+    │   9 constitutional documents created.       │
     │   Phase 1 split into 1A / 1B / 1C.         │
     │   PR authority changed to Proposal Only.    │
     │                                             │

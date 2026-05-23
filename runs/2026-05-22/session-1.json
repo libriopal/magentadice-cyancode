@@ -80,7 +80,7 @@
       "tag": "L1-FINDING",
       "cell": "Governance Auditor",
       "description": "Supabase public schema is empty — no FD, PDX, or replay tables exist.",
-      "file_affected": "supabase/schema/public",
+      "file_affected": "runtime:supabase-schema",
       "resolved": false,
       "resolution": "Deferred to T4 (Ledger and Replay)"
     },

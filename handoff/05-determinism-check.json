@@ -10,8 +10,8 @@
   "rng_lineage_notes": "No RNG code created or modified. csprng.ts untouched. Math.random() prohibition comments in existing files are warnings, not violations — confirmed in audit cell 01.",
   "hashing_strategy_compliant": true,
   "hashing_notes": "No hashing code created. ADR-008 documents SHA-256/BLAKE3 strategy. No new code contradicts the strategy.",
-  "rapier_dt_enforced": true,
-  "rapier_dt_notes": "No Rapier physics code was modified. Existing WildCubeEngine.ts dt-implicit-1/60 finding is documented as L1 in current-grade-assessment.md for T3 scope.",
+  "rapier_dt_enforced": false,
+  "rapier_dt_notes": "No Rapier physics code was modified. Existing WildCubeEngine.ts uses Rapier's implicit dt (dt-implicit-1/60), which is documented as an L1 finding in current-grade-assessment.md for T3 scope. No explicit dt lock was introduced in this session.",
   "escalation_raised": null,
   "notes": "All determinism checks pass trivially because T0 is a zero-code session. The four L1 findings (KYCGate UI-only, empty Supabase, no Play Integrity, implicit dt) are pre-existing codebase state, not session regressions — they are baseline documentation for subsequent tiers."
 }

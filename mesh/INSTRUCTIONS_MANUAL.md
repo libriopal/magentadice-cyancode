@@ -211,7 +211,7 @@ touch sessions/.gitkeep
 touch core/art/profiling/.gitkeep
 
 # --- Session log file
-echo "# Session Log\n## FAR_NZY / magentadice-cyancode" > sessions/session-log.md
+printf '# Session Log\n## FAR_NZY / magentadice-cyancode\n' > sessions/session-log.md
 
 echo "Scaffold complete."
 ```
