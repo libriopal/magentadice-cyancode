@@ -122,7 +122,6 @@ Limitations:
 | Audit halt conflicts with Execution progress | Audit wins. Session halted until Human decides. |
 | Execution output conflicts with Agent proposal | Execution wins. Agent proposal is advisory only. |
 | Two constitutional documents conflict | Higher position in precedence list wins. |
-| Sacred Core spec conflicts with DELTA-VERIFY | Sacred Core spec wins (more specific). |
 
 ---
 
