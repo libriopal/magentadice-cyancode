@@ -462,18 +462,15 @@ Remaining 2–3%: Concrete storage implementation of IEventStore
 
     ┌─────────────────────────────────────────────┐
     │                                             │
-    │   RESUBMITTED FOR REVIEW — v2               │
+    │   APPROVED — v2 plan executed               │
     │                                             │
-    │   All 10 veto items resolved.               │
-    │   8 constitutional documents created.       │
-    │   Phase 1 split into 1A / 1B / 1C.         │
-    │   PR authority changed to Proposal Only.    │
+    │   T0 Baseline Audit: 87/105                 │
+    │   Verdict: PASS_PROPOSE_COMMIT              │
+    │   Date: 2026-05-22                          │
+    │   Branch: tier/T0-baseline-audit-20260522   │
+    │   PR #1: open (pending Human merge)         │
     │                                             │
-    │   Mark verdict:                             │
-    │                                             │
-    │   PASS  → execution begins at T0            │
-    │   VETO  → specify changes, resubmit as v3  │
+    │   Evidence: runs/2026-05-22/session-1.json  │
+    │             sessions/session-log.md         │
     │                                             │
     └─────────────────────────────────────────────┘
-
-Awaiting your review.

@@ -13,17 +13,19 @@ AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 
 ## Currently Active MCPs
 
-| MCP | Status | Purpose |
-|---|---|---|
-| `brightdata` | Active | Competitive research, web scraping |
-| `filesystem` | Active | Local file read/write access |
-| `memory` | Active | Session state knowledge graph |
-| `context7` | Active | Library documentation lookup |
-| `sequential-thinking` | Active | Structured reasoning chains |
-| `supabase` | Active | Database schema/query access |
-| `github` | Active | PR management, code search |
-| `pixellab` | Active | Pixel art generation |
-| `postgres` | Active | Direct SQL access |
+**Authoritative source:** root `.mcp.json` (gitignored) + claude.ai platform integrations.
+
+| MCP | Source | Status | Purpose |
+|---|---|---|---|
+| `brightdata` | `.mcp.json` | Active | Competitive research, web scraping |
+| `filesystem` | `.mcp.json` | Active | Local file read/write access |
+| `memory` | `.mcp.json` | Active | Session state knowledge graph |
+| `context7` | `.mcp.json` | Active | Library documentation lookup |
+| `sequential-thinking` | `.mcp.json` | Active | Structured reasoning chains |
+| `supabase` | claude.ai platform | Active | Database schema/query access |
+| `github` | claude.ai platform | Active | PR management, code search |
+| `pixellab` | claude.ai platform | Active | Pixel art generation |
+| `postgres` | claude.ai platform | Active | Direct SQL access |
 
 **Removed:** `godot` — deprecated per ADR-009.
 

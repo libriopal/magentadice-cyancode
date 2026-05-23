@@ -9,7 +9,8 @@
   "properties": {
     "scene_id": {
       "type": "string",
-      "description": "Unique scene identifier (kebab-case)"
+      "description": "Unique scene identifier (kebab-case)",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
     },
     "version": {
       "type": "string",
@@ -35,9 +36,9 @@
           "type": "object",
           "properties": {
             "enabled": { "type": "boolean" },
-            "color": { "type": "string" },
-            "near": { "type": "number" },
-            "far": { "type": "number" }
+            "color": { "type": "string", "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$" },
+            "near": { "type": "number", "minimum": 0, "maximum": 100000 },
+            "far": { "type": "number", "minimum": 0, "maximum": 100000 }
           },
           "additionalProperties": false
         }

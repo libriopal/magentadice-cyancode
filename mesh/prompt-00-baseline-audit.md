@@ -190,7 +190,7 @@ If validation fails → Level 2 flag (non-blocking for T0, blocking for T7).
 
 Commit all required constitutional artifacts to the repo root and docs/adr/:
 
-```
+```text
 authority-model.md
 sacred-core-spec.md
 rng-lineage-spec.md
@@ -198,6 +198,7 @@ threat-model.md (v1.1.0)
 event-versioning-spec.md
 snapshot-strategy.md
 agent-escalation-model.md
+adr-governance.md
 hashing-strategy.md
 docs/adr/ADR-000 through ADR-008
 ```

@@ -1,6 +1,6 @@
 # SESSION RUNNER
 ## FAR_NZY / magentadice-cyancode
-## File: prompts/session-runner.md
+## File: mesh/session-runner.md
 ## Purpose: Orchestrates every tier session — load, execute, audit, score, pause
 
 ---

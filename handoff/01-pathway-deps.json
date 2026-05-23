@@ -12,11 +12,18 @@
     "core/art/manifest/visual_manifest.json"
   ],
   "dependency_map": {
-    "CLAUDE.md": ["no downstream code consumers — documentation only"],
-    "visual_manifest.json": ["core/art/manifest/visual_manifest.json is the canonical copy — root copy is stale"],
-    "archive/godot/Main.tscn": ["no consumers — Godot never integrated with Three.js runtime"],
-    "docs/adr/ADR-009-godot-deprecation.md": ["docs/adr/ index"],
-    "contracts/scene-definition.schema.json": ["future Three.js scene loader — not yet implemented"]
+    "CLAUDE.md": [],
+    "visual_manifest.json": ["core/art/manifest/visual_manifest.json"],
+    "archive/godot/Main.tscn": [],
+    "docs/adr/ADR-009-godot-deprecation.md": [],
+    "contracts/scene-definition.schema.json": []
+  },
+  "dependency_notes": {
+    "CLAUDE.md": "no downstream code consumers — documentation only",
+    "visual_manifest.json": "core/art/manifest/visual_manifest.json is the canonical copy — root copy is stale",
+    "archive/godot/Main.tscn": "no consumers — Godot never integrated with Three.js runtime",
+    "docs/adr/ADR-009-godot-deprecation.md": "referenced by docs/adr/ index",
+    "contracts/scene-definition.schema.json": "future Three.js scene loader — not yet implemented"
   },
   "sacred_core_boundary_approached": false,
   "sacred_core_files_modified": [],

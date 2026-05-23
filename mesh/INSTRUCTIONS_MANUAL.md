@@ -252,13 +252,17 @@ magentadice-cyancode/
 ├── authority-model.md           ← file 1
 ├── sacred-core-spec.md          ← file 2
 ├── rng-lineage-spec.md          ← file 3
-├── threat-model.md              ← file 4 (use threat-model-v2.md content)
+├── threat-model.md              ← file 4 (source: mesh/threat-model-v2.md, v1.1.0 / VERSION 2)
 ├── event-versioning-spec.md     ← file 5
 ├── snapshot-strategy.md         ← file 6
 ├── agent-escalation-model.md    ← file 7
 ├── adr-governance.md            ← file 8
 └── hashing-strategy.md          ← file 9
 ```
+
+> **threat-model.md workflow:** Copy `mesh/threat-model-v2.md` to repo root as `threat-model.md`
+> (overwriting the existing v1). Commit the replacement. The original `mesh/threat-model.md` is
+> superseded by `threat-model-v2.md` (v1.1.0); mark it superseded or rename to `mesh/threat-model-v1.md`.
 
 ## Step 2 — Contracts Directory
 

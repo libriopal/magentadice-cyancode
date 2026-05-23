@@ -45,4 +45,4 @@ All remaining references are:
 - [x] No replay contracts impacted
 - [x] No audit contracts weakened
 - [x] ADR-009 created
-- [x] Migration report pending (Phase 9)
+- [x] Migration report created (Phase 9)

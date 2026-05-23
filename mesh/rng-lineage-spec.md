@@ -19,15 +19,18 @@ but how every derived value traces back to a single genesis root.
 ## The Four-Level Lineage
 
 ```text
-GENESIS
-  ↓ HMAC-SHA256(ServerSecret, "genesis")
+GENESIS (ServerSecret — never leaves HSM)
+  ↓ HMAC-SHA256(ServerSecret, RoomID ∥ TimestampMs)
 SESSION
-  ↓ HMAC-SHA256(SessionSeed, RoomID ∥ Timestamp)
+  ↓ HMAC-SHA256(SessionSeed, RoundNumber ∥ MatchPhase)
 GAME
-  ↓ HMAC-SHA256(GameSeed, RoundNumber ∥ MatchPhase)
+  ↓ HMAC-SHA256(GameSeed, EventIndex ∥ EventType)
 EVENT
-  ↓ HMAC-SHA256(EventSeed, EventIndex ∥ EventType)
 ```
+
+Note: diagram matches the detailed derivation formulas in the sections below.
+The GENESIS level is the raw ServerSecret; its derivation arrow shows how
+SESSION is produced (not a derivation of GENESIS itself).
 
 Every derived value at every level is deterministically reconstructable
 from the level above it, given the same inputs.
