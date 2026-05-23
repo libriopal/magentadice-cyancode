@@ -10,19 +10,28 @@
     "docs/audits/post-migration-verification.md",
     "docs/reports/full-godot-removal-report.md"
   ],
+  "submodule_updates": {
+    "core": "c07675db → 9282d804 (only core/art/manifest/visual_manifest.json changed — art asset, not source code)"
+  },
   "dependency_map": {
     "CLAUDE.md": [],
     "visual_manifest.json": [],
     "archive/godot/Main.tscn": [],
     "docs/adr/ADR-009-godot-deprecation.md": [],
-    "contracts/scene-definition.schema.json": []
+    "contracts/scene-definition.schema.json": [],
+    "docs/audits/mcp-opportunities.md": [],
+    "docs/audits/post-migration-verification.md": [],
+    "docs/reports/full-godot-removal-report.md": []
   },
   "dependency_notes": {
     "CLAUDE.md": "no downstream code consumers — documentation only",
     "visual_manifest.json": "root copy is a known stale duplicate; canonical is core/art/manifest/visual_manifest.json. Reconciliation deferred to T7 per ADR-009 §Consequences. Not a Sacred Core item.",
     "archive/godot/Main.tscn": "no consumers — Godot never integrated with Three.js runtime",
     "docs/adr/ADR-009-godot-deprecation.md": "referenced by docs/adr/ index",
-    "contracts/scene-definition.schema.json": "future Three.js scene loader — not yet implemented"
+    "contracts/scene-definition.schema.json": "future Three.js scene loader — not yet implemented",
+    "docs/audits/mcp-opportunities.md": "evaluation artifact — no downstream code consumers",
+    "docs/audits/post-migration-verification.md": "evaluation artifact — no downstream code consumers",
+    "docs/reports/full-godot-removal-report.md": "evaluation artifact — no downstream code consumers"
   },
   "sacred_core_boundary_approached": false,
   "sacred_core_files_modified": [],

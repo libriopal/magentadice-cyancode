@@ -193,6 +193,10 @@ session architecture. Full stop. Constitutional review required.
 **raise** = report or nominate an escalation level (any cell may do this for any level).
 **trigger** = unilaterally enact the consequences of that level (authority-restricted).
 
+Example — raise: Contradiction Hunter finds a potential Sacred Core boundary conflict and writes `[L4-CANDIDATE]` to handoff/04-contradictions.md. The session continues pending review; no halt is enacted.
+
+Example — trigger: Governance Auditor detects a confirmed Sacred Core file modification and immediately halts the session with `[L3-CRITICAL-VIOLATION]` — no secondary approval needed.
+
 Any cell may raise (nominate) an L4 candidate.
 Only Governance Auditor and Determinism Verifier can trigger L4 unilaterally.
 Other cells require two concurrent L3 findings to trigger L4.

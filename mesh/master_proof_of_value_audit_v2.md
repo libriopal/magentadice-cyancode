@@ -231,7 +231,8 @@ Pass gate: 2-player match deterministic + PostHog events active + Play Store che
     snapshot-strategy.md
     agent-escalation-model.md
     hashing-strategy.md
-    adr-governance.md (+ docs/adr/ directory with ADR-000 through ADR-008)
+    adr-governance.md
+    (requires docs/adr/ directory populated with ADR-000 through ADR-008 as supporting governance records — not included in the 9-file count)
 
 ### Tier Prompts (11 files)
 

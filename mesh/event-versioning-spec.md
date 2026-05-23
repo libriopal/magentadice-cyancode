@@ -116,7 +116,7 @@ All event readers MUST handle:
 
 ```typescript
 // REQUIRED: Default handling for missing optional fields
-const DEFAULT_SCORE_MULTIPLIER_FIXED = 100; // Q0.32 fixed-point: 1.0 × 100
+const DEFAULT_SCORE_MULTIPLIER_FIXED = 4294967296; // Q32.32 fixed-point: 1.0 × 2^32
 const scoreMultiplier = event.payload.score_multiplier ?? DEFAULT_SCORE_MULTIPLIER_FIXED;
 ```
 

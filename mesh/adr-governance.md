@@ -144,8 +144,9 @@ An ADR becomes constitutional only when status is "Accepted" and Human has signe
 | ADR-005 | Snapshot Strategy v1.0.0 | Pending Human Review | Constitutional |
 | ADR-006 | Agent Escalation Model v1.0.0 | Pending Human Review | Constitutional |
 | ADR-007 | Threat Model v1.0.0 | Pending Human Review | Constitutional |
+| ADR-008 | Hashing Strategy v1.0.0 | Pending Human Review | Constitutional |
 
-All ADR-001 through ADR-007 are pending the PASS decision on the master audit.
+All ADR-001 through ADR-008 are pending the PASS decision on the master audit.
 Upon PASS, all are marked Accepted with the date of approval.
 
 ---

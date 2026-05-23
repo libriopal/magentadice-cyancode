@@ -38,8 +38,8 @@
     "score_total": {
       "type": "number",
       "minimum": 0,
-      "maximum": 105,
-      "description": "Sum of all dimension scores (100 base + 5 bonus max)",
+      "maximum": 100,
+      "description": "Sum of all dimension scores (95 base from 6 dimensions + 5 bonus from evidence_coverage and mcp_utilization = 100 max)",
       "$comment": "Threshold behaviour (per mesh/agent-escalation-model.md and mesh/session-runner.md): score >= 70 → PASS_PROPOSE_COMMIT (continue); 50–69 → PAUSE_ASK (L2 VIOLATION — pause and present to Human); < 50 → Level 3 CRITICAL VIOLATION (session halt). AUDIT::FIXED_POINT_CHECK FAIL also triggers Level 3 regardless of score."
     },
     "dimensions": {
