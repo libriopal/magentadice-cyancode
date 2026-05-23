@@ -1,0 +1,98 @@
+{
+  "_audit": {
+    "PATHWAY_DEPS": "runs/T0/ — no code files affected",
+    "CURRENT_GRADE": "Grade C — T0 establishes baseline only",
+    "ENTROPY_VECTOR": "none — read-only BrightData artifact",
+    "FIXED_POINT_CHECK": "NOT_APPLICABLE"
+  },
+  "research_date": "2026-05-22T00:00:00.000Z",
+  "platforms": [
+    {
+      "name": "Royal Match",
+      "developer": "Dream Games",
+      "monetization_model": "IAP-heavy (~98% revenue). Consumable IAPs $0.99–$19.99. Royal Pass subscription adds ~25% MRR. No ads. $1.4B revenue in 2024 (56% YoY growth). $3B lifetime since 2021. D2C webshop emerging.",
+      "visual_style_keywords": ["bright", "royal castle", "clean UI", "medieval fantasy", "warm palette", "low visual density", "charming characters"],
+      "top_user_complaints": [
+        "Boosters feel exploitative and pay-to-win",
+        "Accidental IAP charges with no refund path",
+        "Later levels have steep difficulty spikes requiring purchases",
+        "Level content feels repetitive after extended play"
+      ],
+      "update_frequency_per_month": 2.0,
+      "key_features": ["Match-3 puzzle", "castle decoration meta", "Royal Pass subscription", "team tournaments", "no ads", "LiveOps events monthly"]
+    },
+    {
+      "name": "Coin Master",
+      "developer": "Moon Active",
+      "monetization_model": "Spin-based slot mechanic. IAP for spins and coins. $70M+/month IAP consistently since 2020. $553M IAP revenue in 2025 YTD. No advertising model — pure IAP. Social viral loops via Facebook raids/attacks.",
+      "visual_style_keywords": ["cartoon Vikings", "colorful", "slot machine UI", "village building", "bright neons", "whimsical", "low fidelity 2D"],
+      "top_user_complaints": [
+        "Card duplication — rare cards nearly impossible to obtain",
+        "Spin economy feels manipulated / algorithm-rigged",
+        "Addictive mechanics targeting vulnerable players",
+        "Won spins disappearing without support resolution",
+        "Heavy social pressure mechanics (raids/attacks on friends)"
+      ],
+      "update_frequency_per_month": 1.5,
+      "key_features": ["Slot spin mechanic", "village building", "card collection", "PvP raids and attacks", "chest opening", "seasonal events"]
+    },
+    {
+      "name": "Monopoly GO",
+      "developer": "Scopely",
+      "monetization_model": "IAP $1.99–$99.99. $6B lifetime IAP in 2025 (fastest mobile game ever). D2C webshop (Scopely Store) with exclusive rewards and loyalty points. ~$1.3B in 2024. Heavy UA spend (~$500M). Hybrid ad+IAP.",
+      "visual_style_keywords": ["colorful board game", "Monopoly IP", "3D cartoon characters", "bright token art", "busy UI", "celebration animations", "slot reel integration"],
+      "top_user_complaints": [
+        "Dice roll algorithm feels manipulated",
+        "Copy of Coin Master mechanics without originality",
+        "Aggressive monetization pace",
+        "Event timers feel predatory",
+        "Poor customer support response times"
+      ],
+      "update_frequency_per_month": 3.0,
+      "key_features": ["Board game meta", "slot spin for dice rolls", "mini-events weekly", "sticker collections", "partner events", "Quick Win rolls"]
+    },
+    {
+      "name": "WOW Vegas",
+      "developer": "SkillOnNet",
+      "monetization_model": "Sweepstakes dual-currency: Gold Coins (free play) + WOW Coins (sweepstakes redeemable). Free-to-play entry with optional Gold Coin purchases to accelerate play. 1500+ slot games. Revenue through Gold Coin sales.",
+      "visual_style_keywords": ["Las Vegas glam", "neon accents", "modern casino aesthetic", "dark backgrounds", "gold and purple palette", "slot-heavy UI", "minimal meta-game layer"],
+      "top_user_complaints": [
+        "Account locked at redemption stage after spending significant amounts",
+        "No live customer support — email only",
+        "Verification process blocks payouts",
+        "Daily bonus considered insufficient relative to spend"
+      ],
+      "update_frequency_per_month": 0.5,
+      "key_features": ["1500+ slot titles", "sweepstakes model", "daily free coins", "social casino tournaments", "no real-money deposit required"]
+    },
+    {
+      "name": "LuckyLand Slots",
+      "developer": "VGW Holdings",
+      "monetization_model": "Sweepstakes dual-currency: Gold Coins (fun play) + Sweeps Coins (redeemable). Gold Coin packages purchasable. Under severe regulatory pressure in 2025 — exited NJ, WV, DE, MS, CA, NV. Rebranding to LuckyLand Casino.",
+      "visual_style_keywords": ["bright slots aesthetic", "lucky charm motifs", "green and gold palette", "cartoon style", "classic slot machine UI"],
+      "top_user_complaints": [
+        "Sweeps Coin play removed in multiple states with little notice",
+        "Limited game variety vs competitors",
+        "Questionable fairness terms in ToS",
+        "No live customer support",
+        "Mixed redemption experiences"
+      ],
+      "update_frequency_per_month": 0.3,
+      "key_features": ["Sweepstakes slot games", "dual currency", "daily bonuses", "VGW brand backing", "real prize redemption (where legal)"]
+    },
+    {
+      "name": "PokerStars Social",
+      "developer": "Flutter Entertainment",
+      "monetization_model": "Social casino / play-money model. IAP for play chips. Limited sweepstakes component. Revenue secondary to brand loyalty and cross-sell to real-money PokerStars platform. Social games target non-poker casual audience.",
+      "visual_style_keywords": ["poker table green", "professional casino aesthetic", "dark sophisticated UI", "spade/card iconography", "subdued palette vs casual competitors"],
+      "top_user_complaints": [
+        "Limited game variety beyond poker variants",
+        "Social features feel tacked on",
+        "No meaningful sweepstakes / real prize redemption",
+        "Overshadowed by real-money PokerStars brand"
+      ],
+      "update_frequency_per_month": 0.5,
+      "key_features": ["Poker variants", "play-money chips", "social lobby", "brand cross-sell to real-money platform", "casino side games"]
+    }
+  ]
+}

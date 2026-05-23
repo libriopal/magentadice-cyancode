@@ -1,0 +1,128 @@
+{
+  "_audit": {
+    "PATHWAY_DEPS": "runs/T0/ — no code files affected",
+    "CURRENT_GRADE": "Grade C — T0 establishes baseline only",
+    "ENTROPY_VECTOR": "none — read-only BrightData artifact",
+    "FIXED_POINT_CHECK": "NOT_APPLICABLE"
+  },
+  "research_date": "2026-05-22T00:00:00.000Z",
+  "regulatory_context": {
+    "summary": "The sweepstakes casino model faced unprecedented state-level crackdowns in 2025. Montana (Oct 2025), New Jersey (Aug 2025), West Virginia (Nov 2025), California (Dec 2025), Delaware (Apr 2025), Mississippi (Jul 2025), Nevada, Connecticut, Maine, Indiana, Tennessee, and Illinois all enacted or enforced restrictions. The dual-currency model is under legal scrutiny nationwide.",
+    "key_legal_risk_for_far_nzy": "FAR_NZY must ensure AMOE pathway is genuine, no-purchase-necessary is structurally enforced at IEventStore level, and geofencing is maintained dynamically. Any state ban must immediately block PDX redemption flows."
+  },
+  "platforms": [
+    {
+      "name": "McLuck",
+      "operator": "RSG (Rush Street Gaming affiliate)",
+      "legal_disclosures": {
+        "amoe_language": "Alternate Method of Entry available via mail-in request. No purchase necessary to obtain Sweepstakes Coins. Purchase does not increase chances of winning.",
+        "terms_of_service_notes": "AMOE explicitly documented; minimum purchase $1.99 for Gold Coin bundles bundled with SC bonus",
+        "responsible_gaming": "Self-exclusion and cooling-off period available"
+      },
+      "geofencing": {
+        "legal_states": 36,
+        "plus_dc": true,
+        "restricted_states": ["Idaho", "Kentucky", "New York", "Washington", "Maryland", "Michigan (pending)", "Montana", "New Jersey", "California", "Nevada", "Louisiana", "Hawaii", "Alabama"],
+        "notes": "Exited Kentucky Dec 2025, ceased SC play NJ and CA in 2025"
+      },
+      "kyc_flow": {
+        "age_gate": "18+",
+        "id_verification_trigger": "Required at redemption threshold",
+        "redemption_minimum": "Varies by tier; SC must meet minimum balance",
+        "document_types": ["Government-issued ID", "Proof of address"]
+      }
+    },
+    {
+      "name": "Stake.us",
+      "operator": "Stake (Easygo Entertainment)",
+      "legal_disclosures": {
+        "amoe_language": "NO PURCHASE OR PAYMENT IS NECESSARY TO PARTICIPATE OR PLAY THE GAMES. A PURCHASE OR PAYMENT OF ANY KIND WILL NOT INCREASE YOUR CHANCES OF WINNING.",
+        "terms_of_service_notes": "Caps 2.4 of ToS contain explicit NPNS language. Stake Cash (SC-equivalent) obtainable via daily login bonus, social media promotions, and mail-in AMOE.",
+        "responsible_gaming": "Responsible Gaming page, self-exclusion, deposit limits"
+      },
+      "geofencing": {
+        "legal_states": 40,
+        "plus_dc": false,
+        "restricted_states": ["New York", "Washington", "Kentucky", "New Jersey", "Montana", "Nevada", "California (Dec 2025)"],
+        "notes": "Exited Kentucky Dec 2025 alongside McLuck"
+      },
+      "kyc_flow": {
+        "age_gate": "21+",
+        "id_verification_trigger": "Required before first SC redemption; also triggered at registration for age verification",
+        "redemption_minimum": "Minimum $50 USD equivalent SC balance",
+        "document_types": ["Government-issued photo ID", "SSN (last 4 or full for high-value redemptions)"]
+      }
+    },
+    {
+      "name": "Fortune Coins",
+      "operator": "GAN Limited",
+      "legal_disclosures": {
+        "amoe_language": "No purchase necessary. Players may obtain Fortune Coins (sweepstakes currency) via mail-in AMOE request. See official rules for details.",
+        "terms_of_service_notes": "Part of RSG stable. AMOE via written mail-in to US address. Fortune Coins (FC) are sweepstakes entries; Gold Coins are virtual entertainment only.",
+        "responsible_gaming": "Responsible Gaming section; GAN-backed compliance infrastructure"
+      },
+      "geofencing": {
+        "legal_states": 42,
+        "plus_dc": true,
+        "restricted_states": ["Idaho", "Michigan", "Montana", "New Jersey", "Kentucky", "Nevada", "Washington", "Hawaii", "Alabama", "Louisiana"],
+        "notes": "Maryland issued cease-and-desist Jan 2025; Fortune Coins exited MD"
+      },
+      "kyc_flow": {
+        "age_gate": "18+",
+        "id_verification_trigger": "At FC redemption request",
+        "redemption_minimum": "Minimum FC balance required; varies by redemption method",
+        "document_types": ["Government-issued ID", "Utility bill or bank statement for address"]
+      }
+    },
+    {
+      "name": "Pulsz",
+      "operator": "Pulsz (Gamewise LLC)",
+      "legal_disclosures": {
+        "amoe_language": "18+ No Purchase Necessary. Void where prohibited by law. See Terms of Use. AMOE available for Pulsz Coins (sweepstakes currency).",
+        "terms_of_service_notes": "Dual currency: Gold Coins (fun play) and Pulsz Coins (sweepstakes). No deposit model with optional Gold Coin packages. Pulsz Points loyalty program.",
+        "responsible_gaming": "Responsible gaming page; self-exclusion; account limits"
+      },
+      "geofencing": {
+        "legal_states": 43,
+        "plus_dc": true,
+        "restricted_states": ["Idaho", "Michigan", "Montana", "New Jersey", "Nevada", "Washington", "Kentucky", "Hawaii", "Alabama", "Louisiana"],
+        "notes": "Pricing example: $49.99 = 1,005,000 GC + 77.3 SC + 750 Pulsz Points + Golden Key"
+      },
+      "kyc_flow": {
+        "age_gate": "18+",
+        "id_verification_trigger": "Identity verification required before SC redemption",
+        "redemption_minimum": "Minimum Pulsz Coins balance required for prize redemption",
+        "document_types": ["Government-issued ID"]
+      }
+    },
+    {
+      "name": "Global Poker",
+      "operator": "VGW Holdings",
+      "legal_disclosures": {
+        "amoe_language": "No purchase necessary. Players may request Gold Coins via mail-in AMOE. Sweeps Coins received as bonus with Gold Coin purchase or via promotions.",
+        "terms_of_service_notes": "VGW Terms of Service. Sweeps Coins redeemable for cash prizes. AMOE documented in Official Rules.",
+        "responsible_gaming": "Self-exclusion, spending limits, VGW responsible gambling policy"
+      },
+      "geofencing": {
+        "legal_states": 38,
+        "plus_dc": true,
+        "restricted_states": ["Nevada (exited Apr 2025)", "California (exited Dec 2025)", "New Jersey", "Montana", "Washington", "Idaho", "Michigan", "Kentucky", "Hawaii", "Alabama", "Louisiana"],
+        "notes": "VGW under mounting pressure — exited NV Apr 2025, CA Dec 2025. Nevada exit confirmed Dec 2024."
+      },
+      "kyc_flow": {
+        "age_gate": "18+",
+        "id_verification_trigger": "Required at account registration for poker (skill-based framing) and at SC redemption",
+        "redemption_minimum": "Minimum SC balance; exact threshold not publicly disclosed",
+        "document_types": ["Government-issued ID", "Bank account or PayPal for prize delivery"]
+      }
+    }
+  ],
+  "far_nzy_compliance_gaps": [
+    "PDX redemption must be blocked dynamically for all restricted states — geofencing enforcement is a legal requirement, not a nice-to-have",
+    "AMOE must be a genuine alternative pathway — mail-in or equivalent must be implemented before any PDX operations go live",
+    "KYC must be triggered at PDX redemption threshold — attestation verdict 'PASS' required per IEventStore contract",
+    "NPNS (No Purchase Necessary) language must appear at every onboarding and purchase touchpoint",
+    "Age gate minimum 18+ enforced at account creation with ID verification before PDX access",
+    "State-by-state geofencing review required from licensed sweepstakes attorney before launch"
+  ]
+}

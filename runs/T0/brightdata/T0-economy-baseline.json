@@ -1,0 +1,145 @@
+{
+  "_audit": {
+    "PATHWAY_DEPS": "runs/T0/ — no code files affected",
+    "CURRENT_GRADE": "Grade C — T0 establishes baseline only",
+    "ENTROPY_VECTOR": "none — read-only BrightData artifact",
+    "FIXED_POINT_CHECK": "NOT_APPLICABLE"
+  },
+  "research_date": "2026-05-22T00:00:00.000Z",
+  "currency_model_taxonomy": {
+    "type_A_iap_only": "Games like Royal Match — soft currency (coins/lives) earned via gameplay and purchased; premium content via IAP bundles",
+    "type_B_sweepstakes_dual": "Games like McLuck, Stake.us, Pulsz — Gold Coins (fun play, purchasable) + Sweeps Coins (sweepstakes entries, free AMOE or bundled with GC purchase)",
+    "type_C_hybrid": "Games with both IAP and ad-based earn — less common in this category"
+  },
+  "soft_currency_earn_rates": [
+    {
+      "platform": "Royal Match",
+      "soft_currency": "Coins (level completion) + Lives (time-gated)",
+      "daily_free_earn": "Approx. 200–500 coins from daily login; 25 lives max capped; 1 life per 30min passive regen",
+      "far_nzy_fd_analog": "FD (Farkle Dice) is the closest analog — earns from gameplay, time gates, daily login",
+      "notes": "Lives are the scarcity driver forcing IAP or wait"
+    },
+    {
+      "platform": "Coin Master",
+      "soft_currency": "Spins (slot fuel) + Coins (village build)",
+      "daily_free_earn": "5 free spins/hour (max 50 stored); daily spin link via social media for bonus spins",
+      "far_nzy_fd_analog": "FD earns at fixed rate per game session",
+      "notes": "Spin scarcity is primary monetization driver"
+    },
+    {
+      "platform": "Monopoly GO",
+      "soft_currency": "Dice rolls",
+      "daily_free_earn": "Free dice rolls refill over time; friend gifts; event completion; ~25–50 dice/day free",
+      "far_nzy_fd_analog": "FD daily earn equivalent",
+      "notes": "Dice roll economy is core to Monopoly GO session pacing"
+    },
+    {
+      "platform": "McLuck / Pulsz / Stake.us (sweepstakes class)",
+      "soft_currency": "Gold Coins (GC, fun play) + Sweeps Coins (SC, sweepstakes)",
+      "daily_free_earn": "2.5–325 SC + 7,000–1,500,000 GC via: daily login bonus, social media check-ins, AMOE mail-in, promotional events",
+      "far_nzy_fd_analog": "FD = Gold Coin analog (fun play); PDX = Sweeps Coin analog (real-value sweepstakes)",
+      "notes": "McLuck example: 7,500 GC + 2.5 SC on sign-up. Daily bonus scales with streak."
+    }
+  ],
+  "premium_currency_pricing_tiers": [
+    {
+      "platform": "Royal Match",
+      "currency_name": "Coin bundles / Royal Pass",
+      "pricing": [
+        {"price_usd": 0.99, "content": "Small coin bundle"},
+        {"price_usd": 4.99, "content": "Medium coin bundle"},
+        {"price_usd": 9.99, "content": "Large coin bundle + bonus boosters"},
+        {"price_usd": 19.99, "content": "Max bundle"},
+        {"price_usd": 4.99, "content": "Royal Pass (monthly subscription, recurring)"}
+      ],
+      "pdx_analog_notes": "PDX pricing should anchor to $4.99–$9.99 entry tier for broadest accessibility"
+    },
+    {
+      "platform": "Monopoly GO",
+      "currency_name": "Dice roll bundles",
+      "pricing": [
+        {"price_usd": 1.99, "content": "Starter dice pack"},
+        {"price_usd": 9.99, "content": "Mid dice pack"},
+        {"price_usd": 19.99, "content": "Large dice pack"},
+        {"price_usd": 49.99, "content": "Mega dice pack"},
+        {"price_usd": 99.99, "content": "Ultimate dice pack"}
+      ],
+      "pdx_analog_notes": "Broad tier range $1.99–$99.99 captures impulse to whale spectrum"
+    },
+    {
+      "platform": "McLuck (sweepstakes reference)",
+      "currency_name": "Gold Coin packages (bundled SC)",
+      "pricing": [
+        {"price_usd": 1.99, "content": "Entry GC pack + bonus SC"},
+        {"price_usd": 9.99, "content": "Mid GC pack + SC"},
+        {"price_usd": 19.99, "content": "Large GC pack + SC"},
+        {"price_usd": 49.99, "content": "Premium GC pack + SC"},
+        {"price_usd": 99.99, "content": "VIP GC pack + SC"}
+      ],
+      "pdx_analog_notes": "PDX packages mirror this: GC-equivalent fun play (FD) bundled with PDX entry"
+    },
+    {
+      "platform": "Pulsz (sweepstakes reference)",
+      "currency_name": "Gold Coin packages (bundled Pulsz Coins + loyalty points)",
+      "pricing": [
+        {"price_usd": 49.99, "content": "1,005,000 GC + 77.3 SC + 750 Pulsz Points + Golden Key"}
+      ],
+      "pdx_analog_notes": "Loyalty point layer (Pulsz Points) analogous to SDX prestige layer in FAR_NZY"
+    }
+  ],
+  "prestige_scarcity_patterns": [
+    {
+      "platform": "Royal Match",
+      "prestige_item": "King's Cup tournament crown cosmetics",
+      "scarcity_mechanism": "Time-limited tournament ranking required",
+      "far_nzy_sdx_analog": "SDX items with blockchain scarcity — VOIDSHARD tier"
+    },
+    {
+      "platform": "Coin Master",
+      "prestige_item": "Golden and Joker cards",
+      "scarcity_mechanism": "Set completion with rare card extreme scarcity; trading events limited",
+      "far_nzy_sdx_analog": "SDX rare card-equivalent — blockchain-verified scarcity"
+    },
+    {
+      "platform": "Monopoly GO",
+      "prestige_item": "Golden Stickers / limited event cosmetics",
+      "scarcity_mechanism": "Limited event windows; golden stickers obtainable only during specific events",
+      "far_nzy_sdx_analog": "SDX seasonal drop equivalent"
+    },
+    {
+      "platform": "Sweepstakes class (McLuck/Pulsz)",
+      "prestige_item": "VIP tiers, loyalty point milestones",
+      "scarcity_mechanism": "Cumulative spend/play thresholds; VIP access gates",
+      "far_nzy_sdx_analog": "SDX tier access; Bard 1.85x multiplier class archetype prestige"
+    }
+  ],
+  "daily_reward_structures": [
+    {
+      "pattern": "Login streak calendar",
+      "used_by": ["Royal Match", "Coin Master", "Monopoly GO", "McLuck", "Pulsz"],
+      "description": "Day 1–30 escalating rewards for consecutive daily login. Break streak = reset. Creates daily retention habit."
+    },
+    {
+      "pattern": "Social media spin bonus",
+      "used_by": ["Coin Master"],
+      "description": "Daily free spins link posted on Facebook/Instagram. Viral distribution mechanic for earn."
+    },
+    {
+      "pattern": "Event pass (time-limited missions)",
+      "used_by": ["Monopoly GO", "Royal Match"],
+      "description": "Weekly or bi-weekly event pass with gated reward track. IAP accelerates progress."
+    },
+    {
+      "pattern": "Daily coin/SC claim",
+      "used_by": ["McLuck", "Stake.us", "Pulsz", "WOW Vegas"],
+      "description": "Daily free SC + GC claim via one-click dashboard. Minimum 2.5 SC/day across benchmarked platforms."
+    }
+  ],
+  "far_nzy_economy_design_implications": {
+    "fd_earn_rate_recommendation": "FD daily free earn should be sufficient for 1–2 game sessions without purchase. Scarcity felt at session 3+.",
+    "pdx_pricing_recommendation": "Entry tier $1.99–$4.99 captures broadest audience. High-value tier $49.99–$99.99 for whales. 5–6 tier ladder optimal per benchmarks.",
+    "sdx_scarcity_recommendation": "SDX items must be blockchain-verified (confirmed on @match3d/blockchain before SDX balance increments). Seasonal limited drops create urgency without inflating supply.",
+    "daily_reward_recommendation": "Login streak calendar (Day 1–30) is industry standard and essential for D1/D7/D30 retention. Streak reset on miss increases urgency. FD daily allocation is the reward token.",
+    "npns_structural_requirement": "AMOE must provide genuine FD and PDX-entry pathway. IEventStore must enforce purchase-free path at schema level — not just UI level."
+  }
+}
