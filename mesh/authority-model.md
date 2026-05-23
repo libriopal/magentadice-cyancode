@@ -46,6 +46,12 @@ Holders: These documents, in order:
 4. `mesh/threat-model.md`
 5. `mesh/hashing-strategy.md`
 6. `3libras/the_visual_layer.md`
+1. `authority-model.md` (this file)
+2. `sacred-core-spec.md`
+3. `rng-lineage-spec.md`
+4. `event-versioning-spec.md`
+5. `snapshot-strategy.md`
+6. `threat-model.md`
 
 Actions:
 - Define what is sacred and what is not
@@ -61,9 +67,10 @@ Limitations:
 ### Audit Runtime Authority
 
 Holders: The 6 Virtual Audit Cells (sequential, defined in `mesh/audit-cells-all-six.md`; escalation levels defined in `mesh/agent-escalation-model.md`)
+Holders: The 6 Virtual Audit Cells (sequential; see mesh/EXECUTE.md and mesh/session-runner.md)
 
 Actions:
-- Halt a session (Levels 2–4 per escalation model)
+- Halt a session (Levels 2–4 per escalation model; see mesh/agent-escalation-model.md and docs/adr/ADR-006-agent-escalation.md)
 - Flag violations in handoff artifacts
 - Propose fixes (cannot implement them)
 - Score sessions against 8-dimension rubric
@@ -87,6 +94,7 @@ Actions:
 - Run tests and scripts
 - Install packages within approved tier scope
 - Write to `core/art/profiling/`, `core/art/manifest/`, `runs/`, `sessions/`, `handoff/`
+- Write to `core/art/profiling/`, `core/art/manifest/`, `handoff/`, `runs/`, `sessions/`
 
 Limitations:
 - PRs are proposals, not actions. Cannot self-merge.
@@ -151,6 +159,8 @@ Limitations:
 1. Agent Output proposes amendment with evidence
 2. Contradiction Hunter (audit-cell-04) reviews for constitutional conflicts
 3. Governance Auditor (audit-cell-03) endorses or flags
+2. Contradiction Hunter (audit cell 04; see mesh/audit-cell-04-contradiction-hunter.md) reviews for constitutional conflicts
+3. Governance Auditor (audit cell 03; see mesh/audit-cell-03-governance-auditor.md) endorses or flags
 4. Human approves or vetoes
 5. If approved: ADR written, document updated, version bumped
 6. New version referenced in memory MCP

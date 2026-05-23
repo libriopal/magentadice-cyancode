@@ -219,6 +219,7 @@ Pass gate: 2-player match deterministic + PostHog events active + Play Store che
 ---
 
 ## SECTION 5 — THE 28-FILE ARCHITECTURE
+## SECTION 5 — THE 27-FILE ARCHITECTURE
 ### Updated: 9 constitutional documents added to infrastructure
 
 ### Constitutional Documents (9 new files — repo root + docs/adr/)
@@ -233,6 +234,7 @@ Pass gate: 2-player match deterministic + PostHog events active + Play Store che
     hashing-strategy.md
     adr-governance.md
     (requires docs/adr/ directory populated with ADR-000 through ADR-008 as supporting governance records — not included in the 9-file count)
+    adr-governance.md (+ docs/adr/ directory with ADR-000 through ADR-008)
 
 ### Tier Prompts (11 files)
 
@@ -470,6 +472,10 @@ Remaining 2–3%: Concrete storage implementation of IEventStore
     │   Date: 2026-05-22                          │
     │   Branch: tier/T0-baseline-audit-20260522   │
     │   PR #1: open (pending Human merge)         │
+    │   All 10 veto items resolved.               │
+    │   9 constitutional documents created.       │
+    │   Phase 1 split into 1A / 1B / 1C.         │
+    │   PR authority changed to Proposal Only.    │
     │                                             │
     │   Evidence: runs/2026-05-22/session-1.json  │
     │             sessions/session-log.md         │

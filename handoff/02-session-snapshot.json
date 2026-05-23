@@ -10,4 +10,24 @@
   "session_seed_committed_before_events": true,
   "escalation_raised": "L1 — T0 PR #1 gate open; documented per session-runner escalation protocol",
   "notes": "Branch feat/godot-deprecation-20260522 created from main (de4dfb1). T0 PR #1 still OPEN — L1-FINDING logged in session planning. No chain break — T4 ledger not yet implemented. All changes are documentation and configuration only."
+  "session_id": "tier/T0-baseline-audit-20260522",
+  "snapshot_timestamp": "2026-05-22T00:00:00.000Z",
+  "git_head": "de4dfb1d2aebbe26099b8097188ce2146c52dd3d (branch: tier/T0-baseline-audit-20260522)",
+  "files_modified_count": 16,
+  "memory_state": {
+    "current_session_branch": "tier/T0-baseline-audit-20260522",
+    "current_tier": "T0",
+    "tier_gate_status_T0": "IN_PROGRESS",
+    "brightdata_artifacts_frozen": true,
+    "first_session": true
+  },
+  "chain_head_valid": true,
+  "chain_head_event_id": null,
+  "chain_head_note": "T4 (Ledger and Replay) not yet complete — Supabase schema is empty. SHA-256 event chain does not exist yet. This is expected at T0 baseline.",
+  "rng_lineage_intact": true,
+  "rng_lineage_note": "No RNG-related code was modified in T0. csprng.ts is unchanged. Lineage integrity not disturbed.",
+  "session_seed_committed_before_events": true,
+  "session_seed_note": "Not applicable at T0 — no game events were generated in this session.",
+  "escalation_raised": null,
+  "notes": "T0 is a documentation-and-artifact session. No event chain exists yet (expected at baseline). RNG lineage untouched. Session branch clean at de4dfb1 as pre-session baseline; new files added on tier/T0-baseline-audit-20260522 branch."
 }

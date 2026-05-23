@@ -56,22 +56,29 @@ All three layers must be consistent for a state to be considered verified.
 ### State Hash Computation
 
 ```typescript
-// Deterministic: recursively sort all keys before hashing
-function deterministicSerialize(value: unknown): string {
-  if (value === null || typeof value !== "object" || Array.isArray(value))
-    return JSON.stringify(value);
-  const sorted = Object.fromEntries(
-    Object.keys(value as object).sort().map(k => [k, (value as Record<string, unknown>)[k]])
-  );
-  return "{" + Object.keys(sorted).map(k =>
-    JSON.stringify(k) + ":" + deterministicSerialize(sorted[k])
-  ).join(",") + "}";
+// Deterministic deep serialization: recursively sort all object keys
+function deterministicSerialize(obj: any): any {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(deterministicSerialize);
+  }
+  const sorted: Record<string, any> = {};
+  Object.keys(obj).sort().forEach(key => {
+    sorted[key] = deterministicSerialize(obj[key]);
+  });
+  return sorted;
 }
-const stateHash = sha256(deterministicSerialize(snapshot.state));
+
+// Hash the deterministically serialized state
+const stateHash = sha256(
+  JSON.stringify(deterministicSerialize(snapshot.state))
+);
 ```
 
-Recursive key sorting ensures the same state always produces the same hash
-regardless of JavaScript object insertion order, including nested objects.
+Deterministic deep serialization ensures the same state always produces the same hash
+regardless of JavaScript object insertion order at any nesting level.
 This is the same principle as Q32.32 math: eliminate environmental variance.
 
 ---

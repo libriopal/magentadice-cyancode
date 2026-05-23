@@ -1,0 +1,122 @@
+{
+  "session_id": "tier/T0-baseline-audit-20260522",
+  "tier": "T0",
+  "branch": "tier/T0-baseline-audit-20260522",
+  "timestamp": "2026-05-22T00:00:00.000Z",
+  "score_total": 87,
+  "dimensions": {
+    "mathematical_purity": {
+      "score": 20,
+      "max": 20,
+      "fixed_point_check": "NOT_APPLICABLE",
+      "float_violations": 0,
+      "notes": "T0 produced zero TypeScript code. Full marks — no scoring-path regressions possible."
+    },
+    "sacred_core_integrity": {
+      "score": 20,
+      "max": 20,
+      "violations": [],
+      "notes": "Zero Sacred Core files touched. farkleStore.ts, gameStore.ts, csprng.ts, farkleScorer.ts, rtpConfig.ts, monteCarlo.ts all untouched."
+    },
+    "performance_delta": {
+      "score": 20,
+      "max": 20,
+      "notes": "T0 produced zero runtime code. No frame time delta, no heap allocations introduced."
+    },
+    "grade_elevation": {
+      "score": 7,
+      "max": 15,
+      "transitions": [
+        { "file": "runs/T0/current-grade-assessment.md", "from": "C", "to": "B" },
+        { "file": "core/art/manifest/visual_manifest.json", "from": "C", "to": "B" }
+      ],
+      "notes": "Documentation artifacts elevated C to B. Codebase overall grade remains C — elevation is T1 through T9 scope. Partial credit for establishing the baseline."
+    },
+    "regression_count": {
+      "score": 10,
+      "max": 10,
+      "bugs_fixed": 0,
+      "bugs_introduced": 0,
+      "notes": "T0 documentation-only. Four L1 findings are pre-existing codebase state, not session regressions."
+    },
+    "tier_gate_progress": {
+      "score": 5,
+      "max": 10,
+      "gates_advanced": [
+        "T0-brightdata-artifacts-frozen",
+        "T0-grade-assessment-complete",
+        "T0-visual-manifest-validated",
+        "T0-constitutional-docs-committed",
+        "T0-legal-md-written"
+      ],
+      "notes": "All 5 T0 pass-gate items produced. Score is 5/10 pending PR merge. Updates to 10/10 when Human merges."
+    },
+    "evidence_coverage": {
+      "score": 3,
+      "max": 3,
+      "corpus_citations": 297,
+      "notes": "297 of 1115 corpus images cited in visual_manifest.json. All BrightData claims cite SERP sources. Grade assessment cites file paths and line numbers."
+    },
+    "mcp_utilization": {
+      "score": 2,
+      "max": 2,
+      "mcps_used": ["brightdata/search_engine_batch", "memory/create_entities", "memory/add_observations", "supabase/list_tables"],
+      "mcps_misused": [],
+      "notes": "All MCP usage within T0 authorization scope."
+    }
+  },
+  "flags": [
+    {
+      "level": 1,
+      "tag": "L1-FINDING",
+      "cell": "Governance Auditor",
+      "description": "KYCGate.tsx and AgeGate.tsx are UI-only with no backend enforcement.",
+      "file_affected": "core/apps/web/src/components/KYCGate.tsx",
+      "resolved": false,
+      "resolution": "Deferred to T2 (Security and Compliance)"
+    },
+    {
+      "level": 1,
+      "tag": "L1-FINDING",
+      "cell": "Governance Auditor",
+      "description": "Supabase public schema is empty — no FD, PDX, or replay tables exist.",
+      "file_affected": "runtime:supabase-schema",
+      "resolved": false,
+      "resolution": "Deferred to T4 (Ledger and Replay)"
+    },
+    {
+      "level": 1,
+      "tag": "L1-FINDING",
+      "cell": "Governance Auditor",
+      "description": "Play Integrity plugin absent from Capacitor android/ plugins. PDX payout constitutionally blocked.",
+      "file_affected": "core/android/app/src/main/assets/capacitor.plugins.json",
+      "resolved": false,
+      "resolution": "Deferred to T2 (Security and Compliance)"
+    },
+    {
+      "level": 1,
+      "tag": "L1-FINDING",
+      "cell": "Governance Auditor",
+      "description": "Rapier physics dt not explicitly locked — implicit 1/60 default via Rapier internal parameter.",
+      "file_affected": "core/apps/web/src/game/WildCubeEngine.ts",
+      "resolved": false,
+      "resolution": "Deferred to T3 (Spawn Physics Fix)"
+    },
+    {
+      "level": 1,
+      "tag": "L1-FINDING",
+      "cell": "Replay Archivist",
+      "description": "Git HEAD at session start (b1f3f9e) differs from EXECUTE.md baseline (1ee12fd). Repo has advanced legitimately.",
+      "resolved": true,
+      "resolution": "Logged per PB-4. No action required."
+    }
+  ],
+  "escalation_level": 1,
+  "verdict": "PASS_PROPOSE_COMMIT",
+  "audit_signature": {
+    "pathway_deps": ["runs/T0/", "docs/adr/", "LEGAL.md", "core/art/manifest/visual_manifest.json", "handoff/", "sessions/"],
+    "current_grade": "Grade C",
+    "entropy_vector": "none — read-only session except documentation artifacts",
+    "fixed_point_check": "NOT_APPLICABLE"
+  }
+}

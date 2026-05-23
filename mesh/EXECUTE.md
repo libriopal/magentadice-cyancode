@@ -38,7 +38,7 @@
       Files listed there are PROPOSE ONLY.
       Any session action that writes to a Sacred Core file
       without prior Human approval is a Level 3 violation.
-      Execute mesh/infrastructure/audit-cell-03-governance-auditor.md
+      Execute the governance auditor cell from mesh/audit-cells-all-six.md
       before committing any file touched near a Sacred Core boundary.
     </sacred_boundary>
 
@@ -90,7 +90,7 @@
 
         If memory is empty or uninitialized:
           → This is the first session.
-          → Load mesh/prompts/tiers/prompt-00-baseline-audit.md.
+          → Load mesh/prompt-00-baseline-audit.md.
           → Do not initialize memory yourself.
           → The baseline audit prompt initializes memory.
 
@@ -105,7 +105,7 @@
         against the version recorded in memory.constitutional_docs_version.
 
         If any version has drifted without a corresponding Accepted ADR
-        in mesh/docs/adr/:
+        in docs/adr/:
           → Raise Level 2 violation
           → Report: "Constitutional drift detected: [document] [stored] → [actual]"
           → HALT until Human resolves.
@@ -144,45 +144,43 @@
         Apply this decision tree in order:
 
           IF tier_gate_status.T0 != 'PASS':
-            → Load: mesh/prompts/tiers/prompt-00-baseline-audit.md
+            → Load: mesh/prompt-00-baseline-audit.md
             → Reason: T0 is the prerequisite for everything.
 
-          ELSE IF tier_gate_status.T1A != 'PASS':
-            → Load: mesh/prompts/tiers/prompt-01a-governance-runtime.md
-
-          ELSE IF tier_gate_status.T1B != 'PASS':
-            → Load: mesh/prompts/tiers/prompt-01b-audit-runtime.md
-
-          ELSE IF tier_gate_status.T1C != 'PASS':
-            → Load: mesh/prompts/tiers/prompt-01c-replay-runtime.md
+          ELSE IF tier_gate_status.T1A != 'PASS'
+             OR tier_gate_status.T1B != 'PASS'
+             OR tier_gate_status.T1C != 'PASS':
+            → Load: mesh/prompt-01abc-phase1.md
+            → Contains T1A (governance runtime), T1B (audit runtime), T1C (replay runtime).
+            → Prerequisite: T0 PASS. Verify before loading.
 
           ELSE IF tier_gate_status.T1 != 'PASS':
-            → Load: mesh/prompts/tiers/prompt-02-mathematical-foundation.md
+            → Load: mesh/prompt-02-mathematical-foundation.md
             → Prerequisite: T1C PASS. Verify before loading.
 
           ELSE IF tier_gate_status.T2 != 'PASS':
-            → Load: mesh/prompts/tiers/prompt-03-security-compliance.md
+            → Load: mesh/prompt-03-security-compliance.md
 
           ELSE IF tier_gate_status.T3 != 'PASS':
-            → Load: mesh/prompts/tiers/prompt-01-spawn-physics-fix.md
+            → Load: mesh/prompt-01-spawn-physics-fix.md
 
           ELSE IF tier_gate_status.T4 != 'PASS':
-            → Load: mesh/prompts/tiers/prompt-04-ledger-replay.md
+            → Load: mesh/prompt-04-ledger-replay.md
 
           ELSE IF tier_gate_status.T5 != 'PASS':
-            → Load: mesh/prompts/tiers/prompt-05-core-loop-excellence.md
+            → Load: mesh/prompt-05-core-loop-excellence.md
 
           ELSE IF tier_gate_status.T6 != 'PASS':
-            → Load: mesh/prompts/tiers/prompt-06-content-pipeline.md
+            → Load: mesh/prompt-06-content-pipeline.md
 
           ELSE IF tier_gate_status.T7 != 'PASS':
-            → Load: mesh/prompts/tiers/prompt-07-visual-overhaul.md
+            → Load: mesh/prompt-07-visual-overhaul.md
 
           ELSE IF tier_gate_status.T8 != 'PASS':
-            → Load: mesh/prompts/tiers/prompt-09-economy-farnzy.md
+            → Load: mesh/prompt-09-economy-farnzy.md
 
           ELSE IF tier_gate_status.T9 != 'PASS':
-            → Load: mesh/prompts/tiers/prompt-10-social-platform-liveops.md
+            → Load: mesh/prompt-10-social-platform-liveops.md
 
           ELSE:
             → All tiers complete. Report to Human.
@@ -225,28 +223,29 @@
       </step>
 
       <step id="EX-2" label="Audit cell sequence (mandatory after every significant change)">
-        Run in this exact order. Each cell reads the prior cell's handoff.
+        Read mesh/audit-cells-all-six.md (contains all six audit cell prompts).
+        Execute each cell in the order defined within that file.
 
-          mesh/prompts/infrastructure/audit-cell-01-systems-architect.md
+          Cell 01 — Systems Architect
           → writes: handoff/01-pathway-deps.json
 
-          mesh/prompts/infrastructure/audit-cell-02-replay-archivist.md
+          Cell 02 — Replay Archivist
           → reads: handoff/01-pathway-deps.json
           → writes: handoff/02-session-snapshot.json
 
-          mesh/prompts/infrastructure/audit-cell-03-governance-auditor.md
+          Cell 03 — Governance Auditor
           → reads: handoff/01, handoff/02
           → writes: handoff/03-governance-report.md
 
-          mesh/prompts/infrastructure/audit-cell-04-contradiction-hunter.md
+          Cell 04 — Contradiction Hunter
           → reads: handoff/01, handoff/02, handoff/03
           → writes: handoff/04-contradictions.md
 
-          mesh/prompts/infrastructure/audit-cell-05-determinism-verifier.md
+          Cell 05 — Determinism Verifier
           → reads: handoff/01 through handoff/04
           → writes: handoff/05-determinism-check.json
 
-          mesh/prompts/infrastructure/audit-cell-06-failure-taxonomist.md
+          Cell 06 — Failure Taxonomist
           → reads: all five prior handoffs
           → writes: runs/YYYY-MM-DD/session-N.json
           → appends: sessions/session-log.md
@@ -302,7 +301,7 @@
         The Failure Taxonomist (audit-cell-06) computes this.
         Do not compute it yourself.
         Read the score from runs/YYYY-MM-DD/session-N.json.
-        Validate that file against: mesh/prompts/session-score.schema.json.
+        Validate that file against: mesh/session-score.schema.json.
 
         If the file fails schema validation:
           → Raise Level 1 finding.
@@ -495,25 +494,18 @@
       <file id="K03" name="Snapshot.v1.md" version="1.0.0" frozen="true"/>
     </layer>
 
-    <layer name="infrastructure" destination="mesh/prompts/">
+    <layer name="infrastructure" destination="mesh/">
       <file id="I01" name="session-runner.md" version="1.0.0"/>
       <file id="I02" name="session-score.schema.json" version="1.0.0"/>
     </layer>
 
-    <layer name="audit_cells" destination="mesh/prompts/infrastructure/">
-      <file id="A01" name="audit-cell-01-systems-architect.md"/>
-      <file id="A02" name="audit-cell-02-replay-archivist.md"/>
-      <file id="A03" name="audit-cell-03-governance-auditor.md"/>
-      <file id="A04" name="audit-cell-04-contradiction-hunter.md"/>
-      <file id="A05" name="audit-cell-05-determinism-verifier.md"/>
-      <file id="A06" name="audit-cell-06-failure-taxonomist.md"/>
+    <layer name="audit_cells" destination="mesh/">
+      <file id="A01" name="audit-cells-all-six.md" note="Contains all six audit cell prompts in execution order"/>
     </layer>
 
-    <layer name="tier_prompts" destination="mesh/prompts/tiers/">
+    <layer name="tier_prompts" destination="mesh/">
       <file id="T00" name="prompt-00-baseline-audit.md" authorized="true"/>
-      <file id="T1A" name="prompt-01a-governance-runtime.md" authorized="true"/>
-      <file id="T1B" name="prompt-01b-audit-runtime.md" authorized="true"/>
-      <file id="T1C" name="prompt-01c-replay-runtime.md" authorized="true"/>
+      <file id="T1ABC" name="prompt-01abc-phase1.md" authorized="true" note="Contains T1A governance-runtime, T1B audit-runtime, T1C replay-runtime"/>
       <file id="T01" name="prompt-02-mathematical-foundation.md" authorized="pending_T1C_pass"/>
       <file id="T02" name="prompt-03-security-compliance.md" authorized="pending_T1C_pass"/>
       <file id="T03" name="prompt-01-spawn-physics-fix.md" authorized="pending_T1C_pass"/>
@@ -526,17 +518,16 @@
       <file id="T10" name="prompt-10-social-platform-liveops.md" authorized="pending_T1C_pass"/>
     </layer>
 
-    <layer name="reference" destination="mesh/docs/reference/">
-      <file id="R01" name="proof-of-value-decisions.md"/>
-      <file id="R02" name="master-proof-of-value-audit-v2.md"/>
-      <file id="R03" name="INSTRUCTIONS_MANUAL.md"/>
+    <layer name="reference" destination="mesh/">
+      <file id="R01" name="master_proof_of_value_audit_v2.md"/>
+      <file id="R02" name="INSTRUCTIONS_MANUAL.md"/>
     </layer>
 
     <layer name="boot" destination="mesh/">
       <file id="B01" name="EXECUTE.md" version="1.0.0" immutable="true"/>
     </layer>
 
-    <layer name="visual" destination="mesh/core/art/manifest/">
+    <layer name="visual" destination="core/art/manifest/">
       <file id="V01" name="visual_manifest_schema.json" version="1.0.0"/>
     </layer>
 

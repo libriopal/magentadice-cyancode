@@ -32,6 +32,43 @@
     "docs/audits/mcp-opportunities.md": "evaluation artifact — no downstream code consumers",
     "docs/audits/post-migration-verification.md": "evaluation artifact — no downstream code consumers",
     "docs/reports/full-godot-removal-report.md": "evaluation artifact — no downstream code consumers"
+  "session_id": "tier/T0-baseline-audit-20260522",
+  "modified_files": [
+    "LEGAL.md",
+    "docs/adr/ADR-000-adr-governance.md",
+    "docs/adr/ADR-001-authority-model.md",
+    "docs/adr/ADR-002-sacred-core-spec.md",
+    "docs/adr/ADR-003-rng-lineage.md",
+    "docs/adr/ADR-004-event-versioning.md",
+    "docs/adr/ADR-005-snapshot-strategy.md",
+    "docs/adr/ADR-006-agent-escalation.md",
+    "docs/adr/ADR-007-threat-model.md",
+    "docs/adr/ADR-008-hashing-strategy.md",
+    "core/art/manifest/visual_manifest.json",
+    "visual_manifest_schema.json",
+    "runs/T0/brightdata/T0-competitor-matrix.json",
+    "runs/T0/brightdata/T0-compliance-baseline.json",
+    "runs/T0/brightdata/T0-visual-benchmark.json",
+    "runs/T0/brightdata/T0-economy-baseline.json",
+    "runs/T0/current-grade-assessment.md"
+  ],
+  "dependency_map": {
+    "LEGAL.md": [],
+    "docs/adr/ADR-000-adr-governance.md": [],
+    "docs/adr/ADR-001-authority-model.md": [],
+    "docs/adr/ADR-002-sacred-core-spec.md": [],
+    "docs/adr/ADR-003-rng-lineage.md": [],
+    "docs/adr/ADR-004-event-versioning.md": [],
+    "docs/adr/ADR-005-snapshot-strategy.md": [],
+    "docs/adr/ADR-006-agent-escalation.md": [],
+    "docs/adr/ADR-007-threat-model.md": [],
+    "docs/adr/ADR-008-hashing-strategy.md": [],
+    "core/art/manifest/visual_manifest.json": ["visual_manifest_schema.json"],
+    "runs/T0/brightdata/T0-competitor-matrix.json": [],
+    "runs/T0/brightdata/T0-compliance-baseline.json": [],
+    "runs/T0/brightdata/T0-visual-benchmark.json": [],
+    "runs/T0/brightdata/T0-economy-baseline.json": [],
+    "runs/T0/current-grade-assessment.md": []
   },
   "sacred_core_boundary_approached": false,
   "sacred_core_files_modified": [],
@@ -40,4 +77,6 @@
   "gc_spike_risk": false,
   "escalation_raised": "L1",
   "notes": "Documentation-only migration. No source code in core/ or dream/ submodules was touched. core submodule pointer bumped from c07675db to 9282d804; only core/art/manifest/visual_manifest.json changed (art asset, not source code). Godot had no runtime integration — removal has zero downstream impact on build, test, or production execution. L1: T0 PR #1 gate is OPEN — Human directive authorized proceeding."
+  "escalation_raised": null,
+  "notes": "T0 is a documentation-only and artifact-generation session. No TypeScript or source code was modified. All modified files are: docs/adr/ (9 ADRs), LEGAL.md, runs/T0/ artifacts (4 BrightData JSONs + 1 grade assessment), core/art/manifest/visual_manifest.json. No Sacred Core files (farkleStore.ts, gameStore.ts, csprng.ts, farkleScorer.ts, rtpConfig.ts, monteCarlo.ts) were touched. No Sacred Core boundary was approached for modification decisions. The codebase was read for grade assessment purposes only."
 }

@@ -116,8 +116,9 @@ All event readers MUST handle:
 
 ```typescript
 // REQUIRED: Default handling for missing optional fields
-const DEFAULT_SCORE_MULTIPLIER_FIXED = 4294967296; // Q32.32 fixed-point: 1.0 × 2^32
-const scoreMultiplier = event.payload.score_multiplier ?? DEFAULT_SCORE_MULTIPLIER_FIXED;
+// Fixed-point constant: 1.0 represented as Q32.32 fixed-point integer
+const DEFAULT_SCORE_MULTIPLIER_FIXED = 0x100000000; // 1.0 in Q32.32
+const scoreMultiplierFixed = event.payload.score_multiplier_fixed ?? DEFAULT_SCORE_MULTIPLIER_FIXED;
 ```
 
 ### Migration Strategy
