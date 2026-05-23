@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://libriopal.dev/schemas/scene-definition.json",
+  "title": "SceneDefinition",
+  "description": "Browser-native scene contract for FAR_NZY. Replaces the conceptual role of scenes/Main.tscn (archived). Rendering authority: Three.js. Simulation authority: Rapier3D.",
+  "type": "object",
+  "required": ["scene_id", "version", "entities"],
+  "additionalProperties": false,
+  "properties": {
+    "scene_id": {
+      "type": "string",
+      "description": "Unique scene identifier (kebab-case)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "background_color": { "type": "string", "pattern": "^#([0-9a-fA-F]{6})$" },
+        "ambient_light_color": { "type": "string", "pattern": "^#([0-9a-fA-F]{6})$" },
+        "ambient_light_intensity": { "type": "number", "minimum": 0 },
+        "fog": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "color": { "type": "string" },
+            "near": { "type": "number" },
+            "far": { "type": "number" }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "cameras": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "position"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string", "enum": ["perspective", "orthographic"] },
+          "position": { "$ref": "#/$defs/vec3" },
+          "look_at": { "$ref": "#/$defs/vec3" },
+          "fov": { "type": "number" },
+          "near": { "type": "number" },
+          "far": { "type": "number" },
+          "is_default": { "type": "boolean" }
+        }
+      }
+    },
+    "lights": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "color", "intensity"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string", "enum": ["directional", "point", "spot", "ambient"] },
+          "color": { "type": "string", "pattern": "^#([0-9a-fA-F]{6})$" },
+          "intensity": { "type": "number", "minimum": 0 },
+          "position": { "$ref": "#/$defs/vec3" },
+          "cast_shadow": { "type": "boolean" }
+        }
+      }
+    },
+    "spawn_points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "position"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "role": { "type": "string", "description": "e.g. 'cube_drop', 'player_start'" },
+          "position": { "$ref": "#/$defs/vec3" },
+          "rotation_deg": { "$ref": "#/$defs/vec3" }
+        }
+      }
+    },
+    "entities": {
+      "type": "array",
+      "description": "Static scene entities (non-physics, non-gameplay). Physics bodies are managed by Rapier3D runtime.",
+      "items": {
+        "type": "object",
+        "required": ["id", "type"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string", "description": "Three.js geometry type or custom asset id" },
+          "position": { "$ref": "#/$defs/vec3" },
+          "rotation_deg": { "$ref": "#/$defs/vec3" },
+          "scale": { "$ref": "#/$defs/vec3" },
+          "material": { "type": "string", "description": "Material key referencing visual manifest" },
+          "cast_shadow": { "type": "boolean" },
+          "receive_shadow": { "type": "boolean" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "vec3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      }
+    }
+  }
+}

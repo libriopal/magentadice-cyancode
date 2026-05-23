@@ -1,0 +1,13 @@
+{
+  "session_id": "feat/godot-deprecation-20260522",
+  "fixed_point_check": "NOT_APPLICABLE",
+  "float_violations": [],
+  "math_random_violations": [],
+  "date_now_violations": [],
+  "new_float32array_violations": [],
+  "rng_lineage_compliant": true,
+  "hashing_strategy_compliant": true,
+  "rapier_dt_enforced": true,
+  "escalation_raised": null,
+  "notes": "No TypeScript or JavaScript files were modified. All changes are documentation (*.md), configuration (.mcp.json), JSON schemas, and a scene archive. FIXED_POINT_CHECK is NOT_APPLICABLE. No scanning required."
+}

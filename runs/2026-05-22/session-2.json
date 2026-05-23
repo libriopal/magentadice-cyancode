@@ -1,0 +1,96 @@
+{
+  "session_id": "feat/godot-deprecation-20260522",
+  "tier": "T0",
+  "branch": "feat/godot-deprecation-20260522",
+  "timestamp": "2026-05-22T00:00:00.000Z",
+  "score_total": 91,
+  "dimensions": {
+    "mathematical_purity": {
+      "score": 20,
+      "max": 20,
+      "fixed_point_check": "NOT_APPLICABLE",
+      "float_violations": 0,
+      "notes": "No code modified. NOT_APPLICABLE."
+    },
+    "sacred_core_integrity": {
+      "score": 20,
+      "max": 20,
+      "violations": [],
+      "notes": "No Sacred Core files touched."
+    },
+    "performance_delta": {
+      "score": 20,
+      "max": 20,
+      "notes": "No source code modified. No performance impact possible."
+    },
+    "grade_elevation": {
+      "score": 11,
+      "max": 15,
+      "transitions": [
+        { "file": "CLAUDE.md", "from": "C", "to": "A" },
+        { "file": "docs/adr/ADR-009-godot-deprecation.md", "from": "C", "to": "A" },
+        { "file": "contracts/scene-definition.schema.json", "from": "C", "to": "A" }
+      ],
+      "notes": "3 files elevated to Grade A. Deducted for visual_manifest.json (root stale copy, B) and stale schema hints deferred to T7."
+    },
+    "regression_count": {
+      "score": 10,
+      "max": 10,
+      "bugs_fixed": 0,
+      "bugs_introduced": 0,
+      "notes": "Documentation-only. Zero regressions possible."
+    },
+    "tier_gate_progress": {
+      "score": 7,
+      "max": 10,
+      "gates_advanced": [
+        "godot-dependency-surface-zero",
+        "three-js-declared-rendering-authority",
+        "rapier3d-declared-simulation-authority",
+        "ADR-009-created",
+        "scene-contract-schema-created",
+        "mcp-landscape-audited"
+      ],
+      "notes": "Constitutional migration complete. 2 points deducted: T0 gate not formally PASS yet (PR #1 open), schema hints deferred to T7."
+    },
+    "evidence_coverage": {
+      "score": 3,
+      "max": 3,
+      "corpus_citations": 0,
+      "notes": "Full audit trail: Phase 1-9 artifacts, ADR-009, contradiction scan, post-migration verification, final report."
+    },
+    "mcp_utilization": {
+      "score": 0,
+      "max": 2,
+      "mcps_used": [],
+      "mcps_misused": [],
+      "notes": "No MCP tools invoked this session — git + filesystem operations only."
+    }
+  },
+  "flags": [
+    {
+      "level": 1,
+      "tag": "T0-PR-GATE-OPEN",
+      "cell": "audit-cell-01",
+      "description": "T0 PR #1 is OPEN, not merged into main. T0 gate is PASS_PROPOSE_COMMIT, not formally PASS. Human Constitutional Directive authorized proceeding.",
+      "resolved": true,
+      "resolution": "Human directive accepted. L1 logged. Proceeding."
+    },
+    {
+      "level": 0,
+      "tag": "STALE-SCHEMA-HINTS",
+      "cell": "audit-cell-04",
+      "description": "visual_manifest_schema.json (root and core/art/manifest/) contains 'Godot StandardMaterial3D' in optional description hints. Deferred to T7.",
+      "resolved": false,
+      "resolution": "Deferred to T7 (Visual Overhaul) per ADR-009."
+    }
+  ],
+  "escalation_level": 1,
+  "verdict": "PASS_PROPOSE_COMMIT",
+  "audit_signature": {
+    "pathway_deps": ["CLAUDE.md", "visual_manifest.json", "archive/godot/Main.tscn", "docs/adr/ADR-009-godot-deprecation.md", "contracts/scene-definition.schema.json"],
+    "current_grade": "Grade B",
+    "entropy_vector": "none",
+    "fixed_point_check": "NOT_APPLICABLE"
+  }
+}

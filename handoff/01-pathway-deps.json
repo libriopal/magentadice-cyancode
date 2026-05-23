@@ -1,0 +1,27 @@
+{
+  "session_id": "feat/godot-deprecation-20260522",
+  "modified_files": [
+    "CLAUDE.md",
+    "visual_manifest.json",
+    "archive/godot/Main.tscn",
+    "docs/adr/ADR-009-godot-deprecation.md",
+    "contracts/scene-definition.schema.json",
+    "docs/audits/mcp-opportunities.md",
+    "docs/audits/post-migration-verification.md",
+    "docs/reports/full-godot-removal-report.md"
+  ],
+  "dependency_map": {
+    "CLAUDE.md": ["no downstream code consumers — documentation only"],
+    "visual_manifest.json": ["core/art/manifest/visual_manifest.json is the canonical copy — root copy is stale"],
+    "archive/godot/Main.tscn": ["no consumers — Godot never integrated with Three.js runtime"],
+    "docs/adr/ADR-009-godot-deprecation.md": ["docs/adr/ index"],
+    "contracts/scene-definition.schema.json": ["future Three.js scene loader — not yet implemented"]
+  },
+  "sacred_core_boundary_approached": false,
+  "sacred_core_files_modified": [],
+  "wasm_layer_risk": false,
+  "bridge_overhead_risk": false,
+  "gc_spike_risk": false,
+  "escalation_raised": null,
+  "notes": "Documentation-only migration. No source code in core/ or dream/ submodules was touched. Godot had no runtime integration — removal has zero downstream impact on build, test, or production execution."
+}
