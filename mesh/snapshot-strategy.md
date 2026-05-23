@@ -19,7 +19,7 @@ This makes replay practical at any scale.
 
 ## Three-Layer Architecture
 
-```
+```text
 Event Stream
   ↓ (every event, chained)
 Checkpoint Snapshots
@@ -99,7 +99,7 @@ This is practical for years of operation.
 
 ## Reconstruction Protocol
 
-```
+```text
 1. Identify target event (by event_id or event_index)
 2. Find the nearest snapshot BEFORE the target event
 3. Load snapshot state
@@ -120,7 +120,7 @@ just as tampering with an event breaks the event chain.
 
 Both chains must be valid for a match to be considered verified:
 
-```
+```text
 Valid state = valid event chain ∧ valid snapshot chain ∧ hashes match
 ```
 
