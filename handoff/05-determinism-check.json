@@ -1,0 +1,17 @@
+{
+  "session_id": "tier/T0-baseline-audit-20260522",
+  "fixed_point_check": "NOT_APPLICABLE",
+  "fixed_point_rationale": "T0 produced zero TypeScript or JavaScript code. All session output is documentation (ADRs, LEGAL.md), JSON artifacts (runs/T0/, visual_manifest.json), and Markdown assessments. FIXED_POINT_CHECK is NOT_APPLICABLE — no scoring paths were created or modified.",
+  "float_violations": [],
+  "math_random_violations": [],
+  "date_now_violations": [],
+  "new_float32array_violations": [],
+  "rng_lineage_compliant": true,
+  "rng_lineage_notes": "No RNG code created or modified. csprng.ts untouched. Math.random() prohibition comments in existing files are warnings, not violations — confirmed in audit cell 01.",
+  "hashing_strategy_compliant": true,
+  "hashing_notes": "No hashing code created. ADR-008 documents SHA-256/BLAKE3 strategy. No new code contradicts the strategy.",
+  "rapier_dt_enforced": true,
+  "rapier_dt_notes": "No Rapier physics code was modified. Existing WildCubeEngine.ts dt-implicit-1/60 finding is documented as L1 in current-grade-assessment.md for T3 scope.",
+  "escalation_raised": null,
+  "notes": "All determinism checks pass trivially because T0 is a zero-code session. The four L1 findings (KYCGate UI-only, empty Supabase, no Play Integrity, implicit dt) are pre-existing codebase state, not session regressions — they are baseline documentation for subsequent tiers."
+}

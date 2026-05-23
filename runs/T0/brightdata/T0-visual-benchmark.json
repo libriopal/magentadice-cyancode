@@ -1,0 +1,142 @@
+{
+  "_audit": {
+    "PATHWAY_DEPS": "runs/T0/ — no code files affected",
+    "CURRENT_GRADE": "Grade C — T0 establishes baseline only",
+    "ENTROPY_VECTOR": "none — read-only BrightData artifact",
+    "FIXED_POINT_CHECK": "NOT_APPLICABLE"
+  },
+  "research_date": "2026-05-22T00:00:00.000Z",
+  "methodology": "Visual benchmark assessed via BrightData SERP research on store descriptions, review excerpts, and industry analyst visual assessments. Direct screenshot capture stored in T0-visual-benchmark-corpus/.",
+  "delta_verify_grade_rubric": {
+    "A": "3D rendered environments, physically-integrated UI, particle systems, post-processing, 60fps target",
+    "B": "High-quality 2D or partial 3D, polished UI, some effects",
+    "C": "Flat or basic 2D, minimal effects, functional but not premium"
+  },
+  "games": [
+    {
+      "rank": 1,
+      "name": "Royal Match",
+      "developer": "Dream Games",
+      "category": "Match-3 puzzle",
+      "color_palette": ["warm gold", "royal blue", "cream white", "emerald green"],
+      "ui_density": "low — clean, breathable layouts",
+      "animation_descriptors": ["smooth tile cascade", "character celebration animations", "confetti burst on win", "castle decoration build animations"],
+      "delta_verify_grade": "B",
+      "grade_rationale": "High-quality 2D with polished character art and smooth animations. No 3D environment. Clean UI. Would be Grade A with 3D environment integration.",
+      "key_visual_differentiators": ["No ads = clean experience", "Charming royal character cast", "Episodic castle renovation loop keeps context fresh"]
+    },
+    {
+      "rank": 2,
+      "name": "Monopoly GO",
+      "developer": "Scopely",
+      "category": "Board game + slot hybrid",
+      "color_palette": ["Monopoly red", "bright yellow", "money green", "white"],
+      "ui_density": "high — board game map + slot reel + event banners simultaneous",
+      "animation_descriptors": ["dice roll 3D animation", "token movement on board", "slot reel spin", "celebration fireworks", "sticker pack opening"],
+      "delta_verify_grade": "B",
+      "grade_rationale": "3D dice and token elements, strong IP visual language. UI density is high and can feel overwhelming. Not a cohesive 3D world.",
+      "key_visual_differentiators": ["Monopoly IP recognition", "3D animated token character", "Board game perspective unique in space"]
+    },
+    {
+      "rank": 3,
+      "name": "Coin Master",
+      "developer": "Moon Active",
+      "category": "Slot + village building",
+      "color_palette": ["bright orange", "yellow", "cartoon blue", "white"],
+      "ui_density": "medium — slot machine dominant, village beneath",
+      "animation_descriptors": ["slot reel spin", "Viking character attack animation", "coin shower on win", "village building animation"],
+      "delta_verify_grade": "C",
+      "grade_rationale": "Cartoon 2D aesthetic, functional but dated visually. Slot machine dominant. Not premium by 2025 standards.",
+      "key_visual_differentiators": ["Iconic spin mechanic visualization", "Social raid animations", "Strong color contrast for casual audience"]
+    },
+    {
+      "rank": 4,
+      "name": "Merge Mansion",
+      "developer": "Metacore",
+      "category": "Merge puzzle + narrative",
+      "color_palette": ["muted estate tones", "antique gold", "dark wood", "dusty rose"],
+      "ui_density": "medium — merge grid dominant with narrative overlay",
+      "animation_descriptors": ["item merge sparkle", "character story cutscenes", "mystery chest reveal", "seasonal decoration"],
+      "delta_verify_grade": "B",
+      "grade_rationale": "Strong narrative integration, sophisticated palette for the genre. 2D but polished. Character-driven aesthetic earns B.",
+      "key_visual_differentiators": ["Mystery narrative tension sets visual mood", "Mature palette vs typical casual bright colors", "Story-driven progression hooks"]
+    },
+    {
+      "rank": 5,
+      "name": "Gardenscapes",
+      "developer": "Playrix",
+      "category": "Match-3 + garden renovation",
+      "color_palette": ["garden green", "floral pastels", "warm sunlight yellow"],
+      "ui_density": "low to medium — garden meta clean, match grid busy",
+      "animation_descriptors": ["match-3 cascade", "garden element placement animation", "character dialogue pop-up", "seasonal themed events"],
+      "delta_verify_grade": "B",
+      "grade_rationale": "Industry standard for match-3 visual polish. Character art quality high. Garden renovation gives visual progression context.",
+      "key_visual_differentiators": ["Character-driven narrative hooks", "Garden renovation provides persistent visual payoff", "Seasonal LiveOps visual updates"]
+    },
+    {
+      "rank": 6,
+      "name": "WOW Vegas",
+      "developer": "SkillOnNet",
+      "category": "Social casino sweepstakes",
+      "color_palette": ["deep purple", "gold accents", "neon highlights", "dark backgrounds"],
+      "ui_density": "high — lobby grid of 1500+ slots, heavy banner promotion",
+      "animation_descriptors": ["slot reel spin", "jackpot celebration", "coin shower", "neon pulse on win"],
+      "delta_verify_grade": "C",
+      "grade_rationale": "Standard social casino visual template. No differentiated aesthetic. Functional but indistinguishable from competitors.",
+      "key_visual_differentiators": ["Dark premium aesthetic vs casual-bright competitors", "Vegas brand recognition in naming"]
+    },
+    {
+      "rank": 7,
+      "name": "Screwdom",
+      "developer": "Various",
+      "category": "Hybrid-casual 3D puzzle",
+      "color_palette": ["bright primaries", "clean white backgrounds", "bold accent colors"],
+      "ui_density": "low — puzzle-focused, minimal chrome",
+      "animation_descriptors": ["3D screw unthread physics", "piece drop animation", "completion celebration", "level transition"],
+      "delta_verify_grade": "B",
+      "grade_rationale": "3D rendered puzzle elements in otherwise 2D casual wrapper. The 3D depth distinguishes it from flat competitors. Q1 2025 top hybrid-casual performer.",
+      "key_visual_differentiators": ["3D rendering in a category dominated by 2D", "Physics-based visual feedback on interactions"]
+    },
+    {
+      "rank": 8,
+      "name": "LuckyLand Slots",
+      "developer": "VGW",
+      "category": "Social casino sweepstakes",
+      "color_palette": ["green and gold", "four-leaf clover motifs", "bright cartoon style"],
+      "ui_density": "medium — cleaner lobby than WOW Vegas",
+      "animation_descriptors": ["slot reel spin", "lucky charm reveal", "coin burst", "daily bonus wheel"],
+      "delta_verify_grade": "C",
+      "grade_rationale": "Standard slot-lobby aesthetic. Lucky charm theme is differentiated but not premium. Functional.",
+      "key_visual_differentiators": ["Lucky/Irish theme consistent across branding", "Cleaner lobby layout than some competitors"]
+    },
+    {
+      "rank": 9,
+      "name": "Jackpot Party Casino",
+      "developer": "SciPlay",
+      "category": "Social casino",
+      "color_palette": ["casino red", "gold", "bright white", "celebration confetti palette"],
+      "ui_density": "very high — aggressive promotion banners, multiple CTAs",
+      "animation_descriptors": ["slot spin", "free spin bonus game", "jackpot fireworks", "daily wheel"],
+      "delta_verify_grade": "C",
+      "grade_rationale": "Dated aesthetic. Very high UI density creates friction. No meaningful visual differentiation.",
+      "key_visual_differentiators": ["Large established player base creates social proof signals", "Broad game library"]
+    },
+    {
+      "rank": 10,
+      "name": "Royal Kingdom",
+      "developer": "Dream Games",
+      "category": "Match-3 puzzle (Royal Match successor)",
+      "color_palette": ["deep royal purple", "gold", "emerald", "dark stone"],
+      "ui_density": "low — clean continuation of Royal Match aesthetic",
+      "animation_descriptors": ["match-3 cascade", "siege battle animation", "castle under siege event", "character hero abilities"],
+      "delta_verify_grade": "B+",
+      "grade_rationale": "Evolution of Royal Match visual language with added drama (siege battles). Still 2D but higher production value than predecessor. $207.5M IAP in 2025.",
+      "key_visual_differentiators": ["Darker, more dramatic tone vs Royal Match", "Battle meta adds visual conflict tension", "Dream Games IP continuity"]
+    }
+  ],
+  "far_nzy_gap_analysis": {
+    "current_assessment": "Grade C — FAR_NZY's 3D physics-based environment (Rapier3D + Three.js) positions it structurally above all Grade C competitors and on par with or above Grade B competitors if visual polish is achieved.",
+    "path_to_grade_a": "Gothic Hacker Neon UI over Organic Vegas 3D backend per 3libras/the_visual_layer.md — the 3D physically-integrated aesthetic is a genuine visual differentiator vs all benchmarked competitors. No direct competitor has achieved Grade A in casino+puzzle hybrid category.",
+    "biggest_risk": "UI density — social casino players expect high information density; FAR_NZY must maintain Gothic Hacker Neon clarity at high information loads."
+  }
+}
