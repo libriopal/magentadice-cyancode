@@ -26,14 +26,30 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def read_file(rel_path: str) -> str:
-    """Read a file relative to the repo root."""
+    """
+    Return the UTF-8 decoded contents of a file located relative to the repository root.
+    
+    Parameters:
+        rel_path (str): File path relative to the repository root.
+    
+    Returns:
+        str: The file's contents as a UTF-8 decoded string.
+    """
     full_path = os.path.join(REPO_ROOT, rel_path)
     with open(full_path, encoding="utf-8") as fh:
         return fh.read()
 
 
 def load_json(rel_path: str) -> dict:
-    """Load a JSON file relative to the repo root."""
+    """
+    Load and parse a JSON file located at a path relative to the repository root.
+    
+    Parameters:
+        rel_path (str): Path to the JSON file relative to the repository root.
+    
+    Returns:
+        dict: The decoded JSON object.
+    """
     full_path = os.path.join(REPO_ROOT, rel_path)
     with open(full_path, encoding="utf-8") as fh:
         return json.load(fh)
@@ -47,9 +63,19 @@ class TestLegalMd:
     """Tests for LEGAL.md — legal classification disclaimer."""
 
     def test_file_exists(self):
+        """
+        Check that the repository-level LEGAL.md file exists.
+        
+        Asserts that a file named "LEGAL.md" is present at the repository root determined by REPO_ROOT.
+        """
         assert os.path.exists(os.path.join(REPO_ROOT, "LEGAL.md"))
 
     def test_contains_audit_comment_block(self):
+        """
+        Asserts that LEGAL.md includes the required AUDIT comment markers used by the test suite.
+        
+        Checks for the presence of the following audit markers: "AUDIT::PATHWAY_DEPS", "AUDIT::CURRENT_GRADE", "AUDIT::ENTROPY_VECTOR", and "AUDIT::FIXED_POINT_CHECK".
+        """
         content = read_file("LEGAL.md")
         assert "AUDIT::PATHWAY_DEPS" in content
         assert "AUDIT::CURRENT_GRADE" in content
@@ -77,6 +103,15 @@ class TestLegalMd:
         assert "qualified legal review" in content.lower() or "Qualified legal review" in content
 
     def test_four_prerequisites_listed(self):
+        """
+        Assert that LEGAL.md lists the four required numbered prerequisites.
+        
+        Checks that LEGAL.md contains the following numbered prerequisites:
+        1. "Qualified legal review"
+        2. "geofencing"
+        3. "AMOE"
+        4. "compliance certification"
+        """
         content = read_file("LEGAL.md")
         # All four numbered prerequisites must be present
         assert "1." in content and "Qualified legal review" in content
@@ -112,15 +147,28 @@ class TestBootPromptProof:
         assert "GOVERNED PROMPT" in content
 
     def test_naive_prompt_has_zero_governance_value(self):
+        """
+        Asserts the naive prompt section in boot_prompt_proof.md indicates negligible governance value.
+        
+        Checks that the document contains the phrase "Governance value produced" and the approximate value "~0%".
+        """
         content = read_file("boot_prompt_proof.md")
         assert "Governance value produced" in content
         assert "~0%" in content
 
     def test_governed_prompt_has_high_governance_value(self):
+        """
+        Asserts the governed prompt section reports a governance value of approximately 98% by checking for the '~98%' marker.
+        """
         content = read_file("boot_prompt_proof.md")
         assert "~98%" in content
 
     def test_naive_risks_rated_high(self):
+        """
+        Verify the NAIVE PROMPT section lists 'HIGH' in its risk profile.
+        
+        Asserts that boot_prompt_proof.md contains a NAIVE PROMPT Risk profile section and that the extracted risk profile text includes the token "HIGH".
+        """
         content = read_file("boot_prompt_proof.md")
         # All major risk categories should show HIGH for naive prompt
         naive_section_match = re.search(
@@ -133,6 +181,11 @@ class TestBootPromptProof:
         assert "HIGH" in naive_risks
 
     def test_governed_risks_rated_zero(self):
+        """
+        Asserts that the 'GOVERNED PROMPT' risk profile in boot_prompt_proof.md exists and contains the token "ZERO".
+        
+        Checks that the file has a governed prompt section with a "Risk profile:" block and fails the test if that section is missing or does not include the string "ZERO".
+        """
         content = read_file("boot_prompt_proof.md")
         governed_section_match = re.search(
             r"GOVERNED PROMPT.*?Risk profile:(.*?)────────────",
@@ -165,6 +218,11 @@ class TestPathwayDepsJson:
 
     @pytest.fixture(autouse=True)
     def load(self):
+        """
+        Load the pathway dependency handoff JSON into this object's `data` attribute.
+        
+        Reads and parses the file at "handoff/01-pathway-deps.json" and assigns the resulting dictionary to `self.data`.
+        """
         self.data = load_json("handoff/01-pathway-deps.json")
 
     def test_required_top_level_keys_present(self):
@@ -192,16 +250,31 @@ class TestPathwayDepsJson:
         assert isinstance(self.data["modified_files"], list)
 
     def test_modified_files_not_empty(self):
+        """
+        Assert that the pathway dependencies manifest contains at least one modified file.
+        
+        Checks that self.data["modified_files"] is a non-empty list; the test fails if it is empty.
+        """
         assert len(self.data["modified_files"]) > 0
 
     def test_modified_files_contains_legal_md(self):
         assert "LEGAL.md" in self.data["modified_files"]
 
     def test_modified_files_contains_adr_files(self):
+        """
+        Verifies the pathway dependencies list includes all nine ADR files (ADR-000 through ADR-008).
+        
+        Asserts that at least nine entries containing the substring "ADR-" are present in the loaded `modified_files` list.
+        """
         adr_files = [f for f in self.data["modified_files"] if "ADR-" in f]
         assert len(adr_files) >= 9, "Should list all 9 ADR files (ADR-000 through ADR-008)"
 
     def test_dependency_map_is_dict(self):
+        """
+        Verify the handoff pathway dependencies file contains a top-level dependency_map object.
+        
+        Asserts that self.data["dependency_map"] is a dict.
+        """
         assert isinstance(self.data["dependency_map"], dict)
 
     def test_dependency_map_keys_match_modified_files(self):
@@ -216,6 +289,11 @@ class TestPathwayDepsJson:
                 assert val == [], f"ADR file {key} should have empty dependency list"
 
     def test_legal_md_has_no_dependencies(self):
+        """
+        Verify that LEGAL.md is listed with no dependencies in the pathway dependency map.
+        
+        Checks that the loaded pathway dependencies object contains an entry for "LEGAL.md" whose value is an empty list, indicating no file dependencies.
+        """
         assert self.data["dependency_map"]["LEGAL.md"] == []
 
     def test_sacred_core_not_approached(self):
@@ -230,6 +308,11 @@ class TestPathwayDepsJson:
         assert self.data["gc_spike_risk"] is False
 
     def test_no_escalation_raised(self):
+        """
+        Verify that the loaded handoff data indicates no escalation was raised for this session.
+        
+        Checks that the `escalation_raised` field in the parsed JSON is `None`.
+        """
         assert self.data["escalation_raised"] is None
 
     def test_notes_is_non_empty_string(self):
@@ -245,6 +328,12 @@ class TestPathwayDepsJson:
             assert isinstance(f, str), f"Expected string in modified_files, got {type(f)}"
 
     def test_dependency_values_are_lists(self):
+        """
+        Assert every entry in `dependency_map` has a list value.
+        
+        Raises:
+            AssertionError: if any `dependency_map` value is not a list.
+        """
         for key, val in self.data["dependency_map"].items():
             assert isinstance(val, list), f"dependency_map['{key}'] should be a list"
 
@@ -258,6 +347,11 @@ class TestSessionSnapshotJson:
 
     @pytest.fixture(autouse=True)
     def load(self):
+        """
+        Load the session snapshot JSON from handoff/02-session-snapshot.json into the instance.
+        
+        Reads and parses the JSON file at handoff/02-session-snapshot.json and assigns the resulting dictionary to self.data.
+        """
         self.data = load_json("handoff/02-session-snapshot.json")
 
     def test_required_top_level_keys_present(self):
@@ -281,6 +375,11 @@ class TestSessionSnapshotJson:
         assert self.data["session_id"] == pathway["session_id"]
 
     def test_snapshot_timestamp_is_iso8601(self):
+        """
+        Verify that `snapshot_timestamp` is an ISO-8601 UTC timestamp with millisecond precision ending in 'Z'.
+        
+        Asserts the value matches the pattern YYYY-MM-DDThh:mm:ss.sssZ (e.g., 2025-01-30T12:34:56.789Z).
+        """
         ts = self.data["snapshot_timestamp"]
         # Must be ISO 8601 format ending in Z
         assert re.match(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z", ts), (
@@ -324,6 +423,11 @@ class TestSessionSnapshotJson:
         assert self.data["rng_lineage_intact"] is True
 
     def test_no_escalation_raised(self):
+        """
+        Verify that the loaded handoff data indicates no escalation was raised for this session.
+        
+        Checks that the `escalation_raised` field in the parsed JSON is `None`.
+        """
         assert self.data["escalation_raised"] is None
 
     def test_session_branch_matches_session_id(self):
@@ -342,9 +446,19 @@ class TestDeterminismCheckJson:
 
     @pytest.fixture(autouse=True)
     def load(self):
+        """
+        Load the determinism-check handoff JSON into the instance.
+        
+        Sets self.data to the parsed contents of "handoff/05-determinism-check.json".
+        """
         self.data = load_json("handoff/05-determinism-check.json")
 
     def test_required_top_level_keys_present(self):
+        """
+        Assert the determinism-check JSON contains all required top-level fields.
+        
+        Raises an AssertionError if any of the following keys are missing: session_id, fixed_point_check, fixed_point_rationale, float_violations, math_random_violations, date_now_violations, new_float32array_violations, rng_lineage_compliant, hashing_strategy_compliant, escalation_raised, notes.
+        """
         required = {
             "session_id",
             "fixed_point_check",
@@ -385,9 +499,20 @@ class TestDeterminismCheckJson:
         assert self.data["hashing_strategy_compliant"] is True
 
     def test_no_escalation_raised(self):
+        """
+        Verify that the loaded handoff data indicates no escalation was raised for this session.
+        
+        Checks that the `escalation_raised` field in the parsed JSON is `None`.
+        """
         assert self.data["escalation_raised"] is None
 
     def test_violation_lists_are_lists(self):
+        """
+        Assert that each violation field in the determinism-check data is a list.
+        
+        Checks the following keys on `self.data`: `float_violations`, `math_random_violations`,
+        `date_now_violations`, and `new_float32array_violations`, ensuring each value is a list.
+        """
         assert isinstance(self.data["float_violations"], list)
         assert isinstance(self.data["math_random_violations"], list)
         assert isinstance(self.data["date_now_violations"], list)
@@ -427,10 +552,24 @@ class TestAdrFiles:
 
     @pytest.mark.parametrize("rel_path,adr_id", ADR_FILES)
     def test_file_exists(self, rel_path, adr_id):
+        """
+        Assert that a file at the given repository-relative path exists.
+        
+        Parameters:
+            rel_path (str): Path to the file relative to the repository root.
+            adr_id (str): ADR identifier associated with the file, provided for context in assertions.
+        """
         assert os.path.exists(os.path.join(REPO_ROOT, rel_path)), f"{rel_path} not found"
 
     @pytest.mark.parametrize("rel_path,adr_id", ADR_FILES)
     def test_has_audit_comment_block(self, rel_path, adr_id):
+        """
+        Assert that the ADR file at the given repository-relative path contains the required audit markers.
+        
+        Parameters:
+            rel_path (str): Path to the ADR file relative to the repository root.
+            adr_id (str): ADR identifier (e.g., "ADR-000") used for context in the test.
+        """
         content = read_file(rel_path)
         assert "AUDIT::PATHWAY_DEPS" in content
         assert "AUDIT::CURRENT_GRADE" in content
@@ -449,6 +588,13 @@ class TestAdrFiles:
 
     @pytest.mark.parametrize("rel_path,adr_id", ADR_FILES)
     def test_has_date_field(self, rel_path, adr_id):
+        """
+        Check that the ADR file contains a `Date: YYYY-MM-DD` metadata line.
+        
+        Parameters:
+            rel_path (str): Path to the ADR file relative to the repository root.
+            adr_id (str): ADR identifier (e.g., "ADR-000") used for context in test iteration.
+        """
         content = read_file(rel_path)
         assert re.search(r"^Date:\s+\d{4}-\d{2}-\d{2}", content, re.MULTILINE), (
             f"Missing 'Date: YYYY-MM-DD' in {rel_path}"
@@ -475,6 +621,17 @@ class TestAdrFiles:
 
     @pytest.mark.parametrize("rel_path,adr_id", ADR_FILES)
     def test_status_is_valid_value(self, rel_path, adr_id):
+        """
+        Validate that an ADR file contains a well-formed `Status:` field.
+        
+        Checks that the file at `rel_path` has a `Status:` line and that its value is one of:
+        `Proposed`, `Accepted`, `Rejected`, `Deprecated`, or starts with `Superseded` (e.g., `Superseded by ADR-001`).
+        Raises an assertion failure if the `Status:` field is missing or has an invalid value.
+        
+        Parameters:
+            rel_path (str): Path to the ADR file relative to the repository root.
+            adr_id (str): ADR identifier (e.g., "ADR-000") used for test parametrization and error context.
+        """
         content = read_file(rel_path)
         match = re.search(r"^Status:\s+(.+)$", content, re.MULTILINE)
         assert match is not None
@@ -494,6 +651,13 @@ class TestAdrFiles:
 
     @pytest.mark.parametrize("rel_path,adr_id", ADR_FILES)
     def test_has_authority_required_field(self, rel_path, adr_id):
+        """
+        Assert that the ADR file at the given relative path contains an `Authority Required:` metadata field.
+        
+        Parameters:
+            rel_path (str): Path to the ADR file relative to the repository root.
+            adr_id (str): ADR identifier (e.g., "ADR-000"); used for test identification and messaging.
+        """
         content = read_file(rel_path)
         assert re.search(r"^Authority Required:", content, re.MULTILINE), (
             f"Missing 'Authority Required:' in {rel_path}"
@@ -501,26 +665,69 @@ class TestAdrFiles:
 
     @pytest.mark.parametrize("rel_path,adr_id", ADR_FILES)
     def test_has_context_section(self, rel_path, adr_id):
+        """
+        Assert that the specified ADR file contains a '## Context' section.
+        
+        Parameters:
+            rel_path (str): Path to the ADR file relative to the repository root.
+            adr_id (str): ADR identifier (e.g., "ADR-000"); provided for test parametrization and context.
+        """
         content = read_file(rel_path)
         assert "## Context" in content, f"Missing '## Context' section in {rel_path}"
 
     @pytest.mark.parametrize("rel_path,adr_id", ADR_FILES)
     def test_has_decision_section(self, rel_path, adr_id):
+        """
+        Check that the ADR file at rel_path contains a '## Decision' section.
+        
+        Parameters:
+            rel_path (str): Repository-relative path to the ADR markdown file.
+            adr_id (str): ADR identifier (e.g., "ADR-001"), provided for contextual clarity in test output.
+        """
         content = read_file(rel_path)
         assert "## Decision" in content, f"Missing '## Decision' section in {rel_path}"
 
     @pytest.mark.parametrize("rel_path,adr_id", ADR_FILES)
     def test_has_consequences_section(self, rel_path, adr_id):
+        """
+        Check that the ADR file contains a '## Consequences' section.
+        
+        Parameters:
+            rel_path (str): Path to the ADR file, relative to the repository root.
+            adr_id (str): ADR identifier (e.g., "ADR-000"); provided for context in failure messages.
+        
+        Raises:
+            AssertionError: If the '## Consequences' section is not present in the file.
+        """
         content = read_file(rel_path)
         assert "## Consequences" in content, f"Missing '## Consequences' section in {rel_path}"
 
     @pytest.mark.parametrize("rel_path,adr_id", ADR_FILES)
     def test_has_evidence_section(self, rel_path, adr_id):
+        """
+        Assert that the ADR file contains an "## Evidence" section.
+        
+        Parameters:
+            rel_path (str): Repository-relative path to the ADR markdown file being checked.
+            adr_id (str): ADR identifier (e.g., "ADR-000") for context in failure messages.
+        
+        Raises:
+            AssertionError: If the file does not contain a "## Evidence" section.
+        """
         content = read_file(rel_path)
         assert "## Evidence" in content, f"Missing '## Evidence' section in {rel_path}"
 
     @pytest.mark.parametrize("rel_path,adr_id", ADR_FILES)
     def test_all_sections_are_non_empty(self, rel_path, adr_id):
+        """
+        Verify that the ADR file at rel_path contains the four required sections and that each section's body is non-empty.
+        
+        Checks that the headings "## Context", "## Decision", "## Consequences", and "## Evidence" are present in the file and that the text between each heading and the next (or the end of file) has more than 10 characters.
+        
+        Parameters:
+            rel_path (str): Repository-relative path to the ADR markdown file to validate.
+            adr_id (str): ADR identifier used for contextual test reporting.
+        """
         content = read_file(rel_path)
         sections = ["## Context", "## Decision", "## Consequences", "## Evidence"]
         for i, section in enumerate(sections):
@@ -537,6 +744,13 @@ class TestAdrFiles:
 
     @pytest.mark.parametrize("rel_path,adr_id", ADR_FILES)
     def test_section_order_is_correct(self, rel_path, adr_id):
+        """
+        Assert that an ADR markdown file contains the four required sections in the order: Context, Decision, Consequences, Evidence.
+        
+        Parameters:
+            rel_path (str): Path to the ADR file relative to the repository root.
+            adr_id (str): ADR identifier (e.g., "ADR-000"); provided for test parametrization and reporting.
+        """
         content = read_file(rel_path)
         ctx_pos = content.find("## Context")
         dec_pos = content.find("## Decision")
@@ -573,6 +787,11 @@ class TestAdrFiles:
         assert "60" in content
 
     def test_adr_006_defines_five_escalation_levels(self):
+        """
+        Verify ADR-006 documents the five escalation levels.
+        
+        Asserts that docs/adr/ADR-006-agent-escalation.md contains the escalation markers "L0", "L1", "L2", "L3", and "L4".
+        """
         content = read_file("docs/adr/ADR-006-agent-escalation.md")
         assert "L0" in content
         assert "L1" in content
@@ -595,6 +814,11 @@ class TestExecuteMd:
 
     @pytest.fixture(autouse=True)
     def load(self):
+        """
+        Load the mesh/EXECUTE.md protocol document into the instance.
+        
+        Sets the instance attribute `content` to the full text of mesh/EXECUTE.md.
+        """
         self.content = read_file("mesh/EXECUTE.md")
 
     def test_file_exists(self):
@@ -640,6 +864,11 @@ class TestExecuteMd:
         assert "<execution>" in self.content
 
     def test_has_constraints_layer(self):
+        """
+        Verify the mesh/EXECUTE.md protocol document declares a constraints layer.
+        
+        Asserts that the string "<constraints>" appears in the loaded EXECUTE.md content.
+        """
         assert "<constraints>" in self.content
 
     def test_has_audit_signature_element(self):
@@ -649,15 +878,30 @@ class TestExecuteMd:
         assert "<mesh_manifest" in self.content
 
     def test_has_invocation_element(self):
+        """
+        Checks that the EXECUTE.md document contains an <invocation> element.
+        
+        This assertion verifies the presence of the required <invocation> tag in the loaded protocol document.
+        """
         assert "<invocation>" in self.content
 
     def test_constitution_has_identity(self):
+        """
+        Asserts the EXECUTE.md constitution includes an <identity> element.
+        
+        This test fails if the `<identity>` tag is not present in the loaded EXECUTE.md content.
+        """
         assert "<identity>" in self.content
 
     def test_constitution_has_authority_ceiling(self):
         assert "<authority_ceiling>" in self.content
 
     def test_constitution_has_sacred_boundary(self):
+        """
+        Assert that the EXECUTE.md constitution declares a sacred boundary element.
+        
+        Checks that the loaded EXECUTE.md content contains the XML-style tag `<sacred_boundary>`, indicating the document defines the protocol's sacred boundary.
+        """
         assert "<sacred_boundary>" in self.content
 
     def test_constitution_has_legal_posture(self):
@@ -682,6 +926,11 @@ class TestExecuteMd:
         assert 'action="skip_audit_cells"' in self.content
 
     def test_prohibited_run_multiple_tiers(self):
+        """
+        Assert that the EXECUTE.md protocol disallows running multiple tiers in a single session.
+        
+        Checks that the loaded protocol content contains the prohibited action marker `action="run_multiple_tiers"`.
+        """
         assert 'action="run_multiple_tiers"' in self.content
 
     def test_prohibited_write_sacred_core_files(self):
@@ -737,6 +986,11 @@ class TestIEventStoreV1Md:
 
     @pytest.fixture(autouse=True)
     def load(self):
+        """
+        Load the mesh interface document "mesh/IEventStore.v1.md" into the instance.
+        
+        Populates self.content with the UTF-8 text of the IEventStore.v1.md file read from the repository.
+        """
         self.content = read_file("mesh/IEventStore.v1.md")
 
     def test_file_exists(self):
@@ -746,9 +1000,19 @@ class TestIEventStoreV1Md:
         assert "FROZEN" in self.content
 
     def test_version_is_1_0_0(self):
+        """
+        Ensure the document declares version 1.0.0.
+        
+        Checks that either the literal `v1.0.0` or `1.0.0` appears anywhere in the test content.
+        """
         assert "v1.0.0" in self.content or "1.0.0" in self.content
 
     def test_requires_migration_adapter_for_changes(self):
+        """
+        Asserts the document requires a migration adapter or mentions migration.
+        
+        Converts the file content to lowercase and asserts it contains either the phrase "migration adapter" or the substring "migrate".
+        """
         content_lower = self.content.lower()
         assert "migration adapter" in content_lower or "migrate" in content_lower
 
@@ -759,18 +1023,45 @@ class TestIEventStoreV1Md:
         assert "read(" in self.content
 
     def test_has_verify_chain_method(self):
+        """
+        Check that the IEventStore.v1 documentation declares a `verifyChain` method.
+        
+        Raises:
+            AssertionError: if the substring "verifyChain(" is not present in the loaded content.
+        """
         assert "verifyChain(" in self.content
 
     def test_has_migrate_method(self):
+        """
+        Checks that the document declares a `migrate(` method, ensuring a migration adapter or migration API is documented for the interface.
+        
+        If the substring `migrate(` is absent, the test fails indicating missing migration/migration-adapter documentation.
+        """
         assert "migrate(" in self.content
 
     def test_has_snapshot_method(self):
+        """
+        Ensure the IEventStore v1 documentation mentions a `snapshot` method.
+        
+        Raises:
+            AssertionError: If the string 'snapshot(' is not found in the loaded content.
+        """
         assert "snapshot(" in self.content
 
     def test_has_load_snapshot_method(self):
+        """
+        Asserts the IEventStore.v1.md interface document declares a loadSnapshot method.
+        
+        Checks that the file content contains the substring "loadSnapshot(" indicating the method is documented.
+        """
         assert "loadSnapshot(" in self.content
 
     def test_has_replay_method(self):
+        """
+        Verify the interface document declares a `replay` method.
+        
+        Checks that the loaded document contains the substring "replay(" indicating the `replay` method is documented.
+        """
         assert "replay(" in self.content
 
     def test_has_health_check_method(self):
@@ -800,6 +1091,11 @@ class TestIEventStoreV1Md:
         assert "PostgresEventStore" in self.content
 
     def test_write_must_not_accept_math_random(self):
+        """
+        Ensure the document references the prohibition of Math.random().
+        
+        Asserts that the loaded content includes the literal "Math.random()", indicating the interface or contract documentation explicitly mentions (and therefore forbids or warns about) use of Math.random().
+        """
         assert "Math.random()" in self.content
 
     def test_method_count_is_eight(self):
@@ -824,6 +1120,11 @@ class TestReplayEventSnapshotV1Md:
 
     @pytest.fixture(autouse=True)
     def load(self):
+        """
+        Load the ReplayEvent-Snapshot.v1.md contract document into the instance.
+        
+        After execution, self.content contains the file's text (the contents of mesh/ReplayEvent-Snapshot.v1.md).
+        """
         self.content = read_file("mesh/ReplayEvent-Snapshot.v1.md")
 
     def test_file_exists(self):
@@ -844,6 +1145,11 @@ class TestReplayEventSnapshotV1Md:
         assert "schema_version" in self.content
 
     def test_has_event_id_field(self):
+        """
+        Verify the ReplayEvent contract includes the 'event_id' field.
+        
+        Asserts that the parsed ReplayEvent content contains the key 'event_id', failing the test if it is missing.
+        """
         assert "event_id" in self.content
 
     def test_has_event_type_field(self):
@@ -882,6 +1188,11 @@ class TestReplayEventSnapshotV1Md:
         assert "fixed-point" in self.content.lower() or "Fixed-point" in self.content
 
     def test_has_event_snapshot_interface(self):
+        """
+        Asserts the ReplayEvent-Snapshot.v1.md document declares the `EventSnapshot` type.
+        
+        This test verifies that the frozen snapshot contract includes the `EventSnapshot` identifier.
+        """
         assert "EventSnapshot" in self.content
 
     def test_has_snapshot_trigger_types(self):
@@ -916,6 +1227,11 @@ class TestReplayEventSnapshotV1Md:
         assert "Bard" in self.content
 
     def test_session_seed_committed_before_start(self):
+        """
+        Verify the document contains the `session_seed_committed` field.
+        
+        This test asserts that the parsed file content includes the `session_seed_committed` key, which indicates the session seed is recorded in the replay/snapshot contract.
+        """
         assert "session_seed_committed" in self.content
 
     def test_state_hash_uses_sha256(self):
@@ -931,6 +1247,11 @@ class TestAdrGovernanceMd:
 
     @pytest.fixture(autouse=True)
     def load(self):
+        """
+        Load the contents of mesh/adr-governance.md into this instance.
+        
+        This reads the repository-relative file "mesh/adr-governance.md" and stores its text in self.content.
+        """
         self.content = read_file("mesh/adr-governance.md")
 
     def test_file_exists(self):
@@ -943,13 +1264,28 @@ class TestAdrGovernanceMd:
         assert "ADR Storage" in self.content
 
     def test_docs_adr_path_documented(self):
+        """
+        Check that the test content references the ADR documentation directory.
+        
+        Asserts that either "docs/adr/" or "docs/" appears in the loaded file content, indicating ADR documentation paths are documented or referenced.
+        """
         assert "docs/adr/" in self.content or "docs/" in self.content
 
     def test_has_adr_format_section(self):
+        """
+        Asserts that the ADR governance document includes the "ADR Format" section.
+        
+        This test verifies the presence of the ADR format heading used to describe the required ADR template and metadata fields.
+        """
         assert "ADR Format" in self.content
 
     def test_adr_format_defines_required_sections(self):
         # The format template should include all required sections
+        """
+        Verify the ADR format template includes the mandatory metadata sections.
+        
+        Asserts that the template contains the section headings: "## Context", "## Decision", "## Consequences", and "## Evidence".
+        """
         assert "## Context" in self.content
         assert "## Decision" in self.content
         assert "## Consequences" in self.content
@@ -962,6 +1298,12 @@ class TestAdrGovernanceMd:
         assert "Status:" in self.content
 
     def test_format_includes_authority_required(self):
+        """
+        Asserts the ADR file contains the "Authority Required" metadata field.
+        
+        Raises:
+            AssertionError: If the string "Authority Required" is not present in the ADR content.
+        """
         assert "Authority Required" in self.content
 
     def test_has_required_adr_triggers_section(self):
@@ -984,6 +1326,11 @@ class TestAdrGovernanceMd:
         assert "Human" in self.content
 
     def test_agent_cannot_self_accept_adr(self):
+        """
+        Verifies the ADR text requires human approval and explicit acceptance language.
+        
+        Checks that the document contains the word "human" and includes wording related to approval or acceptance, ensuring agents cannot self-accept ADRs.
+        """
         content_lower = self.content.lower()
         assert "human" in content_lower and ("approv" in content_lower or "accept" in content_lower)
 
@@ -996,6 +1343,11 @@ class TestAdrGovernanceMd:
         assert "never reused" in self.content.lower() or "sequential" in self.content.lower()
 
     def test_has_human_sign_off_field_in_format(self):
+        """
+        Asserts the ADR format requires a human sign-off.
+        
+        Checks that the document content contains either the exact phrase "Human Sign-off" or a case-insensitive occurrence of "sign-off".
+        """
         assert "Human Sign-off" in self.content or "sign-off" in self.content.lower()
 
     def test_proof_of_value_table_in_format(self):
@@ -1057,7 +1409,11 @@ class TestCrossFileConsistency:
         assert os.path.exists(os.path.join(REPO_ROOT, "LEGAL.md"))
 
     def test_execute_md_references_constitutional_docs_in_correct_order(self):
-        """PB-1 in EXECUTE.md must list the four constitutional files in order."""
+        """
+        Assert that the PB-1 step in mesh/EXECUTE.md references the four required constitutional documents.
+        
+        Checks that the PB-1 step element (id="PB-1") exists and that its content contains the following filenames: authority-model.md, sacred-core-spec.md, agent-escalation-model.md, and hashing-strategy.md.
+        """
         content = read_file("mesh/EXECUTE.md")
         # Find the PB-1 step content
         pb1_match = re.search(r'id="PB-1".*?</step>', content, re.DOTALL)
@@ -1094,7 +1450,11 @@ class TestCrossFileConsistency:
         assert os.path.isdir(data_dir), "data/ directory must exist after image rename"
 
     def test_renamed_image_exists_in_data_directory(self):
-        """Verify the renamed webp file is at data/ (not at repo root)."""
+        """
+        Assert that the repository image file has been moved into the data/ directory and removed from the repository root.
+        
+        Checks that the expected renamed `.webp` exists at data/p_3DpbNH91Hp89DnsjwOT8cmL4r0Q_3DpbNGK3V2Di1crp59QIVHFK7AG.webp and that the same filename is not present at the repository root.
+        """
         new_path = os.path.join(
             REPO_ROOT,
             "data",
