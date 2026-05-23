@@ -1,38 +1,10 @@
 {
-  "session_id": "feat/godot-deprecation-20260522",
-  "modified_files": [
-    "CLAUDE.md",
-    "visual_manifest.json",
-    "archive/godot/Main.tscn",
-    "docs/adr/ADR-009-godot-deprecation.md",
-    "contracts/scene-definition.schema.json",
-    "docs/audits/mcp-opportunities.md",
-    "docs/audits/post-migration-verification.md",
-    "docs/reports/full-godot-removal-report.md"
-  ],
-  "submodule_updates": {
-    "core": "c07675db → 9282d804 (only core/art/manifest/visual_manifest.json changed — art asset, not source code)"
-  },
-  "dependency_map": {
-    "CLAUDE.md": [],
-    "visual_manifest.json": [],
-    "archive/godot/Main.tscn": [],
-    "docs/adr/ADR-009-godot-deprecation.md": [],
-    "contracts/scene-definition.schema.json": [],
-    "docs/audits/mcp-opportunities.md": [],
-    "docs/audits/post-migration-verification.md": [],
-    "docs/reports/full-godot-removal-report.md": []
-  },
-  "dependency_notes": {
-    "CLAUDE.md": "no downstream code consumers — documentation only",
-    "visual_manifest.json": "root copy is a known stale duplicate; canonical is core/art/manifest/visual_manifest.json. Reconciliation deferred to T7 per ADR-009 §Consequences. Not a Sacred Core item.",
-    "archive/godot/Main.tscn": "no consumers — Godot never integrated with Three.js runtime",
-    "docs/adr/ADR-009-godot-deprecation.md": "referenced by docs/adr/ index",
-    "contracts/scene-definition.schema.json": "future Three.js scene loader — not yet implemented",
-    "docs/audits/mcp-opportunities.md": "evaluation artifact — no downstream code consumers",
-    "docs/audits/post-migration-verification.md": "evaluation artifact — no downstream code consumers",
-    "docs/reports/full-godot-removal-report.md": "evaluation artifact — no downstream code consumers"
-  "session_id": "tier/T0-baseline-audit-20260522",
+  "session_id": "tier/T1A-governance-runtime-20260523",
+  "tier": "T1A",
+  "date": "2026-05-23",
+  "branch": "tier/T1A-governance-runtime-20260523",
+  "base_branch": "main",
+
   "modified_files": [
     "LEGAL.md",
     "docs/adr/ADR-000-adr-governance.md",
@@ -43,40 +15,94 @@
     "docs/adr/ADR-005-snapshot-strategy.md",
     "docs/adr/ADR-006-agent-escalation.md",
     "docs/adr/ADR-007-threat-model.md",
-    "docs/adr/ADR-008-hashing-strategy.md",
-    "core/art/manifest/visual_manifest.json",
-    "visual_manifest_schema.json",
-    "runs/T0/brightdata/T0-competitor-matrix.json",
-    "runs/T0/brightdata/T0-compliance-baseline.json",
-    "runs/T0/brightdata/T0-visual-benchmark.json",
-    "runs/T0/brightdata/T0-economy-baseline.json",
-    "runs/T0/current-grade-assessment.md"
+    "docs/adr/ADR-008-hashing-strategy.md"
   ],
-  "dependency_map": {
-    "LEGAL.md": [],
-    "docs/adr/ADR-000-adr-governance.md": [],
-    "docs/adr/ADR-001-authority-model.md": [],
-    "docs/adr/ADR-002-sacred-core-spec.md": [],
-    "docs/adr/ADR-003-rng-lineage.md": [],
-    "docs/adr/ADR-004-event-versioning.md": [],
-    "docs/adr/ADR-005-snapshot-strategy.md": [],
-    "docs/adr/ADR-006-agent-escalation.md": [],
-    "docs/adr/ADR-007-threat-model.md": [],
-    "docs/adr/ADR-008-hashing-strategy.md": [],
-    "core/art/manifest/visual_manifest.json": ["visual_manifest_schema.json"],
-    "runs/T0/brightdata/T0-competitor-matrix.json": [],
-    "runs/T0/brightdata/T0-compliance-baseline.json": [],
-    "runs/T0/brightdata/T0-visual-benchmark.json": [],
-    "runs/T0/brightdata/T0-economy-baseline.json": [],
-    "runs/T0/current-grade-assessment.md": []
+
+  "directories_created": [
+    "docs/adr/",
+    "handoff/",
+    "sessions/",
+    "runs/2026-05-23/"
+  ],
+
+  "memory_mcp_changes": {
+    "action": "full re-initialization",
+    "replaced_entities": ["FAR_NZY_session_state", "FAR_NZY_Session_State"],
+    "new_entity": "FAR_NZY_Session_State",
+    "constitutional_docs_version": "9 documents tracked (was 4)",
+    "tier_gate_statuses": "all tiers initialized (T0=PASS_PROPOSE_COMMIT, T1A=IN_PROGRESS)"
   },
+
+  "dependency_map": {
+    "LEGAL.md": ["docs/adr/ADR-007-threat-model.md", "docs/adr/ADR-003-rng-lineage.md", "mesh/sacred-core-spec.md"],
+    "docs/adr/ADR-000-adr-governance.md": ["mesh/adr-governance.md"],
+    "docs/adr/ADR-001-authority-model.md": ["mesh/authority-model.md"],
+    "docs/adr/ADR-002-sacred-core-spec.md": ["mesh/sacred-core-spec.md"],
+    "docs/adr/ADR-003-rng-lineage.md": ["mesh/rng-lineage-spec.md"],
+    "docs/adr/ADR-004-event-versioning.md": ["mesh/event-versioning-spec.md"],
+    "docs/adr/ADR-005-snapshot-strategy.md": ["mesh/snapshot-strategy.md"],
+    "docs/adr/ADR-006-agent-escalation.md": ["mesh/agent-escalation-model.md"],
+    "docs/adr/ADR-007-threat-model.md": ["mesh/threat-model.md"],
+    "docs/adr/ADR-008-hashing-strategy.md": ["mesh/hashing-strategy.md"]
+  },
+
+  "dependency_notes": {
+    "LEGAL.md": "Legal classification document; sourced from 10 CourtListener cases + 6 federal statutes. Must be reviewed by licensed counsel before PDX prizes awarded to real users.",
+    "docs/adr/": "All 9 bootstrap ADRs created (ADR-000 through ADR-008). ADR-009 (Godot deprecation) exists only on feat/godot-deprecation-20260522 — pending PR #2 merge.",
+    "handoff/": "Directory created with .gitkeep. Prior session handoff artifacts are on feat/godot-deprecation-20260522 branch.",
+    "sessions/": "Directory created with .gitkeep. session-log.md will be written by audit cell 06.",
+    "memory_mcp": "Re-initialized. Previous dual-entity state (stale T0 entries) replaced with single canonical entity."
+  },
+
   "sacred_core_boundary_approached": false,
   "sacred_core_files_modified": [],
   "wasm_layer_risk": false,
   "bridge_overhead_risk": false,
   "gc_spike_risk": false,
-  "escalation_raised": "L1",
-  "notes": "Documentation-only migration. No source code in core/ or dream/ submodules was touched. core submodule pointer bumped from c07675db to 9282d804; only core/art/manifest/visual_manifest.json changed (art asset, not source code). Godot had no runtime integration — removal has zero downstream impact on build, test, or production execution. L1: T0 PR #1 gate is OPEN — Human directive authorized proceeding."
-  "escalation_raised": null,
-  "notes": "T0 is a documentation-only and artifact-generation session. No TypeScript or source code was modified. All modified files are: docs/adr/ (9 ADRs), LEGAL.md, runs/T0/ artifacts (4 BrightData JSONs + 1 grade assessment), core/art/manifest/visual_manifest.json. No Sacred Core files (farkleStore.ts, gameStore.ts, csprng.ts, farkleScorer.ts, rtpConfig.ts, monteCarlo.ts) were touched. No Sacred Core boundary was approached for modification decisions. The codebase was read for grade assessment purposes only."
+
+  "escalation_raised": "L2-RESOLVED",
+  "escalation_history": [
+    {
+      "level": 2,
+      "tag": "L2-VIOLATION",
+      "trigger": "LEGAL.md absent from main branch — T0 PR not merged",
+      "resolution": "Human directive — create LEGAL.md via option (C)",
+      "resolved": true
+    }
+  ],
+
+  "l1_findings": [
+    {
+      "tag": "L1-THREAT-MODEL-VERSION-DRIFT",
+      "description": "threat-model.md is v1.0.0 on main; v1.1.0 exists on T0 PR branch (pending merge)",
+      "resolution_path": "Merge PR #1 (tier/T0-baseline-audit-20260522)"
+    },
+    {
+      "tag": "L1-ADR-009-ABSENT",
+      "description": "ADR-009 (Godot deprecation) absent from main; exists on feat/godot-deprecation-20260522 (PR #2 open)",
+      "resolution_path": "Merge PR #2 (feat/godot-deprecation-20260522)"
+    },
+    {
+      "tag": "L1-AMOE-ABSENT",
+      "description": "AMOE (alternative means of entry) for PDX sweepstakes not implemented",
+      "resolution_path": "T2 — security/compliance tier"
+    },
+    {
+      "tag": "L1-PLAY-INTEGRITY-ABSENT",
+      "description": "Play Integrity API (hardware attestation for PDX) not implemented",
+      "resolution_path": "T2 — security/compliance tier"
+    },
+    {
+      "tag": "L1-KYC-UI-ONLY",
+      "description": "KYC gate is UI-only — no backend verification",
+      "resolution_path": "T2 — security/compliance tier"
+    },
+    {
+      "tag": "L1-AGEGATE-UI-ONLY",
+      "description": "Age verification is UI-only checkbox — no backend enforcement",
+      "resolution_path": "T2 — security/compliance tier"
+    }
+  ],
+
+  "notes": "T1A Governance Runtime session. Infrastructure-only: directories, ADRs, LEGAL.md, memory MCP. No source code touched. No Sacred Core files approached. L2 violation raised and resolved by Human directive during Task 5. ADR-009 (IEventStore freeze) will be ADR-010 when T1C executes — ADR-009 is taken by Godot deprecation on Session 2 branch."
 }

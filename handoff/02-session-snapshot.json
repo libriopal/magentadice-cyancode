@@ -1,33 +1,56 @@
 {
-  "session_id": "feat/godot-deprecation-20260522",
-  "snapshot_timestamp": "2026-05-22T00:00:00.000Z",
-  "git_head": "8790a3bf14f4c172314d5a46581d4b3ea49eb126 (feat/godot-deprecation-20260522 — post-commit)",
-  "files_modified_count": 30,
-  "memory_state_hash": "FAR_NZY_Session_State: T0=PASS_PROPOSE_COMMIT, score=91/105",
-  "chain_head_valid": true,
-  "chain_head_event_id": null,
-  "rng_lineage_intact": true,
-  "session_seed_committed_before_events": true,
-  "escalation_raised": "L1 — T0 PR #1 gate open; documented per session-runner escalation protocol",
-  "notes": "Branch feat/godot-deprecation-20260522 created from main (de4dfb1). T0 PR #1 still OPEN — L1-FINDING logged in session planning. No chain break — T4 ledger not yet implemented. All changes are documentation and configuration only."
-  "session_id": "tier/T0-baseline-audit-20260522",
-  "snapshot_timestamp": "2026-05-22T00:00:00.000Z",
-  "git_head": "de4dfb1d2aebbe26099b8097188ce2146c52dd3d (branch: tier/T0-baseline-audit-20260522)",
-  "files_modified_count": 16,
-  "memory_state": {
-    "current_session_branch": "tier/T0-baseline-audit-20260522",
-    "current_tier": "T0",
-    "tier_gate_status_T0": "IN_PROGRESS",
-    "brightdata_artifacts_frozen": true,
-    "first_session": true
+  "session_id": "tier/T1A-governance-runtime-20260523",
+  "tier": "T1A",
+  "date": "2026-05-23",
+  "timestamp": "2026-05-23T00:00:00.000Z",
+
+  "git_state": {
+    "branch": "tier/T1A-governance-runtime-20260523",
+    "base_branch": "main",
+    "base_head": "de4dfb1d2aebbe26099b8097188ce2146c52dd3d",
+    "head_at_snapshot": "de4dfb1 (pre-commit — files staged, not yet committed)",
+    "submodules": {
+      "core": "c07675db1c4c80f8100e805412f13af5c2315b42 (remotes/origin/dream-core)",
+      "dream": "96978f2b1d518fc498f3ad5a57e25db1809fd948 (heads/dream-core)"
+    },
+    "uncommitted_changes": "11 new files staged (LEGAL.md, docs/adr/ADR-000 through ADR-008, handoff/.gitkeep, sessions/.gitkeep)"
   },
-  "chain_head_valid": true,
-  "chain_head_event_id": null,
-  "chain_head_note": "T4 (Ledger and Replay) not yet complete — Supabase schema is empty. SHA-256 event chain does not exist yet. This is expected at T0 baseline.",
-  "rng_lineage_intact": true,
-  "rng_lineage_note": "No RNG-related code was modified in T0. csprng.ts is unchanged. Lineage integrity not disturbed.",
-  "session_seed_committed_before_events": true,
-  "session_seed_note": "Not applicable at T0 — no game events were generated in this session.",
-  "escalation_raised": null,
-  "notes": "T0 is a documentation-and-artifact session. No event chain exists yet (expected at baseline). RNG lineage untouched. Session branch clean at de4dfb1 as pre-session baseline; new files added on tier/T0-baseline-audit-20260522 branch."
+
+  "session_context": {
+    "previous_session_id": "feat/godot-deprecation-20260522",
+    "previous_session_score": "91/105",
+    "previous_session_verdict": "PASS_PROPOSE_COMMIT",
+    "open_prs": [
+      "PR #1: tier/T0-baseline-audit-20260522 → main (not yet merged)",
+      "PR #2: feat/godot-deprecation-20260522 → main (not yet merged)"
+    ],
+    "outstanding_l1_flags_carried_forward": 5,
+    "l2_violation_raised_and_resolved": true
+  },
+
+  "files_created_count": 11,
+  "files_modified_count": 0,
+  "directories_created": ["docs/adr/", "handoff/", "sessions/", "runs/2026-05-23/"],
+
+  "memory_mcp_state": {
+    "current_tier": "T1A",
+    "tier_gate_status_T0": "PASS_PROPOSE_COMMIT",
+    "tier_gate_status_T1A": "IN_PROGRESS",
+    "constitutional_docs_tracked": 9,
+    "outstanding_flags_count": 7
+  },
+
+  "chain_integrity": {
+    "replay_chain_touched": false,
+    "event_schema_touched": false,
+    "sacred_core_touched": false,
+    "fixed_point_check": "NOT_APPLICABLE",
+    "hash_chain_valid": "NOT_APPLICABLE — no chain events in this session"
+  },
+
+  "escalation_raised": "L2 (resolved by Human directive)",
+  "highest_escalation_level": 2,
+  "escalation_resolved": true,
+
+  "notes": "Infrastructure-only session. No source code modified. No replay chain events. No Sacred Core files approached. L2 raised (LEGAL.md absent from main) and resolved via Human directive. Session produces 9 ADRs + LEGAL.md + directory structure."
 }

@@ -1,0 +1,166 @@
+{
+  "session_id": "tier/T1A-governance-runtime-20260523",
+  "tier": "T1A",
+  "branch": "tier/T1A-governance-runtime-20260523",
+  "timestamp": "2026-05-23T00:00:00.000Z",
+  "score_total": 94,
+  "escalation_level": 2,
+  "verdict": "PASS_PROPOSE_COMMIT",
+
+  "dimensions": {
+    "mathematical_purity": {
+      "score": 20,
+      "max": 20,
+      "fixed_point_check": "NOT_APPLICABLE",
+      "float_violations": 0,
+      "notes": "Documentation-only session. No executable code. No scoring arithmetic. FIXED_POINT_CHECK not applicable."
+    },
+    "sacred_core_integrity": {
+      "score": 20,
+      "max": 20,
+      "violations": [],
+      "notes": "Sacred Core boundary not approached. All 6 Sacred Core files untouched. L2 violation (LEGAL.md absent) was infrastructure, not Sacred Core proximity."
+    },
+    "performance_delta": {
+      "score": 20,
+      "max": 20,
+      "notes": "No code changes. No frame time impact. No heap allocations. NOT_APPLICABLE — documentation session."
+    },
+    "grade_elevation": {
+      "score": 12,
+      "max": 15,
+      "transitions": [
+        {
+          "file": "docs/adr/ (9 files)",
+          "from": "C",
+          "to": "B"
+        },
+        {
+          "file": "LEGAL.md",
+          "from": "C",
+          "to": "B"
+        }
+      ],
+      "notes": "Governance infrastructure elevated from absent to operational (Grade C→B). Deducted 3pts: T0 PR #1 and Session 2 PR #2 both unmerged — infra exists on branch not yet in main, limiting actual grade impact until merge."
+    },
+    "regression_count": {
+      "score": 8,
+      "max": 10,
+      "bugs_fixed": 1,
+      "bugs_introduced": 0,
+      "notes": "L2 violation (LEGAL.md absent) raised and resolved. 6 L1 findings: 2 from open PRs (version drift, ADR-009 absent), 4 T2-deferred (AMOE, Play Integrity, KYC, AgeGate). Deducted 2pts for L1 count."
+    },
+    "tier_gate_progress": {
+      "score": 9,
+      "max": 10,
+      "gates_advanced": [
+        "T1A-session-runner-verified",
+        "T1A-memory-mcp-initialized",
+        "T1A-adrs-created",
+        "T1A-constitutional-versions-audited",
+        "T1A-legal-md-created"
+      ],
+      "notes": "All T1A pass gate conditions met. Deducted 1pt: two open PRs (T0 + Session 2) remain unmerged, leaving main branch in pre-T0 state despite T1A completion."
+    },
+    "evidence_coverage": {
+      "score": 3,
+      "max": 3,
+      "corpus_citations": 16,
+      "notes": "10 CourtListener cases + 6 federal statutes cited in LEGAL.md. Strong legal evidence base."
+    },
+    "mcp_utilization": {
+      "score": 2,
+      "max": 2,
+      "mcps_used": ["mcp__claude_ai_CourtListener__search", "mcp__memory__read_graph", "mcp__memory__create_entities", "mcp__memory__delete_entities", "mcp__memory__add_observations"],
+      "mcps_misused": [],
+      "notes": "CourtListener used appropriately for LEGAL.md legal research. Memory MCP used for session state management per T1A protocol. Both within tier scope."
+    }
+  },
+
+  "flags": [
+    {
+      "level": 2,
+      "tag": "L2-VIOLATION-RESOLVED",
+      "cell": "Governance Auditor (T1A Task 5)",
+      "description": "LEGAL.md absent from main branch — T0 PR #1 not merged",
+      "file_affected": "LEGAL.md",
+      "resolved": true,
+      "resolution": "Human directive: create full LEGAL.md via CourtListener research (option C)"
+    },
+    {
+      "level": 1,
+      "tag": "L1-THREAT-MODEL-VERSION-DRIFT",
+      "cell": "Systems Architect (PB-3)",
+      "description": "threat-model.md v1.0.0 on main; v1.1.0 on T0 PR branch (pending merge)",
+      "resolved": false,
+      "resolution": "Merge PR #1 (tier/T0-baseline-audit-20260522)"
+    },
+    {
+      "level": 1,
+      "tag": "L1-ADR-009-ABSENT",
+      "cell": "Contradiction Hunter",
+      "description": "ADR-009 (Godot deprecation) absent from main; exists on Session 2 PR branch",
+      "resolved": false,
+      "resolution": "Merge PR #2 (feat/godot-deprecation-20260522)"
+    },
+    {
+      "level": 1,
+      "tag": "L1-ADR-009-NUMBER-COLLISION",
+      "cell": "Contradiction Hunter",
+      "description": "T1C prompt references ADR-009 for IEventStore freeze; ADR-009 is taken by Godot deprecation",
+      "resolved": false,
+      "resolution": "T1C session must use ADR-010 for IEventStore freeze ADR"
+    },
+    {
+      "level": 1,
+      "tag": "L1-AMOE-ABSENT",
+      "cell": "Governance Auditor",
+      "description": "Alternative means of entry for PDX sweepstakes not implemented",
+      "resolved": false,
+      "resolution": "T2 — security/compliance tier"
+    },
+    {
+      "level": 1,
+      "tag": "L1-PLAY-INTEGRITY-ABSENT",
+      "cell": "Governance Auditor",
+      "description": "Play Integrity API (hardware attestation for PDX) not implemented",
+      "resolved": false,
+      "resolution": "T2 — security/compliance tier"
+    },
+    {
+      "level": 1,
+      "tag": "L1-KYC-UI-ONLY",
+      "cell": "Governance Auditor",
+      "description": "KYC gate is UI-only — no backend verification",
+      "resolved": false,
+      "resolution": "T2 — security/compliance tier"
+    },
+    {
+      "level": 1,
+      "tag": "L1-AGEGATE-UI-ONLY",
+      "cell": "Governance Auditor",
+      "description": "Age gate is UI-only checkbox — no backend enforcement",
+      "resolved": false,
+      "resolution": "T2 — security/compliance tier"
+    }
+  ],
+
+  "audit_signature": {
+    "pathway_deps": "LEGAL.md, docs/adr/ADR-000 through ADR-008, handoff/ (structure), sessions/ (structure), memory MCP",
+    "current_grade": "Grade B — governance infrastructure operational",
+    "entropy_vector": "none — documentation only; no source code affected",
+    "fixed_point_check": "NOT_APPLICABLE"
+  },
+
+  "learning": null,
+
+  "t1a_pass_gate": {
+    "session_runner_verified": true,
+    "memory_mcp_initialized": true,
+    "adrs_created": true,
+    "constitutional_versions_audited": true,
+    "legal_md_present": true,
+    "no_l2_plus_outstanding": true,
+    "verdict": "PASS"
+  }
+}

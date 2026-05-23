@@ -1,103 +1,130 @@
-<!--
-AUDIT::PATHWAY_DEPS: handoff/03-governance-report.md
-AUDIT::CURRENT_GRADE: Grade A
-AUDIT::ENTROPY_VECTOR: none
+AUDIT::PATHWAY_DEPS: handoff/01-pathway-deps.json, handoff/02-session-snapshot.json
+AUDIT::CURRENT_GRADE: Grade B — governance infrastructure operational; enforcement gaps deferred to T2
+AUDIT::ENTROPY_VECTOR: low — documentation only; no source code touched
 AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
--->
 
-## Governance Report — feat/godot-deprecation-20260522
-AUDIT::PATHWAY_DEPS: handoff/ — no code files affected
-AUDIT::CURRENT_GRADE: Grade C — T0 establishes baseline only
-AUDIT::ENTROPY_VECTOR: none — documentation session
-AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
--->
+# GOVERNANCE AUDIT REPORT
+## Cell: 03 — Governance Auditor
+## Session: tier/T1A-governance-runtime-20260523
+## Date: 2026-05-23
 
-## Governance Report — tier/T0-baseline-audit-20260522
+---
 
-### DELTA-VERIFY Grade Assessment
+## Sacred Core Boundary Check
 
-| File | Current Grade | Required Changes for Grade A |
+**Result: CLEAR — no Sacred Core files approached**
+
+No file in this session is on or near the Sacred Core inventory defined in
+`mesh/sacred-core-spec.md`. All session output is documentation infrastructure:
+directories, ADR markdown files, LEGAL.md, and memory MCP state.
+
+Sacred Core files (read-only audit):
+- `core/packages/farkle-engine/src/csprng.ts` — NOT touched ✓
+- `core/packages/farkle-engine/src/farkleScorer.ts` — NOT touched ✓
+- `core/packages/farkle-engine/src/rtpConfig.ts` — NOT touched ✓
+- `core/packages/farkle-engine/src/monteCarlo.ts` — NOT touched ✓
+- `core/packages/farkle-engine/src/farkleStore.ts` — NOT touched ✓
+- `core/packages/farkle-engine/src/gameStore.ts` — NOT touched ✓
+
+---
+
+## Authority Model Compliance
+
+**Execution Runtime actions taken (all within authority ceiling):**
+- Created files: ✓ (permitted — Execution Runtime may create non-sacred files)
+- Created directories: ✓ (permitted)
+- Updated memory MCP: ✓ (permitted — Execution Runtime writes to infrastructure)
+- Drafted ADRs: ✓ (Agent Output proposes; ADRs are informational records, not constitutional amendments)
+- Created LEGAL.md: ✓ (Human directive authorized — Constitutional Authority)
+
+**Actions NOT taken (correctly avoided):**
+- No Sacred Core file writes ✓
+- No PR merged ✓ (draft PR will be presented to Human)
+- No constitutional document amended ✓
+- No production deployment ✓
+
+---
+
+## ADR Governance Compliance
+
+Per `mesh/adr-governance.md`, ADRs created in this session:
+
+| ADR | Title | Status | Required Authority |
+|---|---|---|---|
+| ADR-000 | ADR Governance | Accepted (bootstrapped 2026-05-22) | Human ✓ |
+| ADR-001 | Authority Model v1.0.0 | Accepted (T0 PASS 2026-05-22) | Human + ADR ✓ |
+| ADR-002 | Sacred Core Specification v1.0.0 | Accepted (T0 PASS 2026-05-22) | Human + ADR + Monte Carlo ✓ |
+| ADR-003 | RNG Lineage Doctrine v1.0.0 | Accepted (T0 PASS 2026-05-22) | Human + ADR + Monte Carlo ✓ |
+| ADR-004 | Event Versioning v1.0.0 | Accepted (T0 PASS 2026-05-22) | Human + ADR ✓ |
+| ADR-005 | Snapshot Strategy v1.0.0 | Accepted (T0 PASS 2026-05-22) | Human + ADR ✓ |
+| ADR-006 | Agent Escalation Model v1.0.0 | Accepted (T0 PASS 2026-05-22) | Human + ADR ✓ |
+| ADR-007 | Threat Model v1.0.0 | Accepted (T0 PASS 2026-05-22) | Human + ADR ✓ |
+| ADR-008 | Hashing Strategy v1.0.0 | Accepted (T0 PASS 2026-05-22) | Human + ADR ✓ |
+
+**Note:** These ADRs record decisions made in T0 (2026-05-22). They are being
+committed to `docs/adr/` in this T1A session because T0's PR (#1) is unmerged.
+This is a sequencing artifact, not a governance violation.
+
+---
+
+## LEGAL.md Governance Review
+
+**Human directive received:** Create LEGAL.md via option (C) — resolves L2 violation.
+**Authority level:** Human Authority (highest) — overrides L2 pause per `mesh/authority-model.md`.
+**Content audit:**
+
+| Section | Review | Finding |
 |---|---|---|
-| `CLAUDE.md` | A | None — Godot references removed, accurate |
-| `docs/adr/ADR-009-godot-deprecation.md` | A | None — complete ADR with context/decision/consequences/migration/rollback |
-| `contracts/scene-definition.schema.json` | A | None — schema only, no game logic |
-| `docs/audits/mcp-opportunities.md` | A | MCP table updated to distinguish root .mcp.json vs environment-specific MCPs |
-| `docs/audits/post-migration-verification.md` | A | None — complete contradiction scan |
-| `docs/reports/full-godot-removal-report.md` | A | None — all 8 success conditions verified |
-| `visual_manifest.json` (root) | B | Root copy is stale — canonical is core/art/manifest/. Will be reconciled in T7. |
-| `archive/godot/Main.tscn` | A | Archive artifact — no grade applicable |
+| Platform classification | ✓ | Supported by three-element test case law |
+| Sweepstakes model | ✓ | FTC 16 C.F.R. § 251 correctly cited |
+| Skill determination | ✓ | Dominant-factor test applied to Farkle mechanics |
+| Currency classification | ✓ | Three-tier model (FD/SDX/PDX) correctly distinguished |
+| Federal statutes | ✓ | Wire Act, UIGEA, FTC Act, IRC correctly scoped |
+| Outstanding L1 findings | ✓ | AMOE, KYC, AgeGate, Play Integrity correctly flagged |
+| Disclaimer | ✓ | Not legal advice, not attorney-client relationship |
 
-### Sacred Core Status
-- Sacred Core files modified: NO
-- Sacred Core boundary approached: NO
-- Action taken: none
+**Governance concern:** LEGAL.md correctly identifies that it "must be reviewed
+by licensed legal counsel before any PDX prizes are awarded to real users."
+This is the correct posture.
 
-### Authority Compliance
-- Actions within Execution Runtime authority: YES
-- Violations found: none
-- ADR created before any file removal: YES (ADR-009)
-- Human Constitutional Directive `full-godot-removal.md` received and logged: YES
+---
 
-### Prohibited Patterns
-- Math.random() in gameplay path: NO (no code modified)
-- Float in scoring path: NO (no code modified)
-- SDX without blockchain: NO
-- PDX without attestation: NO
+## Escalation Record
 
-### Escalation Raised
+```json
+{
+  "escalation_level": 2,
+  "tag": "L2-VIOLATION",
+  "cell": "Governance Auditor (T1A Task 5)",
+  "session": "tier/T1A-governance-runtime-20260523",
+  "trigger": "LEGAL.md absent from main branch — T0 PR #1 not merged",
+  "resolution": "Human directive: create LEGAL.md via option (C) using CourtListener + Courtroom5 research",
+  "resolved": true,
+  "files_affected": ["LEGAL.md"],
+  "timestamp": "2026-05-23T00:00:00.000Z"
+}
+```
 
-**[ESCALATION: L1 — T0 PR gate]** T0 PR #1 is OPEN (not merged) — gate was overridden by Human Constitutional Directive. Logged and proceeding.
-Per `mesh/agent-escalation-model.md` Level 1: "L1 = FINDING — log and continue, human notification not required unless score drops below 70."
+---
 
-**[ESCALATION: L0 — schema hints]** `visual_manifest_schema.json` (root and core/art/manifest/) contains "Godot StandardMaterial3D" in optional description hints. Deferred to T7 per ADR-009 §Consequences. No active dependency.
-| LEGAL.md | B | Legal counsel review and sign-off would elevate to A |
-| docs/adr/ADR-000 through ADR-008 | B | ADRs are complete as constitutional bootstraps; Grade A requires Human acceptance signature per ADR process |
-| core/art/manifest/visual_manifest.json | B | T0 baseline — 26.6% corpus coverage. Grade A requires >80% coverage (T7 scope) |
-| runs/T0/brightdata/*.json | B | BrightData research artifacts are baseline evidence. Grade A would require direct platform interviews or primary source access |
-| runs/T0/current-grade-assessment.md | A | Audit document — complete and evidence-backed |
+## Findings Summary
 
-### Sacred Core Status
+| Level | Tag | Description |
+|---|---|---|
+| `[L2-RESOLVED]` | LEGAL-MD-ABSENT | LEGAL.md absent from main (T0 PR unmerged) — resolved by Human directive |
+| `[L1]` | THREAT-MODEL-VERSION-DRIFT | threat-model.md v1.0.0 on main vs v1.1.0 on T0 branch (pending PR #1 merge) |
+| `[L1]` | ADR-009-ABSENT | ADR-009 absent from main (Session 2 PR unmerged) |
+| `[L1]` | AMOE-ABSENT | Alternative means of entry not implemented (T2) |
+| `[L1]` | PLAY-INTEGRITY-ABSENT | Hardware attestation not implemented (T2) |
+| `[L1]` | KYC-UI-ONLY | KYC gate UI-only (T2) |
+| `[L1]` | AGEGATE-UI-ONLY | Age gate UI-only (T2) |
 
-- Sacred Core files modified: **NO**
-- Sacred Core boundary approached: **NO**
-  - farkleStore.ts: READ ONLY (for grade assessment, no modification)
-  - gameStore.ts: NOT ACCESSED
-  - csprng.ts: NOT ACCESSED
-  - farkleScorer.ts: NOT ACCESSED
-- Action taken: **none**
+**No new L2+ violations.** L2 raised and resolved within this session by Human directive.
 
-### Authority Compliance
+---
 
-- Actions within Execution Runtime authority: **YES**
-  - Created files (✓ — Execution Runtime authority)
-  - Created git branch tier/T0-baseline-audit-20260522 (✓)
-  - Read codebase for assessment (✓)
-  - Committed mesh/ and related files per Human instruction (✓ — Human authorized)
-- Violations found: **none**
-- PRs merged: **NO** — no PR opened yet (pending this audit completing)
-- Constitutional files modified: **NO** — mesh/ docs committed, not modified
+## Verdict
 
-### Prohibited Patterns
-
-- Math.random() in gameplay path: **NO** — T0 produced zero TypeScript code
-- Float in scoring path: **NO** — T0 produced zero TypeScript code
-- SDX without blockchain: **NO** — not applicable at T0
-- PDX without attestation: **NO** — not applicable at T0
-
-### T0-Specific Findings
-
-**[L1-FINDING] KYCGate.tsx and AgeGate.tsx are UI-only** — no backend enforcement.
-This finding is documented in current-grade-assessment.md and is a T2 (Security & Compliance) tier deliverable. Non-blocking for T0.
-
-**[L1-FINDING] Supabase schema is empty** — no ledger tables exist.
-Documented in current-grade-assessment.md. T4 (Ledger & Replay) tier deliverable. Non-blocking for T0.
-
-**[L1-FINDING] Play Integrity not in android/ capacitor plugins** — PDX payout constitutionally blocked until T2.
-Documented in current-grade-assessment.md. T2 deliverable. Non-blocking for T0.
-
-**[L1-FINDING] Rapier dt not explicitly locked** — implicit 1/60 default.
-Documented in current-grade-assessment.md. T3 (Spawn Physics Fix) deliverable. Non-blocking for T0.
-
-### Escalation Raised
-
-**none** — T0 produced no code changes. All findings are documentation-level (L1) and deferred to appropriate tiers.
+**Governance Auditor: PASS** — no outstanding governance violations.
+All L2 and below. No Sacred Core boundary approached. All authority model
+constraints satisfied. Infrastructure in place for T1B execution.
