@@ -8,7 +8,8 @@
     "contracts/scene-definition.schema.json",
     "docs/audits/mcp-opportunities.md",
     "docs/audits/post-migration-verification.md",
-    "docs/reports/full-godot-removal-report.md"
+    "docs/reports/full-godot-removal-report.md",
+    "core/art/manifest/visual_manifest.json"
   ],
   "dependency_map": {
     "CLAUDE.md": ["no downstream code consumers — documentation only"],
@@ -23,5 +24,5 @@
   "bridge_overhead_risk": false,
   "gc_spike_risk": false,
   "escalation_raised": null,
-  "notes": "Documentation-only migration. No source code in core/ or dream/ submodules was touched. Godot had no runtime integration — removal has zero downstream impact on build, test, or production execution."
+  "notes": "Documentation-only migration. No source code in core/ or dream/ submodules was touched. core submodule pointer bumped from c07675db to 9282d804; only core/art/manifest/visual_manifest.json changed (art asset, not source code). Godot had no runtime integration — removal has zero downstream impact on build, test, or production execution."
 }

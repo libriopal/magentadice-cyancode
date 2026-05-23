@@ -7,7 +7,7 @@
   "new_float32array_violations": [],
   "rng_lineage_compliant": true,
   "hashing_strategy_compliant": true,
-  "rapier_dt_enforced": true,
+  "rapier_dt_enforced": false,
   "escalation_raised": null,
-  "notes": "No TypeScript or JavaScript files were modified. All changes are documentation (*.md), configuration (.mcp.json), JSON schemas, and a scene archive. FIXED_POINT_CHECK is NOT_APPLICABLE. No scanning required."
+  "notes": "No TypeScript or JavaScript files were modified. All changes are documentation (*.md), configuration (.mcp.json), JSON schemas, and a scene archive. FIXED_POINT_CHECK is NOT_APPLICABLE. No scanning required. rapier_dt_enforced: false — WildCubeEngine.ts uses Rapier implicit dt (1/60); explicit lock not set in any session to date (L1 finding, documented in runs/T0/current-grade-assessment.md)."
 }

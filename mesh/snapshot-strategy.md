@@ -56,14 +56,22 @@ All three layers must be consistent for a state to be considered verified.
 ### State Hash Computation
 
 ```typescript
-// Deterministic: keys always sorted before hashing
-const stateHash = sha256(
-  JSON.stringify(snapshot.state, Object.keys(snapshot.state).sort())
-);
+// Deterministic: recursively sort all keys before hashing
+function deterministicSerialize(value: unknown): string {
+  if (value === null || typeof value !== "object" || Array.isArray(value))
+    return JSON.stringify(value);
+  const sorted = Object.fromEntries(
+    Object.keys(value as object).sort().map(k => [k, (value as Record<string, unknown>)[k]])
+  );
+  return "{" + Object.keys(sorted).map(k =>
+    JSON.stringify(k) + ":" + deterministicSerialize(sorted[k])
+  ).join(",") + "}";
+}
+const stateHash = sha256(deterministicSerialize(snapshot.state));
 ```
 
-Key sorting ensures the same state always produces the same hash
-regardless of JavaScript object insertion order.
+Recursive key sorting ensures the same state always produces the same hash
+regardless of JavaScript object insertion order, including nested objects.
 This is the same principle as Q32.32 math: eliminate environmental variance.
 
 ---

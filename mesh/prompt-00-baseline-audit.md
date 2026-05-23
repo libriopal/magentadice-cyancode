@@ -188,7 +188,7 @@ If validation fails → Level 2 flag (non-blocking for T0, blocking for T7).
 
 ## Artifact Group 4 — Constitutional Document Commit
 
-Commit all 9 constitutional documents to the repo root and docs/adr/:
+Commit all required constitutional artifacts to the repo root and docs/adr/:
 
 ```
 authority-model.md
@@ -243,7 +243,7 @@ T0 passes when:
 - [ ] All 4 BrightData artifacts exist in runs/T0/brightdata/
 - [ ] Current grade assessment complete in runs/T0/current-grade-assessment.md
 - [ ] visual_manifest.json validates against schema
-- [ ] All 9 constitutional documents committed to repo
+- [ ] All required constitutional artifacts committed to repo
 - [ ] LEGAL.md committed to repo root
 - [ ] Draft PR open for Human review
 

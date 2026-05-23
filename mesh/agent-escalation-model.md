@@ -18,7 +18,7 @@ while keeping Human authority supreme.
 
 ## The Five Escalation Levels
 
-```
+```text
 Level 0: OBSERVATION
   ↓
 Level 1: FINDING
@@ -190,8 +190,8 @@ session architecture. Full stop. Constitutional review required.
 | Determinism Verifier | ✓ | ✓ | ✓ (FIXED_POINT concern) | ✓ (FIXED_POINT FAIL) | ✓ |
 | Failure Taxonomist | ✓ | ✓ | ✓ (post-mortem) | ✓ (post-mortem) | ✓ |
 
-All cells can raise to any level.
-Only Governance Auditor and Determinism Verifier can trigger L4 unilaterally.
+All cells can raise (report) to any level.
+Only Governance Auditor and Determinism Verifier can trigger (enact) L4 unilaterally.
 Other cells require two concurrent L3 findings to trigger L4.
 
 ---

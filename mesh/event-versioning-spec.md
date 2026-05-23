@@ -116,14 +116,15 @@ All event readers MUST handle:
 
 ```typescript
 // REQUIRED: Default handling for missing optional fields
-const scoreMultiplier = event.payload.score_multiplier ?? 1.0;
+const DEFAULT_SCORE_MULTIPLIER_FIXED = 100; // Q0.32 fixed-point: 1.0 × 100
+const scoreMultiplier = event.payload.score_multiplier ?? DEFAULT_SCORE_MULTIPLIER_FIXED;
 ```
 
 ### Migration Strategy
 
 When a MAJOR version increment is unavoidable:
 
-```
+```text
 1. Write migration adapter: IEventStore.migrate(oldEvent) → newEvent
 2. Test adapter on 100% of historical event dataset
 3. Dual-write period: write both old and new version simultaneously

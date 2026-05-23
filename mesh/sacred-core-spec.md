@@ -143,7 +143,7 @@ not_sacred:
 
 ## Change Process for Sacred Core
 
-```
+```text
 1. Identify proposed change
 2. Execution Runtime writes proposal (PROPOSE ONLY — no implementation)
 3. Contradiction Hunter reviews for constitutional conflicts
