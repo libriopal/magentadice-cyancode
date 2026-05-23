@@ -88,12 +88,12 @@ Session pauses. Claude Code presents findings. Human decides.
 
 **Triggers:**
 - Propose-only file approached for direct edit (Sacred Core boundary reached)
-- AUDIT::FIXED_POINT_CHECK concern (float detected near scoring path, not confirmed in it) — see `mesh/event-versioning-spec.md` for fixed-point rules
+- AUDIT::FIXED_POINT_CHECK concern (float detected near scoring path, not confirmed in it) — see `event-versioning-spec.md` for fixed-point rules
 - Performance regression above 10% (frame time increased by >1.6ms)
 - Event schema change without corresponding ADR draft
 - RNG lineage path modified without Human pre-approval
 - PR opened without Proposal Only flag
-- Session score in range 50–69 (see `mesh/session-score.schema.json` for threshold definitions)
+- Session score in range 50–69 (see `prompts/session-score.schema.json` for threshold definitions)
 
 **Actions:**
 - Immediately pause Execution Runtime
