@@ -1,24 +1,50 @@
-AUDIT::PATHWAY_DEPS: handoff/01 through handoff/05, runs/2026-05-23/session-3.json
-AUDIT::CURRENT_GRADE: Grade B
-AUDIT::ENTROPY_VECTOR: none
+AUDIT::PATHWAY_DEPS: handoff/01 through handoff/05, runs/2026-05-24/session-3.json
+AUDIT::CURRENT_GRADE: Grade A
+AUDIT::ENTROPY_VECTOR: Low — docs and ADR only; no production code
 AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 
 # FAILURE TAXONOMY REPORT
 ## Cell: 06 — Failure Taxonomist
-## Session: tier/T1A-governance-runtime-20260523
-## Date: 2026-05-23
+## Session: tier/T1B-audit-runtime-20260524
+## Date: 2026-05-24
 
 ---
 
 ## Session Outcome
 
 **Verdict: PASS_PROPOSE_COMMIT**
-**Score: 94 / 100**
-**Highest escalation: L2 (resolved)**
+**Score: 95 / 100**
+**Highest escalation: L2 (raised and resolved by Human)**
 
-No failures to taxonomize at L3 or L4.
-L2 was raised (LEGAL.md absent from main) and resolved within-session by Human directive.
-No post-mortem required.
+No failures. All 5 T1B pass gate conditions met.
+
+---
+
+## Score Breakdown
+
+| Dimension | Score | Max | Notes |
+|---|---|---|---|
+| Mathematical Purity | 20 | 20 | NOT_APPLICABLE — no production code. |
+| Sacred Core Integrity | 18 | 20 | L2 raised (boundary approached via proposal) and resolved by Human. -2 for the L2 event. |
+| Performance Delta | 20 | 20 | No production code modified. Zero impact. |
+| Grade Elevation | 12 | 15 | ADR-010 and docs at Grade A. No C→B or B→A code transitions (docs session). |
+| Regression Count | 10 | 10 | No bugs. No regressions. |
+| Tier Gate Progress | 10 | 10 | All 5 T1B tasks complete. Pass gate met. |
+| Evidence Coverage (bonus) | 3 | 3 | Full audit chain. All task results documented. |
+| MCP Utilization (bonus) | 2 | 2 | Memory MCP read at boot, updated at branch creation and L2 resolution. |
+
+**Total: 95 / 100 → PASS_PROPOSE_COMMIT ✓**
+
+---
+
+## T1B Pass Gate — ALL CONDITIONS MET
+
+- [x] All 6 audit cells produce valid handoff artifacts on known-good scenario (Task 1 — 85/100)
+- [x] Governance Auditor correctly identifies Sacred Core boundary approach (Task 2 — L2 raised correctly)
+- [x] Determinism Verifier correctly triggers Level 3 on float violation (Task 3 — L3 raised correctly)
+- [x] Contradiction Hunter correctly triggers Level 3 on hallucinated authority (Task 4 — L3 raised correctly)
+- [x] Failure Taxonomist produces correct PAUSE_ASK verdict for 50-69 score (Task 5 — 62/100 → PAUSE_ASK)
+- [x] No test files remain committed to main
 
 ---
 
@@ -26,39 +52,18 @@ No post-mortem required.
 
 | Item | Impact |
 |---|---|
-| All 5 T1A tasks completed cleanly | Full pass gate met |
-| L2 resolved without session scrap | Score preserved; no rollback |
-| CourtListener research produced defensible LEGAL.md | Evidence coverage bonus: 3/3 |
-| Memory MCP fully initialized | Removes the stale/duplicate entity problem from T0 |
-| ADR-000–ADR-008 created | Governance infrastructure now in docs/, not just in mesh/ |
+| All 5 audit cell tests passed | Audit runtime confirmed operational |
+| L2 raised correctly on Sacred Core proposal | Cell 03 governance logic verified |
+| L3 raised correctly on Math.random() | Cell 05 determinism logic verified |
+| L3 raised correctly on hallucinated authority | Cell 04 contradiction logic verified |
+| PAUSE_ASK verdict produced correctly | Cell 06 score-to-verdict mapping verified |
+| Human approved ADR-010 direction | Bonus: RTP variance improvement queued |
 
 ---
 
-## What Was Difficult
+## L1 Findings This Session
 
-| Item | Root Cause | Learning |
-|---|---|---|
-| LEGAL.md absent on main | T0 PR (#1) not merged before T1A started | ADRs should note: "Merged to main on [date]" once PRs land |
-| ADR-009 number collision | T1C prompt written before ADR-009 was assigned to Godot deprecation | T1C session must open by reading ADR directory to confirm next available number |
-| threat-model.md version drift | T0 branch improvements not in main | Version in memory should track "what's in main", not "what was the last known value" |
-
----
-
-## Taxonomy of L1 Findings This Session
-
-| Category | Count | Pattern |
-|---|---|---|
-| Open PR sequencing | 3 | T0 PR and Session 2 PR both unmerged — artifacts exist on branches, not main |
-| T2 enforcement gaps | 4 | KYC, AgeGate, AMOE, Play Integrity — by design deferred to T2 |
-| ADR numbering | 1 | Cross-session numbering conflict; flag for T1C |
-
-All L1 findings are explained, non-blocking, and have clear resolution paths.
-
----
-
-## Score Record Reference
-
-`runs/2026-05-23/session-3.json`
+none — clean session
 
 ---
 

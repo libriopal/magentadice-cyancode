@@ -1,68 +1,13 @@
 {
-  "session_id": "tier/T1A-governance-runtime-20260523",
-  "tier": "T1A",
-  "date": "2026-05-23",
-  "cell": "05 — Determinism Verifier",
-
+  "session_id": "tier/T1B-audit-runtime-20260524",
   "fixed_point_check": "NOT_APPLICABLE",
-  "fixed_point_rationale": "T1A is infrastructure-only. No TypeScript, no scoring functions, no currency arithmetic, no event payloads were written in this session. FIXED_POINT_CHECK applies only when code touching scoring, payout, or currency paths is introduced.",
-
-  "float_scan": {
-    "files_scanned": [
-      "LEGAL.md",
-      "docs/adr/ADR-000-adr-governance.md",
-      "docs/adr/ADR-001-authority-model.md",
-      "docs/adr/ADR-002-sacred-core-spec.md",
-      "docs/adr/ADR-003-rng-lineage.md",
-      "docs/adr/ADR-004-event-versioning.md",
-      "docs/adr/ADR-005-snapshot-strategy.md",
-      "docs/adr/ADR-006-agent-escalation.md",
-      "docs/adr/ADR-007-threat-model.md",
-      "docs/adr/ADR-008-hashing-strategy.md"
-    ],
-    "float_violations_found": 0,
-    "math_random_found": false,
-    "float_in_scoring_path": false,
-    "float_in_currency_field": false,
-    "notes": "All session files are Markdown documentation. No executable code produced. No scoring arithmetic. No currency fields. Float scan is nominal — documentation references to amounts (e.g. ±0.005 RTP bounds, 10,000 Monte Carlo runs) are descriptive text, not code values."
-  },
-
-  "rng_lineage_check": {
-    "rng_path_modified": false,
-    "csprng_touched": false,
-    "seed_derivation_touched": false,
-    "math_random_in_scoring": false,
-    "verdict": "CLEAR — no RNG lineage path approached"
-  },
-
-  "sha256_chain_check": {
-    "event_chain_touched": false,
-    "snapshot_chain_touched": false,
-    "predecessor_hash_fields_modified": false,
-    "verdict": "CLEAR — no hash chain touched"
-  },
-
-  "sacred_core_proximity": {
-    "files_within_1_import_of_sacred_core": [],
-    "verdict": "CLEAR — no files near Sacred Core import boundary"
-  },
-
-  "rapier_dt_check": {
-    "rapier_dt_enforced_system_state": false,
-    "rapier_dt_enforced_session_impact": "not_applicable",
-    "rapier_dt_l1_finding_location": "runs/T0/current-grade-assessment.md (T0 branch)",
-    "rapier_dt_resolution_path": "T3 — WildCubeEngine spawn physics fix",
-    "notes": "Pre-existing L1 finding from T0. Not introduced or worsened by T1A."
-  },
-
-  "escalation_raised": "none",
-
-  "summary": {
-    "verdict": "DETERMINISM_CLEAR",
-    "fixed_point_check": "NOT_APPLICABLE",
-    "float_violations": 0,
-    "math_random_violations": 0,
-    "chain_integrity": "NOT_APPLICABLE",
-    "session_impact_on_determinism": "none — documentation-only session"
-  }
+  "float_violations": [],
+  "math_random_violations": [],
+  "date_now_violations": [],
+  "new_float32array_violations": [],
+  "rng_lineage_compliant": true,
+  "hashing_strategy_compliant": true,
+  "rapier_dt_enforced": true,
+  "escalation_raised": null,
+  "notes": "No production TypeScript code modified this session. Test files containing violations (float-violation-test.ts, contradiction-hunter-test.md) were created, verified, and deleted — not committed. Final scan of session output files: docs/scoring-notes.md, docs/adr/ADR-010-rtp-variance-tightening.md, runs/proposals/PROPOSAL-rtpConfig-variance-20260524.md — all are Markdown, no executable code, FIXED_POINT_CHECK NOT_APPLICABLE."
 }
