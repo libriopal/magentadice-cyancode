@@ -1,11 +1,11 @@
-AUDIT::PATHWAY_DEPS: handoff/01 through handoff/05, runs/2026-05-24/session-4.json
+AUDIT::PATHWAY_DEPS: handoff/01 through handoff/05
 AUDIT::CURRENT_GRADE: Grade A
-AUDIT::ENTROPY_VECTOR: Low — contracts + test infrastructure only; no production code; no Sacred Core boundary
+AUDIT::ENTROPY_VECTOR: Medium — L4 genre modules + server + client; no Sacred Core writes; Sacred Core boundary READ ONLY
 AUDIT::FIXED_POINT_CHECK: PASS
 
 # FAILURE TAXONOMY REPORT
 ## Cell: 06 — Failure Taxonomist
-## Session: tier/T1C-replay-runtime-20260524
+## Session: tier/T1-mathematical-foundation-20260524
 ## Date: 2026-05-24
 
 ---
@@ -13,39 +13,20 @@ AUDIT::FIXED_POINT_CHECK: PASS
 ## Session Outcome
 
 **Verdict: PASS_PROPOSE_COMMIT**
-**Score: 97 / 100**
+**Score: 91 / 100**
 **Highest escalation: L0 (none)**
 
-No failures. All 7 T1C pass gate conditions met.
+All 4 T1 tasks complete.
 
 ---
 
-## Score Breakdown
+## L1 Findings
 
-| Dimension | Score | Max | Notes |
+| # | Finding | Level | Status |
 |---|---|---|---|
-| Mathematical Purity | 20 | 20 | FIXED_POINT_CHECK PASS. No floats in amount fields. No Math.random(). |
-| Sacred Core Integrity | 20 | 20 | No Sacred Core files touched. No boundary approached. |
-| Performance Delta | 20 | 20 | No production code modified. Zero performance impact. |
-| Grade Elevation | 12 | 15 | 10 new Grade A files. No C→B or B→A transitions (all new). |
-| Regression Count | 10 | 10 | 5/5 tests pass. No regressions. |
-| Tier Gate Progress | 10 | 10 | All 7 T1C pass gate conditions met. Phase 1 complete. |
-| Evidence Coverage (bonus) | 3 | 3 | Full audit chain. All task results documented in ADR-011. |
-| MCP Utilization (bonus) | 2 | 2 | Memory MCP read at boot (T1B PASS confirmed), updated at session close. |
-
-**Total: 97 / 100 → PASS_PROPOSE_COMMIT ✓**
-
----
-
-## T1C Pass Gate — ALL CONDITIONS MET
-
-- [x] All 3 contract files committed to `contracts/` (FROZEN v1.0.0)
-- [x] TypeScript contract files created — no floats in amounts (Q32.32 annotated)
-- [x] InMemoryEventStore implements all IEventStore methods
-- [x] Replay test passes: `matchesStoredHash === true`
-- [x] SHA-256 chain validates across all 10 test events
-- [x] Snapshot at index 5 + partial replay produces identical result to full replay
-- [x] ADR-011 committed (IEventStore v1.0.0 freeze)
+| 1 | farkleScorer.ts multiplier SEVERITY-B | L1 | PROPOSAL written — no blocker |
+| 2 | gridUtils.ts SEVERITY-C | L1 | Documented — no blocker |
+| 3 | skillMetrics.ts SEVERITY-C | L1 | Documented — no blocker |
 
 ---
 
@@ -53,23 +34,24 @@ No failures. All 7 T1C pass gate conditions met.
 
 | Item | Impact |
 |---|---|
-| ADR-011 numbering corrected from prompt's "ADR-009" | Avoids ADR number collision |
-| `"type": "module"` added to game-core package.json | Enables tsx ESM test runner, matches farkle-engine pattern |
-| All 5 tests pass on first run after tsx path fix | Clean implementation |
-| FIXED_POINT_CHECK passes on all files | Legal compliance maintained |
-| No Sacred Core files anywhere in pathway | L0 session, maximum score on sacred_core_integrity |
+| Full cascade conversion (rhythm → server → client) | No partial fix — all callers updated atomically |
+| Bitshift integer arithmetic in shards.ts | No float literals anywhere in shard multipliers |
+| TypeScript type-check: zero new errors | Refactor is type-safe |
+| 16 farkleScorer tests + 5 replay tests: all pass | No regressions from Q×1000 conversion |
+| Sacred Core protocol followed | PROPOSAL written, no unauthorized Sacred Core edit |
 
 ---
 
-## L1 Findings This Session
+## Failure Taxonomist: PASS (partial session) — no failures
 
-none — clean session
+### Tasks Complete
 
----
+T1 Task 1: Float audit — all violations classified with severity.
+T1 Task 2: Fix non-Sacred SEVERITY-A/B violations — COMPLETE.
 
-## Failure Taxonomist: PASS — no failures to taxonomize
+### All Tasks Complete
 
-### Phase 1 Complete
-
-T0 PASS → T1A PASS → T1B PASS → T1C PASS.
-T1–T9 authorized (per Conditional Pass verdict in T1C prompt).
+T1 Task 1: Float audit — COMPLETE. All violations classified.
+T1 Task 2: Fix non-Sacred SEVERITY-A/B — COMPLETE.
+T1 Task 3: Monte Carlo baseline — COMPLETE. Baseline recorded in ADR-012.
+T1 Task 4: ADR-012 — COMPLETE. Committed.

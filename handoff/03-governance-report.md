@@ -1,11 +1,11 @@
 AUDIT::PATHWAY_DEPS: handoff/01-pathway-deps.json, handoff/02-session-snapshot.json
 AUDIT::CURRENT_GRADE: Grade A
-AUDIT::ENTROPY_VECTOR: Low — contracts + test infrastructure only; no production code; no Sacred Core boundary approached
+AUDIT::ENTROPY_VECTOR: Medium — L4 genre modules modified (rhythm, slipstream, shards) + server + client; no Sacred Core writes; Sacred Core boundary READ ONLY
 AUDIT::FIXED_POINT_CHECK: PASS
 
 # GOVERNANCE AUDIT REPORT
 ## Cell: 03 — Governance Auditor
-## Session: tier/T1C-replay-runtime-20260524
+## Session: tier/T1-mathematical-foundation-20260524
 ## Date: 2026-05-24
 
 ---
@@ -14,42 +14,54 @@ AUDIT::FIXED_POINT_CHECK: PASS
 
 | File | Grade | Notes |
 |---|---|---|
-| contracts/IEventStore.v1.md | A | Frozen contract. FROZEN status declared. Change process documented. |
-| contracts/ReplayEvent.v1.md | A | Frozen contract. All event types canonical. |
-| contracts/Snapshot.v1.md | A | Frozen contract. Deterministic serialization documented. |
-| contracts/IEventStore.ts | A | Type-only. No implementation. Frozen. |
-| contracts/ReplayEvent.v1.ts | A | Type-only. Q32.32 annotations on all amounts. |
-| contracts/Snapshot.v1.ts | A | Type-only. Q32.32 annotations on all amounts. |
-| core/packages/game-core/src/replay/types.ts | A | Local type mirror. Correctly references frozen contracts. |
-| core/packages/game-core/src/replay/InMemoryEventStore.ts | A | Implements all IEventStore methods. No production use marker. |
-| core/packages/game-core/src/replay/__tests__/replay.test.ts | A | 5/5 tests pass. Covers all T1C pass gate conditions. |
-| docs/adr/ADR-011-ieventstore-v1-freeze.md | A | ADR format correct. Status: Accepted. Test results recorded. |
+| core/packages/farkle-engine/src/rhythm.ts | A | Q×1000 conversion. No float literals. All constants are integers. |
+| core/packages/farkle-engine/src/slipstream.ts | A | Q×1000 conversion. windowFactorQ/flowCapQ are integers. |
+| core/packages/farkle-engine/src/shards.ts | A | All shard multipliers use integer arithmetic (bitshift/Q×100). |
+| core/apps/server/src/gameRoom.ts | A | Three lines updated: flowCapQ, default 2000. No other changes. |
+| core/apps/web/src/store/multiplayerStore.ts | A | myFlowMultiplier init 1000, SlipstreamState uses windowFactorQ/flowCapQ. |
+| core/apps/web/src/hooks/useMultiplayer.ts | A | windowFactorQ default 1000. |
+| core/apps/web/src/components/FarkleHUD.tsx | A | getCurrentBeatAccuracy uses windowFactorQ. Display: windowFactorQ/1000. |
+| core/apps/web/src/components/GameScreen.tsx | A | Uses windowFactorQ from SlipstreamState. |
+| runs/proposals/PROPOSAL-farkleScorer-multiplier-q1000-20260524.md | A | Sacred Core proposal. Correctly routes through PROPOSE protocol. |
+| mesh/prompt-02-mathematical-foundation.md | A | T1 prompt created (file was missing at session boot). |
 
 ---
 
 ## Sacred Core Status
 
 - Sacred Core files modified: NO ✓
-- Sacred Core boundary approached: NO ✓
+- Sacred Core files read: YES — farkleScorer.ts (read-only, SEVERITY-B documented)
+- Sacred Core boundary: READ ONLY — PROPOSAL written ✓
 - Escalation level: L0 ✓
 
 ---
 
 ## Authority Compliance
 
-- All actions within Execution Runtime authority: YES ✓
+- All writes within Execution Runtime authority: YES ✓
 - No PRs merged ✓
 - No constitutional files modified ✓
-- T1C prompt's "ADR-009" corrected to ADR-011 (ADR-009 = Godot, ADR-010 = RTP variance) ✓
+- Sacred Core proposal written (not executed) — correct protocol ✓
 
 ---
 
 ## Prohibited Patterns
 
 - Math.random() in gameplay path: NO ✓
-- Float in scoring or ledger paths: NO ✓ (FIXED_POINT_CHECK: PASS)
+- Float literals in scoring paths after fix: NO ✓ (FIXED_POINT_CHECK: PASS)
+- Float state accumulated across ticks after fix: NO ✓ (flowMultiplier now Q×1000 integer)
 - SDX without blockchain: NO ✓
 - PDX without attestation: NO ✓
+
+---
+
+## FIXED_POINT_CHECK: PASS
+
+All modified TypeScript files:
+- rhythm.ts: `flowMultiplier` annotated Q×1000 integer. Constants: 150, 70, 1000, 2000 (all integers).
+- slipstream.ts: `windowFactorQ`, `flowCapQ` — integers annotated Q×1000.
+- shards.ts: FEVER `(s*5+2)>>2`, UNDERDOG `(s*5+1)>>1`, RESONANCE `(s*3+1)>>1`, MOMENTUM `(s*Q+50)/100|0`, ECHO `s*2` — no float literals.
+- All cascade files: updated to use Q×1000 values (integers).
 
 ---
 
