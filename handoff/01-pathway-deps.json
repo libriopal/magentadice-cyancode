@@ -1,6 +1,7 @@
 {
   "session_id": "tier/T1B-audit-runtime-20260524",
   "modified_files": [
+    "CLAUDE.md",
     "docs/scoring-notes.md",
     "docs/adr/ADR-010-rtp-variance-tightening.md",
     "runs/proposals/PROPOSAL-rtpConfig-variance-20260524.md",
@@ -15,6 +16,7 @@
     "runs/2026-05-24/session-2-pause-ask-test.json"
   ],
   "dependency_map": {
+    "CLAUDE.md": [],
     "docs/scoring-notes.md": [],
     "docs/adr/ADR-010-rtp-variance-tightening.md": ["core/packages/farkle-engine/src/rtpConfig.ts (SACRED — read reference only; no change)"],
     "runs/proposals/PROPOSAL-rtpConfig-variance-20260524.md": ["core/packages/farkle-engine/src/rtpConfig.ts (SACRED — proposal target; not modified)"],

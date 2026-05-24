@@ -76,12 +76,6 @@
   ],
   "escalation_level": 1,
   "verdict": "PAUSE_ASK",
-  "_test_metadata": {
-    "purpose": "T1B Task 5 — verify Failure Taxonomist produces PAUSE_ASK for 50-69 score",
-    "score_total": 62,
-    "verdict_check": "62 is in range 50-69 → PAUSE_ASK correct",
-    "test_result": "PASS — Failure Taxonomist correctly outputs PAUSE_ASK for score in 50-69 range"
-  },
   "audit_signature": {
     "pathway_deps": ["hypothetical/unguarded-import.ts", "hypothetical/component.tsx"],
     "current_grade": "Grade B",

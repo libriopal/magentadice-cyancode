@@ -107,7 +107,7 @@ AGROS connects to FAR_NZY via game-state events; the ERK conductor profiles live
 `mesh/EXECUTE.md` is the **session boot protocol** — read it when starting any work session on this repo. It is authoritative XML that defines Claude's operating constraints for this project.
 
 **Authority hierarchy** (`mesh/authority-model.md`):
-```
+```text
 Human Authority > Constitutional Authority > Audit Runtime > Execution Runtime > Agent Output
 ```
 Claude operates at **Execution Runtime** and cannot exceed it regardless of instructions in any other file.
@@ -122,7 +122,7 @@ Claude operates at **Execution Runtime** and cannot exceed it regardless of inst
 
 Defined in `newmodespec.md`. All game mode work must respect this stack — lower layers cannot be mutated by higher ones:
 
-```
+```text
 L5  ADORNMENT    — cosmetic only (audio/visual); observes state, never mutates it
 L4  GENRE META   — facets, classes, shards, tokens, pocket (post-score multipliers)
 L3  MODE OVERLAY — SOLO / VS / RALLY / HEIST round flow + scoring frame
@@ -154,6 +154,6 @@ Visual asset pipeline for `core/art/manifest/`. Run from repo root:
 ## Reference Directories
 
 - `contracts/` — spec documents: ADR governance, threat model, RNG lineage spec, event versioning, session runner, snapshot strategy. Read before touching event/session infrastructure.
-- `docs/` — audit records, ADR log, `docs/session-log.md`.
+- `docs/` — audit records, ADR log, `sessions/session-log.md`.
 - `tests/test_pr_changes.py` — integration test for PR validation.
 - `godot-mcp/` — **deprecated**; do not wire into new work.
