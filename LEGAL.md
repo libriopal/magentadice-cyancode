@@ -230,11 +230,10 @@ They are awarded through a verifiable, auditable draw that is:
 - Reproducible via HMAC-SHA256 chain (audit-ready)
 - Gated on hardware attestation to prevent client-side tampering
 
-**Implementation status:** Play Integrity API integration is a T2 deliverable.
-`[L1-FINDING]` Hardware attestation for PDX path is absent until T2.
-PDX award events are constitutionally blocked at IEventStore.write() without
-a valid attestation verdict of 'PASS'. This is enforced by Sacred Core
-constraint in `mesh/sacred-core-spec.md`.
+**Implementation status:** Play Integrity API integration complete (T2). Hardware
+attestation is enforced server-side via `verifyPlayIntegrity()` in `playIntegrity.ts`;
+PDX award events are blocked by `checkPdxEligibility()` in `gameRoom.ts` without
+a valid attestation verdict of `MEETS_DEVICE_INTEGRITY`.
 
 ---
 
@@ -292,17 +291,17 @@ Associates, Ltd. v. Debra Haaland*, 71 F.4th 1059 (D.C. Cir. 2023)
 
 | Requirement | Status | Resolution Path |
 |---|---|---|
-| Age verification (18+) | UI-only checkbox | T2 — backend enforcement |
-| KYC (Know Your Customer) | UI-only gate | T2 — backend enforcement |
-| Geographic restriction | Not implemented | T2 |
-| Play Integrity attestation | Not implemented | T2 |
+| Age verification (18+) | Implemented server-side (T2) | ComplianceService.fullCheck() |
+| KYC (Know Your Customer) | Implemented server-side (T2) | ComplianceService.fullCheck() |
+| Geographic restriction | Implemented server-side (T2) | checkGeofence() — WA blocked |
+| Play Integrity attestation | Implemented server-side (T2) | verifyPlayIntegrity() |
 
-`[L1-FINDING]` AgeGate is UI-only — a checkbox with no backend verification.
-`[L1-FINDING]` KYCGate is UI-only — no identity document verification.
+Age verification and identity document verification are enforced server-side via
+`ComplianceService.fullCheck()` before any PDX award path executes (T2 pass gate).
 
-### 7.2 Required T2 Implementations
+### 7.2 T2 Implementations (Complete)
 
-The following must be implemented before PDX prizes are awarded to real users:
+The following are enforced server-side before PDX prizes are awarded:
 
 1. **Age verification** — backend confirmation that user is 18+ (or 21+ where required)
    before any PDX prize ticket is issued.
