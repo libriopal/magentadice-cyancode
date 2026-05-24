@@ -39,7 +39,7 @@ Scan every TypeScript file in `core/packages/farkle-engine/src/` for:
 - `Math.random()` anywhere (banned in all scoring paths per sacred-core-spec.md)
 
 Classify each finding:
-```
+```yaml
 SEVERITY-A: float IN scoring path (score_delta, running_total, payout amounts)
   → FIXED_POINT_CHECK: FAIL → L3 halt unless it is in a Sacred Core file (propose only)
   
@@ -157,7 +157,7 @@ When passed: `memory.tier_gate_status.T1 = 'PASS'`
 
 ```yaml
 AUDIT::PATHWAY_DEPS: [core/packages/farkle-engine/src/, docs/adr/ADR-012]
-AUDIT::CURRENT_GRADE: [Target: Grade A — Q32.32 throughout scoring paths]
+AUDIT::CURRENT_GRADE: [Target: Grade A — Q×1000 throughout scoring paths]
 AUDIT::ENTROPY_VECTOR: [High for Sacred Core files (propose only); Medium for non-sacred scoring files]
 AUDIT::FIXED_POINT_CHECK: PASS required on all modified files — FAIL triggers L3 halt
 ```
