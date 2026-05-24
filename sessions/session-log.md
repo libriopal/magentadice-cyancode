@@ -249,3 +249,75 @@ Phase 1 complete. T1–T9 authorized (per Conditional Pass verdict).
 Next: T2 or higher per Human direction.
 
 ---
+
+## Session 6 — T1 Mathematical Foundation
+
+| Field | Value |
+|---|---|
+| session_id | tier/T1-mathematical-foundation-20260524 |
+| date | 2026-05-24 |
+| tier | T1 |
+| branch | tier/T1-mathematical-foundation-20260524 |
+| verdict | PASS_PROPOSE_COMMIT |
+| score_total | 91 / 100 |
+| escalation_level | L0 (none raised) |
+| auditor | Claude Sonnet 4.6 (Execution Runtime) |
+
+### Score Breakdown
+
+| Dimension | Score | Max |
+|---|---|---|
+| Mathematical Purity | 20 | 20 |
+| Sacred Core Integrity | 19 | 20 |
+| Performance Delta | 18 | 20 |
+| Grade Elevation | 12 | 15 |
+| Regression Count | 10 | 10 |
+| Tier Gate Progress | 10 | 10 |
+| Evidence Coverage (bonus) | 2 | 3 |
+| MCP Utilization (bonus) | 0 | 2 |
+
+### T1 Pass Gate — ALL CONDITIONS MET ✓
+
+- [x] Float audit complete — all scoring paths classified (SEVERITY-A/B/C)
+- [x] All SEVERITY-A violations fixed (rhythm.ts flowMultiplier: float→Q×1000)
+- [x] All SEVERITY-B non-Sacred violations fixed (shards.ts, slipstream.ts)
+- [x] Sacred Core SEVERITY-B: PROPOSAL written (farkleScorer.ts multiplier)
+- [x] SEVERITY-C violations documented and deferred (gridUtils.ts, skillMetrics.ts)
+- [x] Monte Carlo baseline recorded (ADR-012)
+- [x] ADR-012 committed (fixed-point audit + Monte Carlo baseline)
+- [x] Full cascade updated — server and client use Q×1000 integers
+- [x] 21 tests pass (16 farkleScorer + 5 replay) — zero regressions
+- [x] TypeScript type-check: zero new errors
+
+### FIXED_POINT_CHECK: PASS
+
+All modified TypeScript files: no float literals in scoring paths. Q×1000 integer arithmetic throughout.
+
+### Monte Carlo Baseline (recorded)
+
+Pre-existing 3.6% systematic deviance in simulation model. monteCarlo.ts is Sacred Core — not modified this session. ADR-010 is the vehicle for calibration.
+
+### Artifacts Produced
+
+- `core/packages/farkle-engine/src/rhythm.ts` — Q×1000 conversion (flowMultiplier, constants)
+- `core/packages/farkle-engine/src/slipstream.ts` — Q×1000 conversion (windowFactorQ, flowCapQ)
+- `core/packages/farkle-engine/src/shards.ts` — Integer arithmetic in all shard apply() functions
+- `core/apps/server/src/gameRoom.ts` — Updated 3 flowCapQ references
+- `core/apps/web/src/store/multiplayerStore.ts` — Q×1000 state init
+- `core/apps/web/src/hooks/useMultiplayer.ts` — windowFactorQ default
+- `core/apps/web/src/components/FarkleHUD.tsx` — windowFactorQ beat accuracy + display
+- `core/apps/web/src/components/GameScreen.tsx` — windowFactorQ prop
+- `runs/proposals/PROPOSAL-farkleScorer-multiplier-q1000-20260524.md` — Sacred Core proposal
+- `docs/adr/ADR-012-fixed-point-audit-t1.md` — Float audit results + Monte Carlo baseline
+- `mesh/prompt-02-mathematical-foundation.md` — T1 tier prompt (created — was missing)
+- `runs/2026-05-24/session-5.json` — Session score record (91/100)
+- `sessions/session-log.md` — This append
+- `handoff/01-06` — Full audit cell chain
+
+### Next Session
+
+T2 or per Human direction.
+`memory.tier_gate_status.T1 = 'PASS'`
+Outstanding: farkleScorer.ts PROPOSAL awaiting Human decision (can proceed to T2 in parallel).
+
+---

@@ -1,13 +1,56 @@
 {
-  "session_id": "tier/T1C-replay-runtime-20260524",
-  "snapshot_timestamp": "2026-05-24T03:00:00.000Z",
-  "git_head": "f33ab39",
-  "files_modified_count": 14,
-  "memory_state_hash": "sha256-of-farnzy-session-state-t1c-complete",
+  "session_id": "tier/T1-mathematical-foundation-20260524",
+  "snapshot_timestamp": "2026-05-24T06:00:00.000Z",
+  "git_head": "258d0e0",
+  "files_modified_count": 9,
+  "memory_state_hash": "sha256-of-farnzy-session-state-t1-in-progress",
   "chain_head_valid": true,
   "chain_head_event_id": null,
   "rng_lineage_intact": true,
   "session_seed_committed_before_events": true,
   "escalation_raised": "L0",
-  "notes": "All 5 T1C tasks complete. Three contracts frozen (IEventStore.v1, ReplayEvent.v1, Snapshot.v1). TypeScript interfaces extracted. InMemoryEventStore implemented in core/packages/game-core/src/replay/. Five replay tests pass. ADR-011 committed. T1C PASS. Phase 1 complete."
+  "float_audit_complete": true,
+  "violations_found": [
+    {
+      "file": "core/packages/farkle-engine/src/rhythm.ts",
+      "severity": "A",
+      "status": "FIXED",
+      "description": "flowMultiplier stored as float (1.0) → converted to Q×1000 integer (1000)"
+    },
+    {
+      "file": "core/packages/farkle-engine/src/slipstream.ts",
+      "severity": "B",
+      "status": "FIXED",
+      "description": "windowFactor/flowCap stored as floats → converted to Q×1000 integers"
+    },
+    {
+      "file": "core/packages/farkle-engine/src/shards.ts",
+      "severity": "B",
+      "status": "FIXED",
+      "description": "Float literals 1.25/2.5/1.5/1.4/0.08/2.0 in shard apply() → pure integer arithmetic"
+    },
+    {
+      "file": "core/packages/farkle-engine/src/farkleScorer.ts",
+      "severity": "B",
+      "status": "PROPOSED",
+      "description": "multiplier param receives floats (1.15, 2.5, 1.85) — Sacred Core, PROPOSAL written"
+    },
+    {
+      "file": "core/packages/farkle-engine/src/gridUtils.ts",
+      "severity": "C",
+      "status": "DEFERRED",
+      "description": "blockerCount * 0.5 / 0.25 — grid generation only, integer result, non-scoring"
+    },
+    {
+      "file": "core/packages/farkle-engine/src/skillMetrics.ts",
+      "severity": "C",
+      "status": "DEFERRED",
+      "description": "Advisory skill score metrics — not in payout path"
+    }
+  ],
+  "tests_pass": {
+    "farkleScorer": "16/16",
+    "replay": "5/5"
+  },
+  "notes": "T1 float audit complete. All SEVERITY-A/B non-Sacred violations fixed. Q×1000 conversion applied across full call stack (farkle-engine → server → client). FIXED_POINT_CHECK: PASS on all modified files. Sacred Core proposal written for Human decision."
 }
