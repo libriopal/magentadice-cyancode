@@ -1,14 +1,11 @@
 {
-  "session_id": "tier/T2-security-compliance-20260524",
+  "session_id": "tier/T3-spawn-physics-fix-20260524",
   "modified_files": [
-    "AMOE.md",
-    "LEGAL.md",
-    "core/apps/server/src/playIntegrity.ts",
-    "core/apps/server/src/gameRoom.ts",
-    "core/apps/server/src/__tests__/playIntegrity.test.ts",
-    "core/apps/server/package.json",
-    "docs/adr/ADR-013-t2-security-compliance.md",
-    "mesh/prompt-03-security-compliance.md",
+    "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts",
+    "core/packages/game-core/src/replay/__tests__/spawn.test.ts",
+    "core/packages/game-core/src/replay/__tests__/inputQueue.test.ts",
+    "docs/adr/ADR-014-t3-physics-input-integrity.md",
+    "mesh/prompt-01-spawn-physics-fix.md",
     "handoff/01-pathway-deps.json",
     "handoff/02-session-snapshot.json",
     "handoff/03-governance-report.md",
@@ -17,18 +14,23 @@
     "handoff/06-failure-taxonomy.md"
   ],
   "dependency_map": {
-    "AMOE.md": ["LEGAL.md (cross-reference)", "docs/adr/ADR-013-t2-security-compliance.md"],
-    "LEGAL.md": ["AMOE.md (L1-FINDING resolved)"],
-    "core/apps/server/src/playIntegrity.ts": ["@match3d/compliance (RESTRICTED_STATES)"],
-    "core/apps/server/src/gameRoom.ts": ["playIntegrity.ts (verifyPlayIntegrity, checkGeofence)", "@match3d/compliance (ComplianceService)"],
-    "core/apps/server/src/__tests__/playIntegrity.test.ts": ["playIntegrity.ts"],
-    "core/apps/server/package.json": ["@match3d/compliance added as workspace:*"]
+    "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts": [
+      "core/apps/web/src/game/VoxelPileScene.tsx (PhysicsImpactListener — audio only)",
+      "core/apps/web/src/hooks/useFarkleGame.ts (tapEntity, tapSphere — direct calls, T5 deferred)",
+      "core/apps/web/src/components/GameScreen.tsx (spawnBody debug tap — T5 deferred)"
+    ],
+    "core/packages/game-core/src/replay/__tests__/spawn.test.ts": [
+      "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts"
+    ],
+    "core/packages/game-core/src/replay/__tests__/inputQueue.test.ts": [
+      "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts"
+    ]
   },
   "sacred_core_boundary_approached": false,
   "sacred_core_files_modified": [],
   "wasm_layer_risk": false,
   "bridge_overhead_risk": false,
   "gc_spike_risk": false,
-  "escalation_raised": "L0",
-  "notes": "T2 Security & Compliance. AMOE.md written. LEGAL.md L1 finding resolved. playIntegrity.ts created (Play Integrity API middleware). gameRoom.ts PDX award path gated (checkPdxEligibility). 6/6 tests pass. TypeScript clean. No Sacred Core boundary approached."
+  "escalation_raised": null,
+  "notes": "T3 Physics & Input Integrity. PHYSICS_TIMESTEP = 1/30 constant extracted. L1-physics-dt-implicit resolved (audio-only path). PhysicsAction queue added (FIFO drain before world.step). spawn.test.ts: 3/3 PASS. Backface culling audit: no changes required (DoubleSide uses all justified). ADR-014 written."
 }
