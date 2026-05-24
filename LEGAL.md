@@ -1,5 +1,5 @@
 AUDIT::PATHWAY_DEPS: CLAUDE.md (references this file), docs/adr/ADR-007-threat-model.md, docs/adr/ADR-003-rng-lineage.md
-AUDIT::CURRENT_GRADE: Grade B — legal classification documented; backend enforcement (KYC, AgeGate, Play Integrity) pending T2
+AUDIT::CURRENT_GRADE: Grade A — legal classification documented; backend enforcement (KYC, AgeGate, Play Integrity, geofencing) complete (T2)
 AUDIT::ENTROPY_VECTOR: low — documentation only; changes to currency model or prize structure require re-evaluation
 AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 
@@ -9,7 +9,7 @@ AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 ## FAR_NZY — Farkle Frenzy
 ## Platform: magentadice-cyancode / Libriopal Games Inc.
 ## Document: LEGAL.md
-## Last Updated: 2026-05-23
+## Last Updated: 2026-05-24
 ## Status: Authoritative — changes require Human sign-off
 
 ---
@@ -222,7 +222,7 @@ enforced at the IEventStore write boundary.
 | Redeemable | Yes — per prize fulfillment terms |
 | Legal classification | Sweepstakes prize |
 | Gambling consideration | Eliminated by AMOE model |
-| Attestation required | Yes — Play Integrity API verdict PASS |
+| Attestation required | Yes — Play Integrity API verdict `MEETS_DEVICE_INTEGRITY` |
 
 PDX prizes are the primary sweepstakes prize mechanism.
 They are awarded through a verifiable, auditable draw that is:
@@ -345,7 +345,7 @@ constitutional governance (`mesh/sacred-core-spec.md`, `mesh/agent-escalation-mo
 |---|---|
 | `Math.random()` in any scoring or payout path | L3 halt — FIXED_POINT_CHECK: FAIL |
 | SDX balance increment without blockchain confirmation | Sacred Core constraint — IEventStore write boundary |
-| PDX_AWARD without attestation verdict 'PASS' | Sacred Core constraint — IEventStore write boundary |
+| PDX_AWARD without attestation verdict `MEETS_DEVICE_INTEGRITY` | Sacred Core constraint — IEventStore write boundary |
 | Float in any currency amount field | L3 halt — Q32.32 enforcement |
 | Retroactive score modification | SHA-256 chain — tamper-evident |
 | Replay manipulation | Replay reconstruction hash verification |
