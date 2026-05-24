@@ -91,7 +91,8 @@ or ledger paths. **FIXED_POINT_CHECK: PASS**
 **Constraints added:**
 - Any change to the frozen interface requires IEventStore.v2.md + migration adapter + new ADR + Human approval.
 - The `InMemoryEventStore` must never ship to production — it is test infrastructure only.
-  Runtime enforcement: the constructor throws if `NODE_ENV !== 'test'` and `TEST_RUNTIME !== 'true'`
+  Runtime enforcement: the constructor throws unless `NODE_ENV === 'test'` OR `TEST_RUNTIME === 'true'`
+  (and always throws when `NODE_ENV === 'production'` regardless of `TEST_RUNTIME`)
   (see `core/packages/game-core/src/replay/InMemoryEventStore.ts`).
   Production implementations (`SupabaseEventStore`, `PostgresEventStore`) are T4 scope.
 
