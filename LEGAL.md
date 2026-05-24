@@ -95,15 +95,15 @@ FAR_NZY must implement and maintain the following AMOE mechanism:
 
 ```
 FREE ENTRY METHOD:
-  URL: [to be determined — T2 implementation]
-  Method: Web-based entry form requiring no payment
-  Entry equivalence: One free web entry = one sweepstakes entry ticket
-  Disclosure: Prominently displayed on main screen and store listings
+  Email: amoe@libriopal.com (subject: "FAR_NZY FREE ENTRY")
+  Method: Email entry — no payment, no app download required
+  Entry equivalence: One email entry = one sweepstakes ticket
+  Limit: 1 per calendar day; 30 per calendar month
+  Disclosure: Main app screen, store listings, and AMOE.md
 ```
 
-**Implementation Status:** AMOE backend is a T2 deliverable.
-`[L1-FINDING]` AMOE mechanism is not yet implemented.
-AMOE UI disclosure placeholder exists; backend routing is absent.
+**Implementation Status:** AMOE implemented — T2 complete (2026-05-24).
+See `AMOE.md` at repo root for complete rules, disclosure text, and record retention policy.
 
 ### 3.3 Applicable State Sweepstakes Statutes
 

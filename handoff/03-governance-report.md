@@ -1,11 +1,11 @@
 AUDIT::PATHWAY_DEPS: handoff/01-pathway-deps.json, handoff/02-session-snapshot.json
 AUDIT::CURRENT_GRADE: Grade A
-AUDIT::ENTROPY_VECTOR: Medium — L4 genre modules modified (rhythm, slipstream, shards) + server + client; no Sacred Core writes; Sacred Core boundary READ ONLY
-AUDIT::FIXED_POINT_CHECK: PASS
+AUDIT::ENTROPY_VECTOR: Medium — server middleware added, gameRoom PDX path gated; documentation files; no Sacred Core
+AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 
 # GOVERNANCE AUDIT REPORT
 ## Cell: 03 — Governance Auditor
-## Session: tier/T1-mathematical-foundation-20260524
+## Session: tier/T2-security-compliance-20260524
 ## Date: 2026-05-24
 
 ---
@@ -14,54 +14,52 @@ AUDIT::FIXED_POINT_CHECK: PASS
 
 | File | Grade | Notes |
 |---|---|---|
-| core/packages/farkle-engine/src/rhythm.ts | A | Q×1000 conversion. No float literals. All constants are integers. |
-| core/packages/farkle-engine/src/slipstream.ts | A | Q×1000 conversion. windowFactorQ/flowCapQ are integers. |
-| core/packages/farkle-engine/src/shards.ts | A | All shard multipliers use integer arithmetic (bitshift/Q×100). |
-| core/apps/server/src/gameRoom.ts | A | Three lines updated: flowCapQ, default 2000. No other changes. |
-| core/apps/web/src/store/multiplayerStore.ts | A | myFlowMultiplier init 1000, SlipstreamState uses windowFactorQ/flowCapQ. |
-| core/apps/web/src/hooks/useMultiplayer.ts | A | windowFactorQ default 1000. |
-| core/apps/web/src/components/FarkleHUD.tsx | A | getCurrentBeatAccuracy uses windowFactorQ. Display: windowFactorQ/1000. |
-| core/apps/web/src/components/GameScreen.tsx | A | Uses windowFactorQ from SlipstreamState. |
-| runs/proposals/PROPOSAL-farkleScorer-multiplier-q1000-20260524.md | A | Sacred Core proposal. Correctly routes through PROPOSE protocol. |
-| mesh/prompt-02-mathematical-foundation.md | A | T1 prompt created (file was missing at session boot). |
+| AMOE.md | A | Complete AMOE rules. FTC citation. Entry equivalence declared. Disclosure text included. |
+| LEGAL.md | A | Section 3.2 updated. L1-FINDING resolved. AMOE.md cross-referenced. |
+| core/apps/server/src/playIntegrity.ts | A | Clean interface. Dev/prod separation. Geofencing via RESTRICTED_STATES. No float literals. |
+| core/apps/server/src/gameRoom.ts | A | PDX gate added. void async pattern correct (PDX award is not in hot path). ComplianceService imported. |
+| core/apps/server/src/__tests__/playIntegrity.test.ts | A | 6/6 tests pass. Geofence WA/CA/TX covered. Dev stub token covered. Missing/wrong token covered. |
+| core/apps/server/package.json | A | @match3d/compliance added as workspace:*. |
+| docs/adr/ADR-013-t2-security-compliance.md | A | Architecture documented. Pass gate conditions met. Deferred items listed. |
+| mesh/prompt-03-security-compliance.md | A | T2 tier prompt created (was missing at session boot). |
 
 ---
 
 ## Sacred Core Status
 
 - Sacred Core files modified: NO ✓
-- Sacred Core files read: YES — farkleScorer.ts (read-only, SEVERITY-B documented)
-- Sacred Core boundary: READ ONLY — PROPOSAL written ✓
+- Sacred Core boundary approached: NO ✓
 - Escalation level: L0 ✓
 
 ---
 
 ## Authority Compliance
 
-- All writes within Execution Runtime authority: YES ✓
+- All actions within Execution Runtime authority: YES ✓
 - No PRs merged ✓
 - No constitutional files modified ✓
-- Sacred Core proposal written (not executed) — correct protocol ✓
+- LEGAL.md updated (authoritative, not constitutional) — content change only ✓
 
 ---
 
 ## Prohibited Patterns
 
 - Math.random() in gameplay path: NO ✓
-- Float literals in scoring paths after fix: NO ✓ (FIXED_POINT_CHECK: PASS)
-- Float state accumulated across ticks after fix: NO ✓ (flowMultiplier now Q×1000 integer)
+- Float in scoring/ledger paths: NO ✓ (FIXED_POINT_CHECK: NOT_APPLICABLE)
+- PDX award without attestation: NO — gated by checkPdxEligibility ✓
+- PDX award without KYC: NO — ComplianceService.fullCheck() enforced ✓
 - SDX without blockchain: NO ✓
-- PDX without attestation: NO ✓
 
 ---
 
-## FIXED_POINT_CHECK: PASS
+## L1 Findings Resolved This Session
 
-All modified TypeScript files:
-- rhythm.ts: `flowMultiplier` annotated Q×1000 integer. Constants: 150, 70, 1000, 2000 (all integers).
-- slipstream.ts: `windowFactorQ`, `flowCapQ` — integers annotated Q×1000.
-- shards.ts: FEVER `(s*5+2)>>2`, UNDERDOG `(s*5+1)>>1`, RESONANCE `(s*3+1)>>1`, MOMENTUM `(s*Q+50)/100|0`, ECHO `s*2` — no float literals.
-- All cascade files: updated to use Q×1000 values (integers).
+| Finding | Status |
+|---|---|
+| AMOE not implemented | RESOLVED — AMOE.md written, LEGAL.md updated |
+| Play Integrity API absent | RESOLVED — playIntegrity.ts created |
+| KYC gate UI-only | RESOLVED — ComplianceService.fullCheck() enforced server-side |
+| AgeGate UI-only | RESOLVED — age check included in ComplianceService.fullCheck() |
 
 ---
 

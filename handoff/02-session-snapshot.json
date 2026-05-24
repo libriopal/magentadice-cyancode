@@ -1,56 +1,44 @@
 {
-  "session_id": "tier/T1-mathematical-foundation-20260524",
-  "snapshot_timestamp": "2026-05-24T06:00:00.000Z",
-  "git_head": "258d0e0",
-  "files_modified_count": 9,
-  "memory_state_hash": "sha256-of-farnzy-session-state-t1-in-progress",
+  "session_id": "tier/T2-security-compliance-20260524",
+  "snapshot_timestamp": "2026-05-24T16:00:00.000Z",
+  "git_head": "e236126",
+  "files_modified_count": 7,
+  "memory_state_hash": "sha256-of-farnzy-session-state-t2-in-progress",
   "chain_head_valid": true,
   "chain_head_event_id": null,
   "rng_lineage_intact": true,
   "session_seed_committed_before_events": true,
   "escalation_raised": "L0",
-  "float_audit_complete": true,
-  "violations_found": [
+  "compliance_tasks": [
     {
-      "file": "core/packages/farkle-engine/src/rhythm.ts",
-      "severity": "A",
-      "status": "FIXED",
-      "description": "flowMultiplier stored as float (1.0) → converted to Q×1000 integer (1000)"
+      "task": "AMOE",
+      "status": "COMPLETE",
+      "artifact": "AMOE.md",
+      "description": "Email-based free entry. LEGAL.md updated. L1 finding resolved."
     },
     {
-      "file": "core/packages/farkle-engine/src/slipstream.ts",
-      "severity": "B",
-      "status": "FIXED",
-      "description": "windowFactor/flowCap stored as floats → converted to Q×1000 integers"
+      "task": "Play Integrity middleware",
+      "status": "COMPLETE",
+      "artifact": "core/apps/server/src/playIntegrity.ts",
+      "description": "verifyPlayIntegrity() + checkGeofence(). Dev stub + prod API path. 6 tests pass."
     },
     {
-      "file": "core/packages/farkle-engine/src/shards.ts",
-      "severity": "B",
-      "status": "FIXED",
-      "description": "Float literals 1.25/2.5/1.5/1.4/0.08/2.0 in shard apply() → pure integer arithmetic"
+      "task": "Server-side KYC + attestation gate",
+      "status": "COMPLETE",
+      "artifact": "core/apps/server/src/gameRoom.ts",
+      "description": "checkPdxEligibility() called before every PDX_AWARD. PDX_BLOCKED emitted if gate fails."
     },
     {
-      "file": "core/packages/farkle-engine/src/farkleScorer.ts",
-      "severity": "B",
-      "status": "PROPOSED",
-      "description": "multiplier param receives floats (1.15, 2.5, 1.85) — Sacred Core, PROPOSAL written"
-    },
-    {
-      "file": "core/packages/farkle-engine/src/gridUtils.ts",
-      "severity": "C",
-      "status": "DEFERRED",
-      "description": "blockerCount * 0.5 / 0.25 — grid generation only, integer result, non-scoring"
-    },
-    {
-      "file": "core/packages/farkle-engine/src/skillMetrics.ts",
-      "severity": "C",
-      "status": "DEFERRED",
-      "description": "Advisory skill score metrics — not in payout path"
+      "task": "Server-side geofencing",
+      "status": "COMPLETE",
+      "artifact": "core/apps/server/src/playIntegrity.ts",
+      "description": "checkGeofence() enforces RESTRICTED_STATES server-side. WA blocked test passes."
     }
   ],
   "tests_pass": {
-    "farkleScorer": "16/16",
-    "replay": "5/5"
+    "playIntegrity.test.ts": "6/6",
+    "farkleScorer.test.ts": "16/16 (regression check — unchanged)",
+    "replay.test.ts": "5/5 (regression check — unchanged)"
   },
-  "notes": "T1 float audit complete. All SEVERITY-A/B non-Sacred violations fixed. Q×1000 conversion applied across full call stack (farkle-engine → server → client). FIXED_POINT_CHECK: PASS on all modified files. Sacred Core proposal written for Human decision."
+  "notes": "T2 complete. All 4 compliance tasks done. No Sacred Core boundary approached. FIXED_POINT_CHECK: NOT_APPLICABLE."
 }
