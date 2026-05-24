@@ -49,7 +49,7 @@ export interface EventSnapshot {
 
   // Only present for SDX_AWARD snapshots
   blockchain_tx_id?: string;
-  sdx_amount?: number;
+  sdx_amount?: number;                        // Q32.32 fixed-point integer
 }
 
 export type SnapshotTrigger =

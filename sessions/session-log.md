@@ -220,6 +220,9 @@ Note: IEventStore freeze ADR must be ADR-011 (ADR-010 taken by RTP variance).
 - [x] SHA-256 chain validates across all 10 test events
 - [x] Snapshot at index 5 + partial replay produces identical result to full replay
 - [x] ADR-011 committed (IEventStore v1.0.0 freeze)
+
+### Additional Validations
+
 - [x] No L2+ flags from audit cells
 
 ### FIXED_POINT_CHECK: PASS

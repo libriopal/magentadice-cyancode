@@ -25,6 +25,9 @@ export interface IEventStore {
 
   loadSnapshot(beforeEventIndex: number): Promise<EventSnapshot | null>;
 
+  // sessionSeed is supplied separately (not only via inputLog.sessionSeed) so the
+  // caller can provide an independently-verified seed for cross-validation. Implementations
+  // must assert sessionSeed === inputLog.sessionSeed and reject if they differ.
   replay(sessionSeed: string, inputLog: MatchInputLog): Promise<ReplayResult>;
 
   healthCheck(): Promise<{ connected: boolean; chainHeadValid: boolean; lastEventIndex: number }>;
