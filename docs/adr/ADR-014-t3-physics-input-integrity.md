@@ -68,17 +68,30 @@ Added `pendingActions: PhysicsAction[]` private array and public `enqueueAction(
 to `VoxelPhysicsSystem`. The queue is drained at the start of each physics step (before
 `world.step()`) via `_drainPendingActions()`.
 
-**Action types supported:**
+**Action types supported** (`PhysicsActionType` in `VoxelPhysicsSystem.ts`):
 - `remove` — deferred body removal
 - `anchor_ghost` — deferred ghost anchoring
 - `apply_impulse` — deferred impulse application
 
+**Deliberate deviation from tier prompt:** The tier prompt proposed `'tap_entity' | 'tap_sphere' | 'spawn' | 'remove'`.
+These were replaced with `'remove' | 'anchor_ghost' | 'apply_impulse'` for the following reasons:
+- `tap_entity` and `tap_sphere` are high-level game-semantic verbs that live in `useFarkleGame.ts`. Encoding
+  them in the physics queue would couple the physics layer to game-layer vocabulary, violating separation of
+  concerns. The physics queue is intentionally physics-primitive.
+- `anchor_ghost` and `apply_impulse` are the underlying physics operations that game-layer taps ultimately
+  resolve to — deferring at the physics primitive level is architecturally cleaner.
+- `spawn` is deferred to T5 because it requires position/seed parameters not yet in the `PhysicsAction`
+  interface; including an incomplete `spawn` variant would produce a dead code path.
+
 **Guarantee:** a tap arriving during a 2-frame render spike sits in the queue and executes
 at the next physics step (≤33ms later at 30Hz). No input is silently dropped.
 
-**Scope:** `GameScreen.tsx` and `useFarkleGame.ts` continue to call physics methods
-directly for now — routing through `enqueueAction()` is a client-side adoption task
-deferred to T5 (Core Loop Excellence). The queue infrastructure is in place.
+**Scope decision — T5 deferral (author: Execution Runtime; approved: Libriopal per T3 session):**
+`GameScreen.tsx` and `useFarkleGame.ts` continue to call physics methods directly for now.
+Routing these callers through `enqueueAction()` requires coordinating return-value semantics
+(direct calls are synchronous; queue drain is deferred). This adoption work is scoped to T5
+(Core Loop Excellence) once the full game loop is stable. The `enqueueAction()` API is in place
+and ready for adoption.
 
 ---
 
@@ -118,5 +131,6 @@ geometry already benefits from backface culling via Three.js defaults.
 | Suite | Result |
 |---|---|
 | `spawn.test.ts` | 3/3 PASS |
+| `inputQueue.test.ts` | 2/2 PASS |
 | `replay.test.ts` | 5/5 PASS (regression) |
 | `farkleScorer.test.ts` | 16/16 PASS (regression) |

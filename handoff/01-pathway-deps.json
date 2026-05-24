@@ -3,6 +3,7 @@
   "modified_files": [
     "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts",
     "core/packages/game-core/src/replay/__tests__/spawn.test.ts",
+    "core/packages/game-core/src/replay/__tests__/inputQueue.test.ts",
     "docs/adr/ADR-014-t3-physics-input-integrity.md",
     "mesh/prompt-01-spawn-physics-fix.md",
     "handoff/01-pathway-deps.json",
@@ -19,6 +20,9 @@
       "core/apps/web/src/components/GameScreen.tsx (spawnBody debug tap — T5 deferred)"
     ],
     "core/packages/game-core/src/replay/__tests__/spawn.test.ts": [
+      "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts"
+    ],
+    "core/packages/game-core/src/replay/__tests__/inputQueue.test.ts": [
       "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts"
     ]
   },

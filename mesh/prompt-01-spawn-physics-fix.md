@@ -87,7 +87,7 @@ In `VoxelPhysicsSystem.ts`:
 This ensures the timestep and interval are always in sync (a single constant drives both).
 
 Document in `VoxelPhysicsSystem.ts` header comment:
-```
+```typescript
 // Physics runs at a FIXED timestep (PHYSICS_TIMESTEP seconds per step).
 // The step interval matches exactly — world.timestep === interval/1000.
 // Rendering reads physics state each frame but does not drive the physics clock.

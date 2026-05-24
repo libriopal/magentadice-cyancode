@@ -3,7 +3,7 @@
   "snapshot_timestamp": "2026-05-24T20:00:00.000Z",
   "git_head": "96f24f56f8f1a990e86b5a5b2fb5002f4e70c3a0",
   "core_submodule_head": "ede7c83a4a580bb75d58d096b2c72e21d2d0ba87",
-  "files_modified_count": 10,
+  "files_modified_count": 11,
   "files_modified_count_rule": "Must equal len(handoff/01-pathway-deps.json#modified_files). Both fields updated atomically.",
   "chain_head_valid": true,
   "chain_head_event_id": null,
@@ -34,10 +34,17 @@
       "status": "COMPLETE — no changes required",
       "artifact": "docs/adr/ADR-014-t3-physics-input-integrity.md",
       "description": "All DoubleSide uses justified (shells, rings, translucent VFX). Solid geometry FrontSide by default."
+    },
+    {
+      "task": "Audit cells + ADR-014",
+      "status": "COMPLETE",
+      "artifact": "docs/adr/ADR-014-t3-physics-input-integrity.md",
+      "description": "All 6 audit cells written. ADR-014 records spawn integrity, fixed-step, input queue, backface culling decisions. inputQueue.test.ts 2/2 PASS."
     }
   ],
   "tests_pass": {
     "spawn.test.ts": "3/3",
+    "inputQueue.test.ts": "2/2",
     "replay.test.ts": "5/5 (regression — unchanged)",
     "farkleScorer.test.ts": "16/16 (regression — unchanged)"
   },
