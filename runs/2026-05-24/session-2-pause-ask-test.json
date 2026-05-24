@@ -1,0 +1,91 @@
+{
+  "session_id": "tier/T1B-audit-runtime-20260524",
+  "tier": "T1B",
+  "branch": "tier/T1B-audit-runtime-20260524",
+  "timestamp": "2026-05-24T01:00:00.000Z",
+  "score_total": 62,
+  "dimensions": {
+    "mathematical_purity": {
+      "score": 10,
+      "max": 20,
+      "fixed_point_check": "NOT_APPLICABLE",
+      "float_violations": 0,
+      "notes": "Simulated: half-credit for mathematical_purity — some integer paths unverified."
+    },
+    "sacred_core_integrity": {
+      "score": 15,
+      "max": 20,
+      "violations": [
+        {
+          "file": "hypothetical/unguarded-import.ts",
+          "type": "Sacred Core boundary approach without proposal",
+          "severity": "L1"
+        }
+      ],
+      "notes": "Simulated: L1 finding for unguarded import near Sacred Core boundary."
+    },
+    "performance_delta": {
+      "score": 10,
+      "max": 20,
+      "notes": "Simulated: frame time increased by 1.2ms — below 10% regression threshold but notable."
+    },
+    "grade_elevation": {
+      "score": 10,
+      "max": 15,
+      "transitions": [
+        { "file": "hypothetical/component.tsx", "from": "C", "to": "B" }
+      ],
+      "notes": "Simulated: one C→B elevation, no B→A."
+    },
+    "regression_count": {
+      "score": 7,
+      "max": 10,
+      "bugs_fixed": 1,
+      "bugs_introduced": 1,
+      "notes": "Simulated: net zero regression — one fix, one new issue."
+    },
+    "tier_gate_progress": {
+      "score": 7,
+      "max": 10,
+      "gates_advanced": ["partial-T1B-progress"],
+      "notes": "Simulated: partial progress — some tasks incomplete."
+    },
+    "evidence_coverage": {
+      "score": 2,
+      "max": 3,
+      "corpus_citations": 2,
+      "notes": "Simulated: partial evidence coverage."
+    },
+    "mcp_utilization": {
+      "score": 1,
+      "max": 2,
+      "mcps_used": ["memory"],
+      "mcps_misused": [],
+      "notes": "Simulated: memory used but context7 not consulted when it should have been."
+    }
+  },
+  "flags": [
+    {
+      "level": 1,
+      "tag": "L1-SACRED-CORE-PROXIMITY",
+      "cell": "Governance Auditor",
+      "description": "Simulated: file approaches Sacred Core boundary without explicit proposal",
+      "file_affected": "hypothetical/unguarded-import.ts",
+      "resolved": false
+    }
+  ],
+  "escalation_level": 1,
+  "verdict": "PAUSE_ASK",
+  "_test_metadata": {
+    "purpose": "T1B Task 5 — verify Failure Taxonomist produces PAUSE_ASK for 50-69 score",
+    "score_total": 62,
+    "verdict_check": "62 is in range 50-69 → PAUSE_ASK correct",
+    "test_result": "PASS — Failure Taxonomist correctly outputs PAUSE_ASK for score in 50-69 range"
+  },
+  "audit_signature": {
+    "pathway_deps": ["hypothetical/unguarded-import.ts", "hypothetical/component.tsx"],
+    "current_grade": "Grade B",
+    "entropy_vector": "Moderate — unguarded Sacred Core proximity, net-zero regression",
+    "fixed_point_check": "NOT_APPLICABLE"
+  }
+}

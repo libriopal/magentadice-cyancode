@@ -1,56 +1,13 @@
 {
-  "session_id": "tier/T1A-governance-runtime-20260523",
-  "tier": "T1A",
-  "date": "2026-05-23",
-  "timestamp": "2026-05-23T00:00:00.000Z",
-
-  "git_state": {
-    "branch": "tier/T1A-governance-runtime-20260523",
-    "base_branch": "main",
-    "base_head": "de4dfb1d2aebbe26099b8097188ce2146c52dd3d",
-    "head_at_snapshot": "de4dfb1 (pre-commit — files staged, not yet committed)",
-    "submodules": {
-      "core": "c07675db1c4c80f8100e805412f13af5c2315b42 (remotes/origin/dream-core)",
-      "dream": "96978f2b1d518fc498f3ad5a57e25db1809fd948 (heads/dream-core)"
-    },
-    "uncommitted_changes": "11 new files staged (LEGAL.md, docs/adr/ADR-000 through ADR-008, handoff/.gitkeep, sessions/.gitkeep)"
-  },
-
-  "session_context": {
-    "previous_session_id": "feat/godot-deprecation-20260522",
-    "previous_session_score": "91/105",
-    "previous_session_verdict": "PASS_PROPOSE_COMMIT",
-    "open_prs": [
-      "PR #1: tier/T0-baseline-audit-20260522 → main (not yet merged)",
-      "PR #2: feat/godot-deprecation-20260522 → main (not yet merged)"
-    ],
-    "outstanding_l1_flags_carried_forward": 5,
-    "l2_violation_raised_and_resolved": true
-  },
-
-  "files_created_count": 11,
-  "files_modified_count": 0,
-  "directories_created": ["docs/adr/", "handoff/", "sessions/", "runs/2026-05-23/"],
-
-  "memory_mcp_state": {
-    "current_tier": "T1A",
-    "tier_gate_status_T0": "PASS_PROPOSE_COMMIT",
-    "tier_gate_status_T1A": "IN_PROGRESS",
-    "constitutional_docs_tracked": 9,
-    "outstanding_flags_count": 7
-  },
-
-  "chain_integrity": {
-    "replay_chain_touched": false,
-    "event_schema_touched": false,
-    "sacred_core_touched": false,
-    "fixed_point_check": "NOT_APPLICABLE",
-    "hash_chain_valid": "NOT_APPLICABLE — no chain events in this session"
-  },
-
-  "escalation_raised": "L2 (resolved by Human directive)",
-  "highest_escalation_level": 2,
-  "escalation_resolved": true,
-
-  "notes": "Infrastructure-only session. No source code modified. No replay chain events. No Sacred Core files approached. L2 raised (LEGAL.md absent from main) and resolved via Human directive. Session produces 9 ADRs + LEGAL.md + directory structure."
+  "session_id": "tier/T1B-audit-runtime-20260524",
+  "snapshot_timestamp": "2026-05-24T02:00:00.000Z",
+  "git_head": "138c352",
+  "files_modified_count": 12,
+  "memory_state_hash": "sha256-of-farnzy-session-state-t1b-tasks-complete",
+  "chain_head_valid": true,
+  "chain_head_event_id": null,
+  "rng_lineage_intact": true,
+  "session_seed_committed_before_events": true,
+  "escalation_raised": "L2-RESOLVED",
+  "notes": "All 5 T1B tasks executed. L2 raised (Task 2 Part B) and resolved by Human (ADR-010 drafted). L3 raised in Task 3 and Task 4 tests — both were intentional test triggers, verified and cleared. T4 not complete — chain head null (NOT_APPLICABLE). No RNG code modified."
 }
