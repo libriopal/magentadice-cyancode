@@ -1,52 +1,33 @@
 {
-  "session_id": "tier/T3-spawn-physics-fix-20260524",
-  "snapshot_timestamp": "2026-05-24T20:00:00.000Z",
-  "git_head": "96f24f56f8f1a990e86b5a5b2fb5002f4e70c3a0",
-  "core_submodule_head": "ede7c83a4a580bb75d58d096b2c72e21d2d0ba87",
-  "files_modified_count": 11,
-  "files_modified_count_rule": "Must equal len(handoff/01-pathway-deps.json#modified_files). Both fields updated atomically.",
+  "session_id": "tier/T4-ledger-replay-20260524",
+  "snapshot_timestamp": "2026-05-24T22:00:00.000Z",
+  "git_head": "tier/T4-ledger-replay-20260524:uncommitted",
+  "git_base_commit": "6ab8185",
+  "files_modified_count": 7,
+  "memory_state_hash": "T0-T3_PASS_T4_IN_PROGRESS",
   "chain_head_valid": true,
-  "chain_head_event_id": null,
+  "chain_head_event_id": "chain.test.ts: 100 events verified via InMemoryEventStore",
   "rng_lineage_intact": true,
   "session_seed_committed_before_events": true,
-  "escalation_raised": null,
-  "physics_tasks": [
-    {
-      "task": "Spawn integrity verification",
-      "status": "COMPLETE",
-      "artifact": "core/packages/game-core/src/replay/__tests__/spawn.test.ts",
-      "description": "3 assertions: die/sphere/ghost spawn with identity quaternion before world.step(). All pass."
-    },
-    {
-      "task": "PHYSICS_TIMESTEP constant",
-      "status": "COMPLETE",
-      "artifact": "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts",
-      "description": "PHYSICS_TIMESTEP = 1/30. world.timestep and setInterval both read constant. L1-physics-dt-implicit resolved."
-    },
-    {
-      "task": "Input queue",
-      "status": "COMPLETE",
-      "artifact": "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts",
-      "description": "PhysicsAction FIFO queue. enqueueAction() public. _drainPendingActions() before world.step(). No dropped inputs."
-    },
-    {
-      "task": "Backface culling audit",
-      "status": "COMPLETE — no changes required",
-      "artifact": "docs/adr/ADR-014-t3-physics-input-integrity.md",
-      "description": "All DoubleSide uses justified (shells, rings, translucent VFX). Solid geometry FrontSide by default."
-    },
-    {
-      "task": "Audit cells + ADR-014",
-      "status": "COMPLETE",
-      "artifact": "docs/adr/ADR-014-t3-physics-input-integrity.md",
-      "description": "All 6 audit cells written. ADR-014 records spawn integrity, fixed-step, input queue, backface culling decisions. inputQueue.test.ts 2/2 PASS."
-    }
+  "t4_tasks_complete": [
+    {"task": "Create mesh/prompt-04-ledger-replay.md", "status": "COMPLETE"},
+    {"task": "Create 002_event_store_ledger.sql (4 tables)", "status": "COMPLETE"},
+    {"task": "Create SupabaseEventStore.ts", "status": "COMPLETE"},
+    {"task": "Create chain.test.ts (100 events + tamper)", "status": "COMPLETE"},
+    {"task": "Create rtp.harness.test.ts (8 modes)", "status": "COMPLETE"},
+    {"task": "Create ADR-015", "status": "COMPLETE"},
+    {"task": "Audit cells + session artifacts", "status": "COMPLETE"}
   ],
   "tests_pass": {
+    "chain.test.ts": "2/2",
+    "rtp.harness.test.ts": "3/3",
+    "replay.test.ts": "5/5",
+    "farkleScorer.test.ts": "16/16",
     "spawn.test.ts": "3/3",
-    "inputQueue.test.ts": "2/2",
-    "replay.test.ts": "5/5 (regression — unchanged)",
-    "farkleScorer.test.ts": "16/16 (regression — unchanged)"
+    "inputQueue.test.ts": "2/2"
   },
-  "notes": "T3 complete. FIXED_POINT_CHECK: PASS — PHYSICS_TIMESTEP is configuration constant, not scoring arithmetic. No Sacred Core boundary approached."
+  "fixed_point_check": "PASS",
+  "sacred_core_touched": false,
+  "escalation_raised": null,
+  "notes": "L1-Supabase-empty flag from T1B resolved. L0-Observation: pre-existing tsconfig missing @types/node in game-core and farkle-engine packages (not T4 scope). gameRoom.ts pre-existing error (not T4 scope)."
 }

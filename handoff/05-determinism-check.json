@@ -1,30 +1,28 @@
 {
-  "session_id": "tier/T3-spawn-physics-fix-20260524",
+  "session_id": "tier/T4-ledger-replay-20260524",
   "fixed_point_check": "PASS",
-  "fixed_point_rationale": "T3 scope: VoxelPhysicsSystem.ts — PHYSICS_TIMESTEP = 1/30 is a configuration constant (not a scoring multiplier). No Q×1000 conversion required per T1 ADR-012. Input queue has no arithmetic. spawn.test.ts has no arithmetic. Backface culling audit introduced no code changes.",
+  "fixed_point_rationale": "All Postgres amount columns use bigint (Q×1000 integer representation). No float4, float8, numeric, real, or decimal types in any ledger column. No new arithmetic on amounts in TypeScript — SupabaseEventStore only hashes strings and reads/writes bigint values. rtp.harness.test.ts calls Sacred Core monteCarlo.ts read-only without adding scoring arithmetic.",
   "float_violations": [],
   "math_random_violations": [],
   "date_now_violations": [],
   "new_float32array_violations": [],
-  "physics_timestep_check": {
-    "constant_name": "PHYSICS_TIMESTEP",
-    "value": "1 / 30",
-    "classification": "configuration constant — not scoring arithmetic",
-    "q_conversion_required": false,
-    "rationale": "Per ADR-012: only scoring-path floats require Q×1000 conversion. PHYSICS_TIMESTEP drives world.timestep and setInterval interval — neither is a scoring or payout path."
-  },
   "rng_lineage_compliant": true,
   "hashing_strategy_compliant": true,
   "rapier_dt_enforced": true,
-  "escalation_raised": null,
-  "files_scanned": [
-    "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts (T3 additions only)",
-    "core/packages/game-core/src/replay/__tests__/spawn.test.ts"
+  "sha256_chain_compliant": true,
+  "blake3_not_used_in_audit_paths": true,
+  "ledger_columns_bigint_only": true,
+  "checks_performed": [
+    "Math.random() in SupabaseEventStore.ts: NOT FOUND (comment only)",
+    "Math.random() in chain.test.ts: NOT FOUND",
+    "Math.random() in rtp.harness.test.ts: NOT FOUND",
+    "float/numeric in 002_event_store_ledger.sql: NOT FOUND (all bigint)",
+    "createHash('sha256') in SupabaseEventStore.ts: FOUND — correct algorithm",
+    "createHmac('sha256') in SupabaseEventStore.ts: FOUND — correct algorithm",
+    "BLAKE3 in any T4 file: NOT FOUND",
+    "FD-to-PDX FK in SQL: NOT FOUND — zero pointer sharing confirmed",
+    "PDX-to-FD FK in SQL: NOT FOUND — zero pointer sharing confirmed"
   ],
-  "test_results": {
-    "spawn.test.ts": "3/3 PASS",
-    "farkleScorer.test.ts": "16/16 PASS (regression)",
-    "replay.test.ts": "5/5 PASS (regression)"
-  },
-  "notes": "No float violations introduced. PHYSICS_TIMESTEP is configuration, not scoring arithmetic. All prior fixed-point fixes (T1) remain intact."
+  "escalation_raised": null,
+  "notes": "All determinism checks PASS. rtp.harness.test.ts calls runAllModeAudit (Sacred Core) read-only. No new randomness sources. chain.test.ts verifies predecessor_hash chain integrity."
 }

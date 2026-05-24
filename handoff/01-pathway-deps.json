@@ -1,36 +1,37 @@
 {
-  "session_id": "tier/T3-spawn-physics-fix-20260524",
+  "session_id": "tier/T4-ledger-replay-20260524",
   "modified_files": [
-    "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts",
-    "core/packages/game-core/src/replay/__tests__/spawn.test.ts",
-    "core/packages/game-core/src/replay/__tests__/inputQueue.test.ts",
-    "docs/adr/ADR-014-t3-physics-input-integrity.md",
-    "mesh/prompt-01-spawn-physics-fix.md",
-    "handoff/01-pathway-deps.json",
-    "handoff/02-session-snapshot.json",
-    "handoff/03-governance-report.md",
-    "handoff/04-contradictions.md",
-    "handoff/05-determinism-check.json",
-    "handoff/06-failure-taxonomy.md"
+    "mesh/prompt-04-ledger-replay.md",
+    "core/supabase/migrations/002_event_store_ledger.sql",
+    "core/apps/server/src/SupabaseEventStore.ts",
+    "core/apps/server/package.json",
+    "core/packages/game-core/src/replay/__tests__/chain.test.ts",
+    "core/packages/farkle-engine/src/__tests__/rtp.harness.test.ts",
+    "docs/adr/ADR-015-t4-ledger-replay.md"
   ],
   "dependency_map": {
-    "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts": [
-      "core/apps/web/src/game/VoxelPileScene.tsx (PhysicsImpactListener — audio only)",
-      "core/apps/web/src/hooks/useFarkleGame.ts (tapEntity, tapSphere — direct calls, T5 deferred)",
-      "core/apps/web/src/components/GameScreen.tsx (spawnBody debug tap — T5 deferred)"
+    "core/supabase/migrations/002_event_store_ledger.sql": [
+      "core/apps/server/src/SupabaseEventStore.ts"
     ],
-    "core/packages/game-core/src/replay/__tests__/spawn.test.ts": [
-      "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts"
+    "core/apps/server/src/SupabaseEventStore.ts": [],
+    "core/apps/server/package.json": [
+      "core/apps/server/src/SupabaseEventStore.ts"
     ],
-    "core/packages/game-core/src/replay/__tests__/inputQueue.test.ts": [
-      "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts"
-    ]
+    "core/packages/game-core/src/replay/__tests__/chain.test.ts": [
+      "core/packages/game-core/src/replay/InMemoryEventStore.ts"
+    ],
+    "core/packages/farkle-engine/src/__tests__/rtp.harness.test.ts": [
+      "core/packages/farkle-engine/src/monteCarlo.ts"
+    ],
+    "mesh/prompt-04-ledger-replay.md": [],
+    "docs/adr/ADR-015-t4-ledger-replay.md": []
   },
-  "sacred_core_boundary_approached": false,
+  "sacred_core_boundary_approached": true,
   "sacred_core_files_modified": [],
+  "sacred_core_note": "monteCarlo.ts and rtpConfig.ts read-only; rtp.harness.test.ts imports and calls them but never modifies. Boundary approached but not crossed.",
   "wasm_layer_risk": false,
   "bridge_overhead_risk": false,
   "gc_spike_risk": false,
   "escalation_raised": null,
-  "notes": "T3 Physics & Input Integrity. PHYSICS_TIMESTEP = 1/30 constant extracted. L1-physics-dt-implicit resolved (audio-only path). PhysicsAction queue added (FIFO drain before world.step). spawn.test.ts: 3/3 PASS. Backface culling audit: no changes required (DoubleSide uses all justified). ADR-014 written."
+  "notes": "All 7 T4 tasks complete. SupabaseEventStore not yet wired to any server route — new production implementation ready for integration. Chain test uses InMemoryEventStore (test env). RTP harness calls Sacred Core read-only."
 }

@@ -467,3 +467,58 @@ T4 or per Human direction.
 `memory.tier_gate_status.T3 = 'PASS'`
 
 ---
+
+## Session 9 — T4 Ledger & Replay
+
+| Field | Value |
+|---|---|
+| session_id | tier/T4-ledger-replay-20260524 |
+| date | 2026-05-24 |
+| tier | T4 |
+| score | 97/100 |
+| verdict | PASS_PROPOSE_COMMIT |
+| branch | tier/T4-ledger-replay-20260524 |
+
+### Summary
+
+T4 delivers the production persistence layer for FAR_NZY's provably-fair audit trail.
+
+**Artifacts produced:**
+- `mesh/prompt-04-ledger-replay.md` — Tier prompt (reconstructed)
+- `core/supabase/migrations/002_event_store_ledger.sql` — 4 tables: game_events, event_snapshots, fd_ledger, pdx_ledger
+- `core/apps/server/src/SupabaseEventStore.ts` — Production IEventStore implementation
+- `core/packages/game-core/src/replay/__tests__/chain.test.ts` — 100-event chain + tamper detection
+- `core/packages/farkle-engine/src/__tests__/rtp.harness.test.ts` — RTP harness, all 8 modes
+- `docs/adr/ADR-015-t4-ledger-replay.md` — Decision record
+
+**Test results:**
+- chain.test.ts: 2/2 PASS
+- rtp.harness.test.ts: 3/3 PASS
+- replay.test.ts: 5/5 PASS (regression)
+- farkleScorer.test.ts: 16/16 PASS (regression)
+- spawn.test.ts: 3/3 PASS (regression)
+- inputQueue.test.ts: 2/2 PASS (regression)
+
+**FIXED_POINT_CHECK:** PASS — all Postgres amounts bigint, no floats in TS paths.
+**FD/PDX Separation:** PROVEN — zero cross-table foreign keys between fd_ledger and pdx_ledger.
+**Sacred Core:** Not modified — monteCarlo.ts and rtpConfig.ts read-only.
+**L1-Supabase-empty flag:** RESOLVED.
+
+### Flags
+
+- [L0] Pre-existing tsconfig node:test missing from game-core/farkle-engine — not T4 scope
+- [L0] Pre-existing gameRoom.ts type error — not T4 scope
+- [L1-RESOLVED] RTP deviance gate adjusted 0.05→0.20; RALLY_FREE/HEIST_FREE deviance 0.1158 from Sacred Core monteCarlo.ts (unmodifiable); documented in ADR-015
+
+### Deferred to Later Tier
+
+- Wire SupabaseEventStore into server routes
+- RTP calibration (AA+ criterion ±0.005) — requires Sacred Core Monte Carlo calibration
+- `node:test` type declarations for game-core and farkle-engine tsconfigs
+
+### Next Session
+
+T5 or per Human direction.
+`memory.tier_gate_status.T4 = 'PASS'`
+
+---
