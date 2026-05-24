@@ -1,44 +1,30 @@
 {
-  "session_id": "tier/T2-security-compliance-20260524",
-  "fixed_point_check": "NOT_APPLICABLE",
-  "fixed_point_rationale": "T2 scope: AMOE documentation, Play Integrity middleware, KYC server-side gate, geofencing. No scoring arithmetic introduced. playIntegrity.ts: pure boolean/string logic. gameRoom.ts changes: guard clauses only, no arithmetic. compliance/src/index.ts: age arithmetic uses Date objects (not scoring paths).",
+  "session_id": "tier/T3-spawn-physics-fix-20260524",
+  "fixed_point_check": "PASS",
+  "fixed_point_rationale": "T3 scope: VoxelPhysicsSystem.ts — PHYSICS_TIMESTEP = 1/30 is a configuration constant (not a scoring multiplier). No Q×1000 conversion required per T1 ADR-012. Input queue has no arithmetic. spawn.test.ts has no arithmetic. Backface culling audit introduced no code changes.",
   "float_violations": [],
   "math_random_violations": [],
-  "date_now_violations": [
-    {
-      "file": "core/packages/compliance/src/index.ts",
-      "line": 32,
-      "snippet": "const today = new Date();",
-      "description": "new Date() used for age calculation (lines 32-35) — acceptable, not in scoring path"
-    },
-    {
-      "file": "core/packages/compliance/src/index.ts",
-      "line": 82,
-      "snippet": "verifiedAt: Date.now()",
-      "description": "Date.now() used for compliance audit timestamp — acceptable, not in scoring path"
-    },
-    {
-      "file": "core/packages/compliance/src/index.ts",
-      "line": 138,
-      "snippet": "termsAcceptedAt: Date.now(), ageVerifiedAt: Date.now()",
-      "description": "Date.now() used for compliance record timestamps — acceptable, not in scoring path"
-    }
-  ],
+  "date_now_violations": [],
   "new_float32array_violations": [],
+  "physics_timestep_check": {
+    "constant_name": "PHYSICS_TIMESTEP",
+    "value": "1 / 30",
+    "classification": "configuration constant — not scoring arithmetic",
+    "q_conversion_required": false,
+    "rationale": "Per ADR-012: only scoring-path floats require Q×1000 conversion. PHYSICS_TIMESTEP drives world.timestep and setInterval interval — neither is a scoring or payout path."
+  },
   "rng_lineage_compliant": true,
   "hashing_strategy_compliant": true,
   "rapier_dt_enforced": true,
   "escalation_raised": null,
   "files_scanned": [
-    "core/apps/server/src/playIntegrity.ts",
-    "core/apps/server/src/gameRoom.ts (T2 additions only)",
-    "core/packages/compliance/src/index.ts",
-    "AMOE.md"
+    "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts (T3 additions only)",
+    "core/packages/game-core/src/replay/__tests__/spawn.test.ts"
   ],
   "test_results": {
-    "playIntegrity.test.ts": "6/6 PASS",
+    "spawn.test.ts": "3/3 PASS",
     "farkleScorer.test.ts": "16/16 PASS (regression)",
     "replay.test.ts": "5/5 PASS (regression)"
   },
-  "notes": "No float violations introduced. Date.now() in compliance/src/index.ts (line 83: verifiedAt: Date.now()) is a timestamp, not scoring arithmetic — acceptable. All prior float fixes (T1) remain intact."
+  "notes": "No float violations introduced. PHYSICS_TIMESTEP is configuration, not scoring arithmetic. All prior fixed-point fixes (T1) remain intact."
 }

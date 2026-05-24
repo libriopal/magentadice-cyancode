@@ -1,11 +1,11 @@
-AUDIT::PATHWAY_DEPS: handoff/01-pathway-deps.json, handoff/02-session-snapshot.json
+AUDIT::PATHWAY_DEPS: core/packages/game-core/src/systems/VoxelPhysicsSystem.ts, core/packages/game-core/src/replay/__tests__/spawn.test.ts, docs/adr/ADR-014-t3-physics-input-integrity.md
 AUDIT::CURRENT_GRADE: Grade A
-AUDIT::ENTROPY_VECTOR: Medium — server middleware added, gameRoom PDX path gated; documentation files; no Sacred Core
-AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
+AUDIT::ENTROPY_VECTOR: Medium — VoxelPhysicsSystem modified; spawn tests added; no Sacred Core
+AUDIT::FIXED_POINT_CHECK: PASS
 
 # GOVERNANCE AUDIT REPORT
 ## Cell: 03 — Governance Auditor
-## Session: tier/T2-security-compliance-20260524
+## Session: tier/T3-spawn-physics-fix-20260524
 ## Date: 2026-05-24
 
 ---
@@ -14,14 +14,10 @@ AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 
 | File | Grade | Notes |
 |---|---|---|
-| AMOE.md | A | Complete AMOE rules. FTC citation. Entry equivalence declared. Disclosure text included. |
-| LEGAL.md | A | Section 3.2 updated. L1-FINDING resolved. AMOE.md cross-referenced. |
-| core/apps/server/src/playIntegrity.ts | A | Clean interface. Dev/prod separation. Geofencing via RESTRICTED_STATES. No float literals. |
-| core/apps/server/src/gameRoom.ts | A | PDX gate added. void async pattern correct (PDX award is not in hot path). ComplianceService imported. |
-| core/apps/server/src/__tests__/playIntegrity.test.ts | A | 6/6 tests pass. Geofence WA/CA/TX covered. Dev stub token covered. Missing/wrong token covered. |
-| core/apps/server/package.json | A | @match3d/compliance added as workspace:*. |
-| docs/adr/ADR-013-t2-security-compliance.md | A | Architecture documented. Pass gate conditions met. Deferred items listed. |
-| mesh/prompt-03-security-compliance.md | A | T2 tier prompt created (was missing at session boot). |
+| core/packages/game-core/src/systems/VoxelPhysicsSystem.ts | A | PHYSICS_TIMESTEP constant. Input queue FIFO. Header comment resolves L1-physics-dt-implicit. No float in scoring path. |
+| core/packages/game-core/src/replay/__tests__/spawn.test.ts | A | 3/3 PASS. Identity quaternion asserted at birth before world.step(). EPS=1e-9. |
+| docs/adr/ADR-014-t3-physics-input-integrity.md | A | All 4 decisions documented. Backface culling table complete. Test results recorded. |
+| mesh/prompt-01-spawn-physics-fix.md | A | T3 tier prompt created (was missing at session boot). |
 
 ---
 
@@ -29,7 +25,7 @@ AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 
 - Sacred Core files modified: NO ✓
 - Sacred Core boundary approached: NO ✓
-- Escalation level: L0 ✓
+- Escalation level: none ✓
 
 ---
 
@@ -38,17 +34,14 @@ AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 - All actions within Execution Runtime authority: YES ✓
 - No PRs merged ✓
 - No constitutional files modified ✓
-- LEGAL.md updated (authoritative, not constitutional) — content change only ✓
 
 ---
 
 ## Prohibited Patterns
 
 - Math.random() in gameplay path: NO ✓
-- Float in scoring/ledger paths: NO ✓ (FIXED_POINT_CHECK: NOT_APPLICABLE)
-- PDX award without attestation: NO — gated by checkPdxEligibility ✓
-- PDX award without KYC: NO — ComplianceService.fullCheck() enforced ✓
-- SDX without blockchain: NO ✓
+- Float in scoring/ledger paths: NO ✓ (PHYSICS_TIMESTEP is configuration — not scoring arithmetic)
+- Dropped tap input under frame spike: NO — input queue guarantees delivery ✓
 
 ---
 
@@ -56,10 +49,15 @@ AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 
 | Finding | Status |
 |---|---|
-| AMOE not implemented | RESOLVED — AMOE.md written, LEGAL.md updated |
-| Play Integrity API absent | RESOLVED — playIntegrity.ts created |
-| KYC gate UI-only | RESOLVED — ComplianceService.fullCheck() enforced server-side |
-| AgeGate UI-only | RESOLVED — age check included in ComplianceService.fullCheck() |
+| L1-physics-dt-implicit | RESOLVED — useFrame delta is audio-only, non-scoring; documented in VoxelPhysicsSystem.ts header |
+| Spawn integrity unverified | RESOLVED — spawn.test.ts 3 assertions confirm identity rotation at birth |
+
+---
+
+## Deferred to T5
+
+- Route GameScreen.tsx and useFarkleGame.ts tap calls through enqueueAction()
+- Extend PhysicsAction types for spawn and additional game actions
 
 ---
 

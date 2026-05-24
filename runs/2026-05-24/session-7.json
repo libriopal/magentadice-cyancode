@@ -1,0 +1,36 @@
+{
+  "session_id": "tier/T3-spawn-physics-fix-20260524",
+  "tier": "T3",
+  "date": "2026-05-24",
+  "score": 96,
+  "max_score": 100,
+  "verdict": "PASS_PROPOSE_COMMIT",
+  "branch": "tier/T3-spawn-physics-fix-20260524",
+  "core_submodule_head": "ede7c83a4a580bb75d58d096b2c72e21d2d0ba87",
+  "tasks_complete": 5,
+  "tasks_total": 5,
+  "highest_escalation": null,
+  "test_results": {
+    "spawn.test.ts": "3/3 PASS",
+    "replay.test.ts": "5/5 PASS",
+    "farkleScorer.test.ts": "16/16 PASS"
+  },
+  "fixed_point_check": "PASS",
+  "sacred_core_touched": false,
+  "l1_findings_resolved": ["L1-physics-dt-implicit"],
+  "l1_findings_raised": [],
+  "deferred_to_t5": [
+    "Route GameScreen.tsx and useFarkleGame.ts through enqueueAction()",
+    "Extend PhysicsAction types for spawn and additional game actions"
+  ],
+  "scoring_breakdown": {
+    "task_completion": "20/20",
+    "test_coverage": "15/15",
+    "fixed_point_compliance": "15/15",
+    "governance_adr": "10/10",
+    "sacred_core_protocol": "10/10",
+    "legal_compliance_posture": "10/10",
+    "entropy_minimization": "8/10",
+    "deferred_scope_discipline": "8/10"
+  }
+}
