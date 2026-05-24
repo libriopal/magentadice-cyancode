@@ -41,7 +41,7 @@ verifyPlayIntegrity(token: string | undefined, isDev?: boolean): Promise<Attesta
 ```
 
 **Dev mode:** Accepts stub token `'dev-integrity-ok'`. All other tokens fail.  
-**Production:** Calls Google Play Integrity API. Requires `PLAYS_INTEGRITY_DECRYPTION_KEY` + `PLAY_INTEGRITY_VERIFICATION_KEY` env vars.  
+**Production:** Calls Google Play Integrity API. Requires `PLAY_INTEGRITY_DECRYPTION_KEY` + `PLAY_INTEGRITY_VERIFICATION_KEY` env vars.  
 **Minimum for PDX:** `deviceIntegrity === 'MEETS_DEVICE_INTEGRITY'`.
 
 **Why not a blocking middleware:** PDX awards happen at session end (async), not in the real-time WS hot path. `checkPdxEligibility` is called void-style; if eligibility fails, `PDX_BLOCKED` event is sent to the client and the wallet transaction is not written.
