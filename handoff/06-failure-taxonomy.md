@@ -8,6 +8,7 @@ AUDIT::FIXED_POINT_CHECK: PASS
 ### Session Score: 97/100 — PASS_PROPOSE_COMMIT
 
 **Dimension Breakdown:**
+
 | Dimension | Score | Max |
 |---|---|---|
 | mathematical_purity | 20 | 20 |

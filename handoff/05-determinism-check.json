@@ -1,6 +1,7 @@
 {
   "session_id": "tier/T4-ledger-replay-20260524",
   "fixed_point_check": "PASS",
+  "fixed_point_rationale": "All Postgres amount columns use bigint (Q×1000 integer representation). No float4, float8, numeric, real, or decimal types in any ledger column. No new arithmetic on amounts in TypeScript — SupabaseEventStore only hashes strings and reads/writes bigint values. rtp.harness.test.ts calls Sacred Core monteCarlo.ts read-only without adding scoring arithmetic.",
   "float_violations": [],
   "math_random_violations": [],
   "date_now_violations": [],

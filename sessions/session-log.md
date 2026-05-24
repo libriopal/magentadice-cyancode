@@ -468,7 +468,7 @@ T4 or per Human direction.
 
 ---
 
-## Session 8 — T4 Ledger & Replay
+## Session 9 — T4 Ledger & Replay
 
 | Field | Value |
 |---|---|

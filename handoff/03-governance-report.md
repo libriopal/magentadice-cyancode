@@ -10,6 +10,7 @@ AUDIT::ENTROPY_VECTOR: Low — no Sacred Core modifications; SupabaseEventStore 
 ## Governance Report — tier/T4-ledger-replay-20260524
 
 ### DELTA-VERIFY Grade Assessment
+
 | File | Current Grade | Required Changes for Grade A |
 |---|---|---|
 | mesh/prompt-04-ledger-replay.md | A | None — tier prompt reconstructed correctly |

@@ -73,7 +73,7 @@ the T4 target (L1-Supabase-empty flag, raised in T1B). This ADR resolves that fl
 
 ### D-2: FD/PDX Zero-Pointer-Sharing Proof
 
-```
+```text
 fd_ledger  references: auth.users(id), [no cross-ledger FKs]
 pdx_ledger references: auth.users(id), [no cross-ledger FKs]
 ```
@@ -106,9 +106,13 @@ signature = 'hmac-sha256:' + hmacSha256Hex(JSON.stringify(partial), HMAC_SECRET)
 Signing happens over the partial event (before signature field is set),
 consistent with `InMemoryEventStore`.
 
-**Ordering:** All chain operations use `created_at ASC`. This means the DB
-insert timestamp determines chain order. Clock skew risk is mitigated by the
-chain validation — any out-of-order insert would produce a hash mismatch.
+**Ordering:** All chain and read/replay operations use `replay_tick ASC, id ASC`
+as the canonical ordering. `replay_tick ASC` aligns with the IEventStore
+`replay()` contract (events applied in tick order). `id ASC` is the
+deterministic tiebreaker when two events share the same tick (e.g., concurrent
+cascade events). `created_at` is stored as metadata only and must not be used
+for ordering — wall-clock skew between inserts would produce non-deterministic
+replay if used as the sort key.
 
 **Type declarations:** Types from `contracts/IEventStore.v1.md` and
 `contracts/ReplayEvent.v1.md` are declared inline in `SupabaseEventStore.ts`

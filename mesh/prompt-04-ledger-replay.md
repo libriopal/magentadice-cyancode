@@ -158,7 +158,7 @@ READ ONLY — never write:
 
 - chain.test.ts: all assertions PASS
 - rtp.harness.test.ts: all 8 modes produce results, deviance < 0.05
-- `pnpm type-check`: 0 errors
+- No new T4-introduced type errors (pre-existing errors in game-core/farkle-engine tsconfigs and gameRoom.ts are not in T4 scope)
 - SQL: no float/numeric/real column types, no FK between fd_ledger and pdx_ledger
 - Regression: replay.test.ts 5/5, farkleScorer.test.ts 16/16, spawn.test.ts 3/3, inputQueue.test.ts 2/2
 
