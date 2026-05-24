@@ -1,13 +1,13 @@
 {
-  "session_id": "tier/T1B-audit-runtime-20260524",
-  "snapshot_timestamp": "2026-05-24T02:00:00.000Z",
-  "git_head": "138c352",
-  "files_modified_count": 12,
-  "memory_state_hash": "sha256-of-farnzy-session-state-t1b-tasks-complete",
+  "session_id": "tier/T1C-replay-runtime-20260524",
+  "snapshot_timestamp": "2026-05-24T03:00:00.000Z",
+  "git_head": "f33ab39",
+  "files_modified_count": 14,
+  "memory_state_hash": "sha256-of-farnzy-session-state-t1c-complete",
   "chain_head_valid": true,
   "chain_head_event_id": null,
   "rng_lineage_intact": true,
   "session_seed_committed_before_events": true,
-  "escalation_raised": "L2-RESOLVED",
-  "notes": "All 5 T1B tasks executed. L2 raised (Task 2 Part B) and resolved by Human (ADR-010 drafted). L3 raised in Task 3 and Task 4 tests — both were intentional test triggers, verified and cleared. T4 not complete — chain head null (NOT_APPLICABLE). No RNG code modified."
+  "escalation_raised": "L0",
+  "notes": "All 5 T1C tasks complete. Three contracts frozen (IEventStore.v1, ReplayEvent.v1, Snapshot.v1). TypeScript interfaces extracted. InMemoryEventStore implemented in core/packages/game-core/src/replay/. Five replay tests pass. ADR-011 committed. T1C PASS. Phase 1 complete."
 }

@@ -1,7 +1,7 @@
 {
-  "session_id": "tier/T1B-audit-runtime-20260524",
-  "fixed_point_check": "NOT_APPLICABLE",
-  "fixed_point_rationale": "No production TypeScript code modified; only non-executable Markdown and transient test files were created and deleted.",
+  "session_id": "tier/T1C-replay-runtime-20260524",
+  "fixed_point_check": "PASS",
+  "fixed_point_rationale": "InMemoryEventStore.ts: all amount fields use integer operations only (| 0). No Math.random() anywhere. randomUUID() used only for event_id assignment — not in scoring paths. types.ts: all amount fields annotated with Q32.32 comments. No float types introduced.",
   "float_violations": [],
   "math_random_violations": [],
   "date_now_violations": [],
@@ -10,5 +10,13 @@
   "hashing_strategy_compliant": true,
   "rapier_dt_enforced": true,
   "escalation_raised": null,
-  "notes": "No production TypeScript code modified this session. Test files containing violations (float-violation-test.ts, contradiction-hunter-test.md) were created, verified, and deleted — not committed. Final scan of session output files: docs/scoring-notes.md, docs/adr/ADR-010-rtp-variance-tightening.md, runs/proposals/PROPOSAL-rtpConfig-variance-20260524.md — all are Markdown, no executable code, FIXED_POINT_CHECK NOT_APPLICABLE."
+  "files_scanned": [
+    "contracts/IEventStore.ts",
+    "contracts/ReplayEvent.v1.ts",
+    "contracts/Snapshot.v1.ts",
+    "core/packages/game-core/src/replay/types.ts",
+    "core/packages/game-core/src/replay/InMemoryEventStore.ts",
+    "core/packages/game-core/src/replay/__tests__/replay.test.ts"
+  ],
+  "notes": "All TypeScript files scanned for float violations. Amount fields: amount, score_delta, running_total, fd_balance_delta, pdx_balance_delta, sdx_balance_delta, rtp_running_average, total_fd_emitted, total_pdx_awarded, total_sdx_awarded, sdx_amount — all typed as number with Q32.32 annotation and no float arithmetic in implementation. Test uses integer literals only."
 }
