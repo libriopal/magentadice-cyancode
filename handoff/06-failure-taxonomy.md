@@ -1,11 +1,11 @@
-AUDIT::PATHWAY_DEPS: handoff/01 through handoff/05, runs/2026-05-24/session-3.json
+AUDIT::PATHWAY_DEPS: handoff/01 through handoff/05, runs/2026-05-24/session-4.json
 AUDIT::CURRENT_GRADE: Grade A
-AUDIT::ENTROPY_VECTOR: Low — docs and ADR only; no production code
-AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
+AUDIT::ENTROPY_VECTOR: Low — contracts + test infrastructure only; no production code; no Sacred Core boundary
+AUDIT::FIXED_POINT_CHECK: PASS
 
 # FAILURE TAXONOMY REPORT
 ## Cell: 06 — Failure Taxonomist
-## Session: tier/T1B-audit-runtime-20260524
+## Session: tier/T1C-replay-runtime-20260524
 ## Date: 2026-05-24
 
 ---
@@ -13,10 +13,10 @@ AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 ## Session Outcome
 
 **Verdict: PASS_PROPOSE_COMMIT**
-**Score: 95 / 100**
-**Highest escalation: L2 (raised and resolved by Human)**
+**Score: 97 / 100**
+**Highest escalation: L0 (none)**
 
-No failures. All 5 T1B pass gate conditions met.
+No failures. All 7 T1C pass gate conditions met.
 
 ---
 
@@ -24,27 +24,28 @@ No failures. All 5 T1B pass gate conditions met.
 
 | Dimension | Score | Max | Notes |
 |---|---|---|---|
-| Mathematical Purity | 20 | 20 | NOT_APPLICABLE — no production code. |
-| Sacred Core Integrity | 18 | 20 | L2 raised (boundary approached via proposal) and resolved by Human. -2 for the L2 event. |
-| Performance Delta | 20 | 20 | No production code modified. Zero impact. |
-| Grade Elevation | 12 | 15 | ADR-010 and docs at Grade A. No C→B or B→A code transitions (docs session). |
-| Regression Count | 10 | 10 | No bugs. No regressions. |
-| Tier Gate Progress | 10 | 10 | All 5 T1B tasks complete. Pass gate met. |
-| Evidence Coverage (bonus) | 3 | 3 | Full audit chain. All task results documented. |
-| MCP Utilization (bonus) | 2 | 2 | Memory MCP read at boot, updated at branch creation and L2 resolution. |
+| Mathematical Purity | 20 | 20 | FIXED_POINT_CHECK PASS. No floats in amount fields. No Math.random(). |
+| Sacred Core Integrity | 20 | 20 | No Sacred Core files touched. No boundary approached. |
+| Performance Delta | 20 | 20 | No production code modified. Zero performance impact. |
+| Grade Elevation | 12 | 15 | 10 new Grade A files. No C→B or B→A transitions (all new). |
+| Regression Count | 10 | 10 | 5/5 tests pass. No regressions. |
+| Tier Gate Progress | 10 | 10 | All 7 T1C pass gate conditions met. Phase 1 complete. |
+| Evidence Coverage (bonus) | 3 | 3 | Full audit chain. All task results documented in ADR-011. |
+| MCP Utilization (bonus) | 2 | 2 | Memory MCP read at boot (T1B PASS confirmed), updated at session close. |
 
-**Total: 95 / 100 → PASS_PROPOSE_COMMIT ✓**
+**Total: 97 / 100 → PASS_PROPOSE_COMMIT ✓**
 
 ---
 
-## T1B Pass Gate — ALL CONDITIONS MET
+## T1C Pass Gate — ALL CONDITIONS MET
 
-- [x] All 6 audit cells produce valid handoff artifacts on known-good scenario (Task 1 — 85/100)
-- [x] Governance Auditor correctly identifies Sacred Core boundary approach (Task 2 — L2 raised correctly)
-- [x] Determinism Verifier correctly triggers Level 3 on float violation (Task 3 — L3 raised correctly)
-- [x] Contradiction Hunter correctly triggers Level 3 on hallucinated authority (Task 4 — L3 raised correctly)
-- [x] Failure Taxonomist produces correct PAUSE_ASK verdict for 50-69 score (Task 5 — 62/100 → PAUSE_ASK)
-- [x] No test files remain committed to main
+- [x] All 3 contract files committed to `contracts/` (FROZEN v1.0.0)
+- [x] TypeScript contract files created — no floats in amounts (Q32.32 annotated)
+- [x] InMemoryEventStore implements all IEventStore methods
+- [x] Replay test passes: `matchesStoredHash === true`
+- [x] SHA-256 chain validates across all 10 test events
+- [x] Snapshot at index 5 + partial replay produces identical result to full replay
+- [x] ADR-011 committed (IEventStore v1.0.0 freeze)
 
 ---
 
@@ -52,12 +53,11 @@ No failures. All 5 T1B pass gate conditions met.
 
 | Item | Impact |
 |---|---|
-| All 5 audit cell tests passed | Audit runtime confirmed operational |
-| L2 raised correctly on Sacred Core proposal | Cell 03 governance logic verified |
-| L3 raised correctly on Math.random() | Cell 05 determinism logic verified |
-| L3 raised correctly on hallucinated authority | Cell 04 contradiction logic verified |
-| PAUSE_ASK verdict produced correctly | Cell 06 score-to-verdict mapping verified |
-| Human approved ADR-010 direction | Bonus: RTP variance improvement queued |
+| ADR-011 numbering corrected from prompt's "ADR-009" | Avoids ADR number collision |
+| `"type": "module"` added to game-core package.json | Enables tsx ESM test runner, matches farkle-engine pattern |
+| All 5 tests pass on first run after tsx path fix | Clean implementation |
+| FIXED_POINT_CHECK passes on all files | Legal compliance maintained |
+| No Sacred Core files anywhere in pathway | L0 session, maximum score on sacred_core_integrity |
 
 ---
 
@@ -68,3 +68,8 @@ none — clean session
 ---
 
 ## Failure Taxonomist: PASS — no failures to taxonomize
+
+### Phase 1 Complete
+
+T0 PASS → T1A PASS → T1B PASS → T1C PASS.
+T1–T9 authorized (per Conditional Pass verdict in T1C prompt).
