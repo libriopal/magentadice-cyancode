@@ -1,5 +1,5 @@
 AUDIT::PATHWAY_DEPS: CLAUDE.md (references this file), docs/adr/ADR-007-threat-model.md, docs/adr/ADR-003-rng-lineage.md
-AUDIT::CURRENT_GRADE: Grade B — legal classification documented; backend enforcement (KYC, AgeGate, Play Integrity) pending T2
+AUDIT::CURRENT_GRADE: Grade A — legal classification documented; backend enforcement (KYC, AgeGate, Play Integrity, geofencing) complete (T2)
 AUDIT::ENTROPY_VECTOR: low — documentation only; changes to currency model or prize structure require re-evaluation
 AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 
@@ -9,7 +9,7 @@ AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 ## FAR_NZY — Farkle Frenzy
 ## Platform: magentadice-cyancode / Libriopal Games Inc.
 ## Document: LEGAL.md
-## Last Updated: 2026-05-23
+## Last Updated: 2026-05-24
 ## Status: Authoritative — changes require Human sign-off
 
 ---
@@ -95,15 +95,15 @@ FAR_NZY must implement and maintain the following AMOE mechanism:
 
 ```
 FREE ENTRY METHOD:
-  URL: [to be determined — T2 implementation]
-  Method: Web-based entry form requiring no payment
-  Entry equivalence: One free web entry = one sweepstakes entry ticket
-  Disclosure: Prominently displayed on main screen and store listings
+  Email: amoe@libriopal.com (subject: "FAR_NZY FREE ENTRY")
+  Method: Email entry — no payment, no app download required
+  Entry equivalence: One email entry = one sweepstakes ticket
+  Limit: 1 per calendar day; 30 per calendar month
+  Disclosure: Main app screen, store listings, and AMOE.md
 ```
 
-**Implementation Status:** AMOE backend is a T2 deliverable.
-`[L1-FINDING]` AMOE mechanism is not yet implemented.
-AMOE UI disclosure placeholder exists; backend routing is absent.
+**Implementation Status:** AMOE implemented — T2 complete (2026-05-24).
+See `AMOE.md` at repo root for complete rules, disclosure text, and record retention policy.
 
 ### 3.3 Applicable State Sweepstakes Statutes
 
@@ -222,7 +222,7 @@ enforced at the IEventStore write boundary.
 | Redeemable | Yes — per prize fulfillment terms |
 | Legal classification | Sweepstakes prize |
 | Gambling consideration | Eliminated by AMOE model |
-| Attestation required | Yes — Play Integrity API verdict PASS |
+| Attestation required | Yes — Play Integrity API verdict `MEETS_DEVICE_INTEGRITY` |
 
 PDX prizes are the primary sweepstakes prize mechanism.
 They are awarded through a verifiable, auditable draw that is:
@@ -230,11 +230,10 @@ They are awarded through a verifiable, auditable draw that is:
 - Reproducible via HMAC-SHA256 chain (audit-ready)
 - Gated on hardware attestation to prevent client-side tampering
 
-**Implementation status:** Play Integrity API integration is a T2 deliverable.
-`[L1-FINDING]` Hardware attestation for PDX path is absent until T2.
-PDX award events are constitutionally blocked at IEventStore.write() without
-a valid attestation verdict of 'PASS'. This is enforced by Sacred Core
-constraint in `mesh/sacred-core-spec.md`.
+**Implementation status:** Play Integrity API integration complete (T2). Hardware
+attestation is enforced server-side via `verifyPlayIntegrity()` in `playIntegrity.ts`;
+PDX award events are blocked by `checkPdxEligibility()` in `gameRoom.ts` without
+a valid attestation verdict of `MEETS_DEVICE_INTEGRITY`.
 
 ---
 
@@ -292,17 +291,17 @@ Associates, Ltd. v. Debra Haaland*, 71 F.4th 1059 (D.C. Cir. 2023)
 
 | Requirement | Status | Resolution Path |
 |---|---|---|
-| Age verification (18+) | UI-only checkbox | T2 — backend enforcement |
-| KYC (Know Your Customer) | UI-only gate | T2 — backend enforcement |
-| Geographic restriction | Not implemented | T2 |
-| Play Integrity attestation | Not implemented | T2 |
+| Age verification (18+) | Implemented server-side (T2) | ComplianceService.fullCheck() |
+| KYC (Know Your Customer) | Implemented server-side (T2) | ComplianceService.fullCheck() |
+| Geographic restriction | Implemented server-side (T2) | checkGeofence() — WA blocked |
+| Play Integrity attestation | Implemented server-side (T2) | verifyPlayIntegrity() |
 
-`[L1-FINDING]` AgeGate is UI-only — a checkbox with no backend verification.
-`[L1-FINDING]` KYCGate is UI-only — no identity document verification.
+Age verification and identity document verification are enforced server-side via
+`ComplianceService.fullCheck()` before any PDX award path executes (T2 pass gate).
 
-### 7.2 Required T2 Implementations
+### 7.2 T2 Implementations (Complete)
 
-The following must be implemented before PDX prizes are awarded to real users:
+The following are enforced server-side before PDX prizes are awarded:
 
 1. **Age verification** — backend confirmation that user is 18+ (or 21+ where required)
    before any PDX prize ticket is issued.
@@ -346,7 +345,7 @@ constitutional governance (`mesh/sacred-core-spec.md`, `mesh/agent-escalation-mo
 |---|---|
 | `Math.random()` in any scoring or payout path | L3 halt — FIXED_POINT_CHECK: FAIL |
 | SDX balance increment without blockchain confirmation | Sacred Core constraint — IEventStore write boundary |
-| PDX_AWARD without attestation verdict 'PASS' | Sacred Core constraint — IEventStore write boundary |
+| PDX_AWARD without attestation verdict `MEETS_DEVICE_INTEGRITY` | Sacred Core constraint — IEventStore write boundary |
 | Float in any currency amount field | L3 halt — Q32.32 enforcement |
 | Retroactive score modification | SHA-256 chain — tamper-evident |
 | Replay manipulation | Replay reconstruction hash verification |

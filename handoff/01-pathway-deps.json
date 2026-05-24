@@ -1,16 +1,14 @@
 {
-  "session_id": "tier/T1-mathematical-foundation-20260524",
+  "session_id": "tier/T2-security-compliance-20260524",
   "modified_files": [
-    "core/packages/farkle-engine/src/rhythm.ts",
-    "core/packages/farkle-engine/src/slipstream.ts",
-    "core/packages/farkle-engine/src/shards.ts",
+    "AMOE.md",
+    "LEGAL.md",
+    "core/apps/server/src/playIntegrity.ts",
     "core/apps/server/src/gameRoom.ts",
-    "core/apps/web/src/store/multiplayerStore.ts",
-    "core/apps/web/src/hooks/useMultiplayer.ts",
-    "core/apps/web/src/components/FarkleHUD.tsx",
-    "core/apps/web/src/components/GameScreen.tsx",
-    "runs/proposals/PROPOSAL-farkleScorer-multiplier-q1000-20260524.md",
-    "mesh/prompt-02-mathematical-foundation.md",
+    "core/apps/server/src/__tests__/playIntegrity.test.ts",
+    "core/apps/server/package.json",
+    "docs/adr/ADR-013-t2-security-compliance.md",
+    "mesh/prompt-03-security-compliance.md",
     "handoff/01-pathway-deps.json",
     "handoff/02-session-snapshot.json",
     "handoff/03-governance-report.md",
@@ -19,23 +17,18 @@
     "handoff/06-failure-taxonomy.md"
   ],
   "dependency_map": {
-    "core/packages/farkle-engine/src/rhythm.ts": ["farkle-engine scoring pipeline — L4 genre wrapper"],
-    "core/packages/farkle-engine/src/slipstream.ts": ["rhythm.ts (flowCapQ consumer)"],
-    "core/packages/farkle-engine/src/shards.ts": ["farkle-engine scoring pipeline — L4 genre wrapper"],
-    "core/apps/server/src/gameRoom.ts": ["rhythm.ts, slipstream.ts (callers updated)"],
-    "core/apps/web/src/store/multiplayerStore.ts": ["slipstream.ts (SlipstreamState consumer)"],
-    "core/apps/web/src/hooks/useMultiplayer.ts": ["multiplayerStore.ts"],
-    "core/apps/web/src/components/FarkleHUD.tsx": ["rhythm.ts, slipstream.ts (display)"],
-    "core/apps/web/src/components/GameScreen.tsx": ["multiplayerStore.ts"],
-    "runs/proposals/PROPOSAL-farkleScorer-multiplier-q1000-20260524.md": ["core/packages/farkle-engine/src/farkleScorer.ts (Sacred Core — READ ONLY)"],
-    "mesh/prompt-02-mathematical-foundation.md": ["mesh/INSTRUCTIONS_MANUAL.md (created — T1 prompt was missing)"]
+    "AMOE.md": ["LEGAL.md (cross-reference)", "docs/adr/ADR-013-t2-security-compliance.md"],
+    "LEGAL.md": ["AMOE.md (L1-FINDING resolved)"],
+    "core/apps/server/src/playIntegrity.ts": ["@match3d/compliance (RESTRICTED_STATES)"],
+    "core/apps/server/src/gameRoom.ts": ["playIntegrity.ts (verifyPlayIntegrity, checkGeofence)", "@match3d/compliance (ComplianceService)"],
+    "core/apps/server/src/__tests__/playIntegrity.test.ts": ["playIntegrity.ts"],
+    "core/apps/server/package.json": ["@match3d/compliance added as workspace:*"]
   },
-  "sacred_core_boundary_approached": true,
+  "sacred_core_boundary_approached": false,
   "sacred_core_files_modified": [],
-  "sacred_core_notes": "farkleScorer.ts line 49 (multiplier float) identified as SEVERITY-B. PROPOSAL written. No edits made to Sacred Core files.",
   "wasm_layer_risk": false,
   "bridge_overhead_risk": false,
   "gc_spike_risk": false,
   "escalation_raised": "L0",
-  "notes": "T1 Mathematical Foundation. Float audit complete. Q×1000 conversion applied to rhythm.ts, slipstream.ts, shards.ts, and all callers. 16 farkleScorer tests + 5 replay tests pass. FIXED_POINT_CHECK: PASS on all modified files. Sacred Core proposal written (SEVERITY-B, awaiting Human decision)."
+  "notes": "T2 Security & Compliance. AMOE.md written. LEGAL.md L1 finding resolved. playIntegrity.ts created (Play Integrity API middleware). gameRoom.ts PDX award path gated (checkPdxEligibility). 6/6 tests pass. TypeScript clean. No Sacred Core boundary approached."
 }

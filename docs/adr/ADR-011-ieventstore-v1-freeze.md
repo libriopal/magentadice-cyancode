@@ -40,12 +40,14 @@ governance documents. Extract TypeScript interfaces into `contracts/*.ts`. Imple
 
 | File | Status | SHA-256 (content fingerprint) |
 |---|---|---|
-| `contracts/IEventStore.v1.md` | FROZEN v1.0.0 | — |
-| `contracts/ReplayEvent.v1.md` | FROZEN v1.0.0 | — |
-| `contracts/Snapshot.v1.md` | FROZEN v1.0.0 | — |
-| `contracts/IEventStore.ts` | FROZEN v1.0.0 | — |
-| `contracts/ReplayEvent.v1.ts` | FROZEN v1.0.0 | — |
-| `contracts/Snapshot.v1.ts` | FROZEN v1.0.0 | — |
+| `contracts/IEventStore.v1.md` | FROZEN v1.0.0 | `c49405b0a4f552e44b0b8f2706d9d3641795fe826f7ebe613d2071cfb9c49a55` |
+| `contracts/ReplayEvent.v1.md` | FROZEN v1.0.0 | `b558143073d837796ed6c3dec0bbc8d94d77cf096f8c9005559e8b693f6a5d4c` |
+| `contracts/Snapshot.v1.md` | FROZEN v1.0.0 | `a12aed472fddcdfac5a2b2dd0e4a43ec73e288dac399d31966094c3fdaa5c83c` |
+| `contracts/IEventStore.ts` | FROZEN v1.0.0 | `fba091c74074ca5e20e13127cd7e61fc50c9f1a9fbc95d6a8768e917a8952aa8` |
+| `contracts/ReplayEvent.v1.ts` | FROZEN v1.0.0 | `4eb2823809c99a30d2428fb2d814dee83e3ed3ebc50818b82ed7cd277c37ae00` |
+| `contracts/Snapshot.v1.ts` | FROZEN v1.0.0 | `0e5d22afa8fe6e0c69eca78f1495aa36d674b655a1c02cc13db3db9b5f72fb06` |
+
+Fingerprints computed with `sha256sum` (2026-05-24). `IEventStore.ts` and `Snapshot.v1.md` hashes reflect doc-comment additions made during PR review (no semantic interface change). Future changes to any frozen file require IEventStore.v2.md + new ADR + Human approval and must update this table.
 
 ---
 
@@ -89,6 +91,10 @@ or ledger paths. **FIXED_POINT_CHECK: PASS**
 **Constraints added:**
 - Any change to the frozen interface requires IEventStore.v2.md + migration adapter + new ADR + Human approval.
 - The `InMemoryEventStore` must never ship to production — it is test infrastructure only.
+  Runtime enforcement: the constructor throws unless `NODE_ENV === 'test'` OR `TEST_RUNTIME === 'true'`
+  (and always throws when `NODE_ENV === 'production'` regardless of `TEST_RUNTIME`)
+  (see `core/packages/game-core/src/replay/InMemoryEventStore.ts`).
+  Production implementations (`SupabaseEventStore`, `PostgresEventStore`) are T4 scope.
 
 **Deferred (T4 scope):**
 - `SupabaseEventStore` implementation (FD casual)

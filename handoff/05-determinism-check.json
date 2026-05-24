@@ -1,53 +1,44 @@
 {
-  "session_id": "tier/T1-mathematical-foundation-20260524",
-  "fixed_point_check": "PASS",
-  "fixed_point_rationale": "Q×1000 conversion applied to rhythm.ts, slipstream.ts, shards.ts. All float literals removed from scoring paths. rhythm.ts: PERFECT_GAIN=150, GOOD_GAIN=70, FLOW_BASE=1000, FLOW_DEFAULT_CAP=2000 — all integers. applyFlowMultiplier uses Math.round(score * effQ / 1000) — no float literals. slipstream.ts: windowFactorQ and flowCapQ are Q×1000 integers. shards.ts: FEVER (s*5+2)>>2, UNDERDOG (s*5+1)>>1, RESONANCE (s*3+1)>>1, MOMENTUM (s*Q+50)/100|0, ECHO s*2 — all pure integer arithmetic. No float literals remain in scoring paths.",
-  "float_violations": [
+  "session_id": "tier/T2-security-compliance-20260524",
+  "fixed_point_check": "NOT_APPLICABLE",
+  "fixed_point_rationale": "T2 scope: AMOE documentation, Play Integrity middleware, KYC server-side gate, geofencing. No scoring arithmetic introduced. playIntegrity.ts: pure boolean/string logic. gameRoom.ts changes: guard clauses only, no arithmetic. compliance/src/index.ts: age arithmetic uses Date objects (not scoring paths).",
+  "float_violations": [],
+  "math_random_violations": [],
+  "date_now_violations": [
     {
-      "file": "core/packages/farkle-engine/src/farkleScorer.ts",
-      "line": 49,
-      "severity": "B",
-      "status": "PROPOSED",
-      "description": "Math.round(score * multiplier) — multiplier receives floats 1.15/2.5/1.85 from callers. Sacred Core — PROPOSAL written. Awaiting Human decision."
+      "file": "core/packages/compliance/src/index.ts",
+      "line": 32,
+      "snippet": "const today = new Date();",
+      "description": "new Date() used for age calculation (lines 32-35) — acceptable, not in scoring path"
     },
     {
-      "file": "core/packages/farkle-engine/src/gridUtils.ts",
-      "line": "240-241",
-      "severity": "C",
-      "status": "DEFERRED",
-      "description": "Math.floor(blockerCount * 0.5/0.25) — grid layout only, not scoring path. Integer result."
+      "file": "core/packages/compliance/src/index.ts",
+      "line": 82,
+      "snippet": "verifiedAt: Date.now()",
+      "description": "Date.now() used for compliance audit timestamp — acceptable, not in scoring path"
     },
     {
-      "file": "core/packages/farkle-engine/src/skillMetrics.ts",
-      "line": "62-64",
-      "severity": "C",
-      "status": "DEFERRED",
-      "description": "chainQuality * 0.40 + bankEfficiency * 0.35 + farkleResistance * 0.25 — advisory metric, not in payout path."
+      "file": "core/packages/compliance/src/index.ts",
+      "line": 138,
+      "snippet": "termsAcceptedAt: Date.now(), ageVerifiedAt: Date.now()",
+      "description": "Date.now() used for compliance record timestamps — acceptable, not in scoring path"
     }
   ],
-  "math_random_violations": [],
-  "date_now_violations": [],
   "new_float32array_violations": [],
   "rng_lineage_compliant": true,
   "hashing_strategy_compliant": true,
   "rapier_dt_enforced": true,
   "escalation_raised": null,
   "files_scanned": [
-    "core/packages/farkle-engine/src/rhythm.ts",
-    "core/packages/farkle-engine/src/slipstream.ts",
-    "core/packages/farkle-engine/src/shards.ts",
-    "core/apps/server/src/gameRoom.ts",
-    "core/apps/web/src/store/multiplayerStore.ts",
-    "core/apps/web/src/hooks/useMultiplayer.ts",
-    "core/apps/web/src/components/FarkleHUD.tsx",
-    "core/apps/web/src/components/GameScreen.tsx",
-    "core/packages/farkle-engine/src/farkleScorer.ts",
-    "core/packages/farkle-engine/src/gridUtils.ts",
-    "core/packages/farkle-engine/src/skillMetrics.ts"
+    "core/apps/server/src/playIntegrity.ts",
+    "core/apps/server/src/gameRoom.ts (T2 additions only)",
+    "core/packages/compliance/src/index.ts",
+    "AMOE.md"
   ],
   "test_results": {
-    "farkleScorer.test.ts": "16/16 PASS",
-    "replay.test.ts": "5/5 PASS"
+    "playIntegrity.test.ts": "6/6 PASS",
+    "farkleScorer.test.ts": "16/16 PASS (regression)",
+    "replay.test.ts": "5/5 PASS (regression)"
   },
-  "notes": "Float audit complete. SEVERITY-A violation (rhythm.ts flowMultiplier stored as float) — FIXED. SEVERITY-B violations (shards.ts float literals in shard apply functions, slipstream.ts float fields) — FIXED. SEVERITY-B Sacred Core (farkleScorer.ts multiplier) — PROPOSED. SEVERITY-C violations (gridUtils.ts, skillMetrics.ts) — DEFERRED. No Math.random() violations. No new Date.now() violations in scoring paths. TypeScript type-check clean (one pre-existing error: node:crypto types in InMemoryEventStore.ts)."
+  "notes": "No float violations introduced. Date.now() in compliance/src/index.ts (line 83: verifiedAt: Date.now()) is a timestamp, not scoring arithmetic — acceptable. All prior float fixes (T1) remain intact."
 }
