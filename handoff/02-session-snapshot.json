@@ -1,7 +1,7 @@
 {
   "session_id": "tier/T2-security-compliance-20260524",
   "snapshot_timestamp": "2026-05-24T16:00:00.000Z",
-  "git_head": "e236126",
+  "git_head": "e236126c6df701ac8c403d9a01781209e9538196",
   "files_modified_count": 14,
   "files_modified_count_rule": "Must equal len(handoff/01-pathway-deps.json#modified_files). Both fields updated atomically.",
   "memory_state_hash": "11e73dcc868b51003ca85011a8cdae3fb24fa2800b007e55c26e5896200375f3",
@@ -10,7 +10,7 @@
   "chain_head_event_id": null,
   "rng_lineage_intact": true,
   "session_seed_committed_before_events": true,
-  "escalation_raised": "L0",
+  "escalation_raised": null,
   "compliance_tasks": [
     {
       "task": "AMOE",
