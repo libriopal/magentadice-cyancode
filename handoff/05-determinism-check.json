@@ -7,8 +7,21 @@
   "date_now_violations": [
     {
       "file": "core/packages/compliance/src/index.ts",
-      "line": 33,
-      "description": "new Date() used for age calculation — acceptable, not in scoring path"
+      "line": 32,
+      "snippet": "const today = new Date();",
+      "description": "new Date() used for age calculation (lines 32-35) — acceptable, not in scoring path"
+    },
+    {
+      "file": "core/packages/compliance/src/index.ts",
+      "line": 82,
+      "snippet": "verifiedAt: Date.now()",
+      "description": "Date.now() used for compliance audit timestamp — acceptable, not in scoring path"
+    },
+    {
+      "file": "core/packages/compliance/src/index.ts",
+      "line": 138,
+      "snippet": "termsAcceptedAt: Date.now(), ageVerifiedAt: Date.now()",
+      "description": "Date.now() used for compliance record timestamps — acceptable, not in scoring path"
     }
   ],
   "new_float32array_violations": [],
