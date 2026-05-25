@@ -1,55 +1,104 @@
-AUDIT::PATHWAY_DEPS: handoff/01 through handoff/03
+AUDIT::PATHWAY_DEPS: handoff/01-pathway-deps.json, handoff/02-session-snapshot.json, handoff/03-governance-report.md
 AUDIT::CURRENT_GRADE: Grade A
-AUDIT::ENTROPY_VECTOR: Low — new files only; constitutional documents not touched
+AUDIT::ENTROPY_VECTOR: Low — new production files only; constitutional documents untouched; ID pre-allocation is local to physics layer
+AUDIT::FIXED_POINT_CHECK: PASS
 
-## Contradiction Report — tier/T4-ledger-replay-20260524
+## Contradiction Report — tier/T5-core-loop-excellence-20260524
 
 ### Source Truth Violations
 None.
 
-All decisions verified against constitutional hierarchy:
+---
 
-1. **SHA-256 for chain hashes** — `hashing-strategy.md` §Decision:
-   "SHA-256 for all external chain links and audit-facing hashes."
-   SupabaseEventStore uses `createHash('sha256')`. ✓
+### Check 1 — spawnBodyQueued() ID pre-allocation vs event-sourcing contracts
 
-2. **HMAC-SHA256 for event signatures** — `hashing-strategy.md` table row:
-   "PDX transaction signature: HMAC-SHA256 | Per DELTA-VERIFY Article 2.3"
-   SupabaseEventStore uses `createHmac('sha256', secret)`. ✓
+**Claim:** spawnBodyQueued() pre-allocates an entity ID (`vb-${++this.idCounter}`) before the physics
+body exists, then enqueues the spawn. The ID is returned to the caller.
 
-3. **BLAKE3 not used** — no BLAKE3 present in any T4 file. ✓
+**Contracts checked:**
+- `contracts/IEventStore.ts` — IEventStore defines write()/read()/verifyChain(). Does not constrain
+  when physics body IDs are allocated. Physics layer is below the event-store boundary.
+- `contracts/ReplayEvent.v1.ts` — EntityEvent carries `entityId: string`. No constraint that the
+  entity must be fully created before the ID is assigned.
+- `mesh/sacred-core-spec.md` — Sacred Core files: csprng.ts, farkleScorer.ts, rtpConfig.ts,
+  monteCarlo.ts, farkleStore.ts, gameStore.ts. VoxelPhysicsSystem.ts is NOT in the Sacred Core list.
+  ID allocation is within Execution Runtime authority.
 
-4. **FD/PDX separation** — `sacred-core-spec.md` §ledger_state:
-   "PDX balance arithmetic" and "FD emission rate calculations" as separate
-   protected elements. Migration enforces zero cross-table FK. ✓
+**Verdict:** No contradiction. ID pre-allocation is an implementation detail within the physics
+system's authority. The IEventStore contract does not govern physics body ID lifecycle.
+The existing `spawnBody()` synchronous path is preserved — backward compatible.
 
-5. **PDX_AWARD attestation** — `mesh/EXECUTE.md` constraint:
-   `pdx_award_without_attestation`: "PDX award events require a hardware
-   attestation verdict of 'PASS'. PDX_AWARD events with absent or invalid
-   attestation are rejected at the IEventStore.write() boundary."
-   Enforced via SQL constraint + SupabaseEventStore application-level check. ✓
+---
 
-6. **bigint amounts** — `sacred-core-spec.md` §ledger_state protected elements
-   imply no floating-point in ledger arithmetic. `002_event_store_ledger.sql`
-   uses only `bigint` for all amount columns. ✓
+### Check 2 — ClassArchetypeBadge import path (game-core vs contracts/)
+
+**Claim:** ClassArchetypeBadge.tsx imports `ClassArchetype` from
+`core/packages/game-core/src/replay/types.ts`, not from `contracts/`.
+
+**Contracts checked:**
+- `contracts/IEventStore.v1.md` §2: "ClassArchetype" appears in SnapshotState.class_archetypes.
+  The source of truth for the type is the IEventStore contract, which re-exports from game-core.
+- `contracts/Snapshot.v1.ts` imports ClassArchetype from the same `replay/types.ts` path.
+  game-core/replay/types.ts IS the canonical type source — contracts/ re-exports it.
+- `mesh/sacred-core-spec.md`: ClassArchetype multipliers (1.15x, 2.5x, 1.85x) are Sacred Core.
+  The badge imports only the discriminated union type, not the multiplier map.
+
+**Verdict:** No contradiction. `game-core/src/replay/types.ts` is the canonical type definition;
+`contracts/Snapshot.v1.ts` imports from it. ClassArchetypeBadge correctly imports the type only.
+Sacred Core boundary respected — multiplier values never referenced.
+
+---
+
+### Check 3 — NODE_ENV=test fix vs constitutional behavior
+
+**Claim:** Adding `NODE_ENV=test` prefix to game-core test scripts changes the InMemoryEventStore
+production guard behavior.
+
+**Constitutional check:**
+- `mesh/EXECUTE.md` §prohibited: No constraint on test environment variables.
+- `mesh/authority-model.md`: Test infrastructure is within Execution Runtime authority.
+- The production guard (`if env !== 'test'`) was authored in T4 (ADR-015) specifically to prevent
+  InMemoryEventStore from running in production. Adding `NODE_ENV=test` in test scripts is the
+  intended usage, not a bypass.
+
+**Verdict:** No contradiction. The fix is the intended use of a T4-authored guard.
+
+---
+
+### Check 4 — FF_V4 supplement scope vs EXECUTE.md governance
+
+**Claim:** T5 scope was expanded to include FF_V4 deliverables (gap analysis, roadmap, risk report).
+Per Human Authority decision (2026-05-24), FF_V4 is supplemental — EXECUTE.md governs.
+
+**Constitutional check:**
+- `mesh/authority-model.md` §Human Authority: "Overrides any constitutional constraint."
+  Human explicitly chose Option B — supplemental, not replacement.
+- No ADR required for supplemental adoption (FF_V4 advisory, not constitutional).
+- ADR-016 D5 records this decision. No EXECUTE.md text was altered.
+- All T5 artifacts produced under EXECUTE.md audit cell sequence, sacred core spec, and
+  authority model. The FF_V4 deliverables (docs only) introduce no code or Sacred Core contact.
+
+**Verdict:** No contradiction. The supplemental scope expansion is authorized by Human Authority.
+EXECUTE.md governance integrity preserved.
+
+---
 
 ### Uncited Authority Claims
-None. All decisions cite constitutional documents or ADR-015.
+None. All T5 decisions cite constitutional documents, ADR-016, or Human Authority.
 
 ### ADR Triggers Met Without ADR
-None. ADR-015 written for all T4 schema and design decisions.
+None. ADR-016 authored for all T5 design decisions.
 
 ### Hashing Inconsistencies
-None. SHA-256 used for all chain links. HMAC-SHA256 for event signatures. BLAKE3 absent.
+None. No new hashing introduced in T5. Existing SHA-256 chain unchanged.
 
 ### Event Schema Changes Without Version Bump
-None. IEventStore v1.0.0 unchanged (frozen). New tables in Supabase do not modify the schema version.
+None. IEventStore v1.0.0 unchanged (frozen). 'spawn' PhysicsActionType is local to the physics
+layer — not an IEventStore event type.
 
-### T4 Gate Deviation: RTP deviance gate
-The plan specified deviance < 0.05. Observed deviance for RALLY_FREE and HEIST_FREE is 0.1158.
-Resolution: Gate raised to 0.20 (T4 purpose is "harness runs"). monteCarlo.ts is Sacred Core —
-cannot be modified to reduce deviance. Deviation recorded in ADR-015 for AA+ tier work.
-This is consistent with "T4 gate is harness runs" stated in the plan. No constitutional conflict.
+### FIXED_POINT_CHECK Cross-Reference
+spawnBodyQueued() returns a string ID; no arithmetic. ClassArchetypeBadge renders strings; no arithmetic.
+NODE_ENV=test fix adds no arithmetic. All clear — see Cell 05 for full verification.
 
 ### Escalations Raised
-None
+None.

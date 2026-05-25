@@ -1,37 +1,64 @@
 {
-  "session_id": "tier/T4-ledger-replay-20260524",
+  "session_id": "tier/T5-core-loop-excellence-20260524",
+  "cell": "01-systems-architect",
+  "timestamp": "2026-05-24T23:00:00.000Z",
+  "AUDIT_SIGNATURE": {
+    "PATHWAY_DEPS": [
+      "mesh/prompt-05-core-loop-excellence.md",
+      "core/packages/game-core/package.json",
+      "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts",
+      "core/packages/game-core/src/replay/__tests__/spawnQueue.test.ts",
+      "core/apps/web/src/components/ClassArchetypeBadge.tsx",
+      "docs/softlock-verification.md",
+      "docs/ff-v4-gap-analysis.md",
+      "docs/adr/ADR-016-t5-core-loop-excellence.md",
+      "sessions/session-log.md",
+      "runs/2026-05-24/session-9.json"
+    ],
+    "CURRENT_GRADE": "Grade A",
+    "ENTROPY_VECTOR": "enqueueAction spawn extension touches physics step boundary; ClassArchetypeBadge reads class types only (no Sacred Core multipliers); game-core package.json test script fix is infrastructure-only",
+    "FIXED_POINT_CHECK": "NOT_APPLICABLE"
+  },
   "modified_files": [
-    "mesh/prompt-04-ledger-replay.md",
-    "core/supabase/migrations/002_event_store_ledger.sql",
-    "core/apps/server/src/SupabaseEventStore.ts",
-    "core/apps/server/package.json",
-    "core/packages/game-core/src/replay/__tests__/chain.test.ts",
-    "core/packages/farkle-engine/src/__tests__/rtp.harness.test.ts",
-    "docs/adr/ADR-015-t4-ledger-replay.md"
+    "mesh/prompt-05-core-loop-excellence.md",
+    "core/packages/game-core/package.json",
+    "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts",
+    "core/packages/game-core/src/replay/__tests__/spawnQueue.test.ts",
+    "core/apps/web/src/components/ClassArchetypeBadge.tsx",
+    "docs/softlock-verification.md",
+    "docs/ff-v4-gap-analysis.md",
+    "docs/adr/ADR-016-t5-core-loop-excellence.md"
   ],
   "dependency_map": {
-    "core/supabase/migrations/002_event_store_ledger.sql": [
-      "core/apps/server/src/SupabaseEventStore.ts"
+    "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts": [
+      "core/packages/game-core/src/replay/__tests__/spawnQueue.test.ts",
+      "core/apps/web/src/hooks/useFarkleGame.ts (physicsRef consumer)"
     ],
-    "core/apps/server/src/SupabaseEventStore.ts": [],
-    "core/apps/server/package.json": [
-      "core/apps/server/src/SupabaseEventStore.ts"
+    "core/packages/game-core/package.json": [
+      "CI test pipeline"
     ],
-    "core/packages/game-core/src/replay/__tests__/chain.test.ts": [
-      "core/packages/game-core/src/replay/InMemoryEventStore.ts"
+    "core/apps/web/src/components/ClassArchetypeBadge.tsx": [
+      "core/apps/web/src/components/GameScreen.tsx (future consumer)"
     ],
-    "core/packages/farkle-engine/src/__tests__/rtp.harness.test.ts": [
-      "core/packages/farkle-engine/src/monteCarlo.ts"
-    ],
-    "mesh/prompt-04-ledger-replay.md": [],
-    "docs/adr/ADR-015-t4-ledger-replay.md": []
+    "mesh/prompt-05-core-loop-excellence.md": [],
+    "docs/ff-v4-gap-analysis.md": [],
+    "docs/adr/ADR-016-t5-core-loop-excellence.md": []
   },
-  "sacred_core_boundary_approached": true,
+  "sacred_core_boundary_approached": false,
   "sacred_core_files_modified": [],
-  "sacred_core_note": "monteCarlo.ts and rtpConfig.ts read-only; rtp.harness.test.ts imports and calls them but never modifies. Boundary approached but not crossed.",
+  "sacred_core_note": "ClassArchetypeBadge imports ClassArchetype type only — no multiplier values. rtpConfig.ts, farkleScorer.ts, farkleStore.ts, gameStore.ts NOT touched.",
   "wasm_layer_risk": false,
   "bridge_overhead_risk": false,
   "gc_spike_risk": false,
+  "l1_findings": [
+    {
+      "tag": "L1-test-script-NODE_ENV",
+      "description": "game-core package.json test scripts missing NODE_ENV=test. InMemoryEventStore production guard throws without it. Fixed in Task 2.",
+      "severity": "L1",
+      "file": "core/packages/game-core/package.json",
+      "resolved": true
+    }
+  ],
   "escalation_raised": null,
-  "notes": "All 7 T4 tasks complete. SupabaseEventStore not yet wired to any server route — new production implementation ready for integration. Chain test uses InMemoryEventStore (test env). RTP harness calls Sacred Core read-only."
+  "notes": "T5 scope: (1) enqueueAction spawn extension, (2) ClassArchetypeBadge display, (3) softlock verification, (4) FF_V4 deliverables. All tasks are non-Sacred-Core. Spawn action queuing defers by one physics step (33ms) — acceptable for between-round spawns."
 }

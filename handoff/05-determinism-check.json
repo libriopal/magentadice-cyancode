@@ -1,28 +1,43 @@
 {
-  "session_id": "tier/T4-ledger-replay-20260524",
+  "session_id": "tier/T5-core-loop-excellence-20260524",
   "fixed_point_check": "PASS",
-  "fixed_point_rationale": "All Postgres amount columns use bigint (Q×1000 integer representation). No float4, float8, numeric, real, or decimal types in any ledger column. No new arithmetic on amounts in TypeScript — SupabaseEventStore only hashes strings and reads/writes bigint values. rtp.harness.test.ts calls Sacred Core monteCarlo.ts read-only without adding scoring arithmetic.",
+  "fixed_point_rationale": "All new production code paths are free of float arithmetic, Math.random(), and Date.now() in scoring paths. spawnBodyQueued() pre-allocates a string ID using integer counter (++this.idCounter). _createBody() uses integer column index and enum entityType — no scoring arithmetic. ClassArchetypeBadge renders visual tokens (color strings, labels) — zero arithmetic. NODE_ENV=test fix adds no arithmetic paths.",
   "float_violations": [],
   "math_random_violations": [],
   "date_now_violations": [],
   "new_float32array_violations": [],
+  "checks_performed": [
+    "Math.random() in VoxelPhysicsSystem.ts (T5 changes): NOT FOUND",
+    "Math.random() in ClassArchetypeBadge.tsx: NOT FOUND",
+    "Math.random() in spawnQueue.test.ts: NOT FOUND",
+    "Float arithmetic in spawnBodyQueued(): NOT FOUND — idCounter is integer, ID is string",
+    "Float arithmetic in _createBody(): NOT FOUND — column is integer index, face is integer|null",
+    "Float arithmetic in _drainPendingActions() spawn case: NOT FOUND — delegates to _createBody()",
+    "Scoring arithmetic in ClassArchetypeBadge: NOT FOUND — display only, no multiplier values",
+    "Multiplier values (1.15, 2.5, 1.85) in ClassArchetypeBadge.tsx: NOT FOUND",
+    "Date.now() in new production paths: NOT FOUND",
+    "PHYSICS_TIMESTEP changed: NOT FOUND — 1/30 unchanged",
+    "COLUMN_X positions (world-space floats): PRESENT but NOT_APPLICABLE — physics coordinate, not scoring",
+    "NODE_ENV=test in package.json test scripts: PRESENT — correct, intended fix",
+    "Math.random() in mesh/prompt-05-core-loop-excellence.md: NOT_APPLICABLE (doc)",
+    "Math.random() in docs/softlock-verification.md: NOT_APPLICABLE (doc)",
+    "Math.random() in docs/ff-v4-gap-analysis.md: NOT_APPLICABLE (doc)",
+    "Math.random() in docs/adr/ADR-016-t5-core-loop-excellence.md: NOT_APPLICABLE (doc)"
+  ],
+  "not_applicable_paths": [
+    {
+      "path": "COLUMN_X world-space positions in VoxelPhysicsSystem.ts",
+      "reason": "Physics coordinate space floats — established in T3, not scoring arithmetic. FIXED_POINT_CHECK NOT_APPLICABLE per ADR-014 §FIXED_POINT_SCOPE."
+    }
+  ],
   "rng_lineage_compliant": true,
   "hashing_strategy_compliant": true,
   "rapier_dt_enforced": true,
   "sha256_chain_compliant": true,
   "blake3_not_used_in_audit_paths": true,
-  "ledger_columns_bigint_only": true,
-  "checks_performed": [
-    "Math.random() in SupabaseEventStore.ts: NOT FOUND (comment only)",
-    "Math.random() in chain.test.ts: NOT FOUND",
-    "Math.random() in rtp.harness.test.ts: NOT FOUND",
-    "float/numeric in 002_event_store_ledger.sql: NOT FOUND (all bigint)",
-    "createHash('sha256') in SupabaseEventStore.ts: FOUND — correct algorithm",
-    "createHmac('sha256') in SupabaseEventStore.ts: FOUND — correct algorithm",
-    "BLAKE3 in any T4 file: NOT FOUND",
-    "FD-to-PDX FK in SQL: NOT FOUND — zero pointer sharing confirmed",
-    "PDX-to-FD FK in SQL: NOT FOUND — zero pointer sharing confirmed"
-  ],
+  "sacred_core_untouched": true,
+  "spawn_id_counter_type": "integer (++this.idCounter) — no float risk",
+  "class_archetype_multipliers_absent": true,
   "escalation_raised": null,
-  "notes": "All determinism checks PASS. rtp.harness.test.ts calls runAllModeAudit (Sacred Core) read-only. No new randomness sources. chain.test.ts verifies predecessor_hash chain integrity."
+  "notes": "All T5 production code paths pass FIXED_POINT_CHECK. The only floats present are pre-existing COLUMN_X physics world-space constants (NOT_APPLICABLE). No new scoring arithmetic, no Math.random(), no Sacred Core contact. spawnBodyQueued() backward compat with spawnBody() confirmed — both use integer idCounter."
 }
