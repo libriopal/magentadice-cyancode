@@ -135,7 +135,7 @@ points only:
 - `core/packages/game-core/src/level/__tests__/levelSchema.test.ts` — 3 test stages
 
 **LevelDef schema fields:**
-```
+```yaml
 id: string (pattern: "^L[0-9]{2}-[a-z-]+$")
 name: string
 stage_number: integer (1-50)

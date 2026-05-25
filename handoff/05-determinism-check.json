@@ -1,7 +1,7 @@
 {
   "session_id": "tier/T6-content-pipeline-20260525",
   "fixed_point_check": "PASS",
-  "fixed_point_rationale": "All new production code paths are free of float arithmetic in scoring/payout paths. rtp_final in MATCH_END uses Math.round(netRTP * 1000) — transient float in conversion expression only; integer result written to event store. gridUtils.ts float multiplications replaced with integer division (/ 2, / 4). LevelDef.schema.json win_score declared integer >= 1000. No new Math.random() or Date.now() in scoring paths.",
+  "fixed_point_rationale": "All new production code paths are free of float arithmetic in scoring/payout paths. rtp_final in MATCH_END uses Math.round(netRTP * 1000) — transient float in conversion expression only; integer result written to event store. gridUtils.ts float multiplications replaced with Math.floor(blockerCount / 2) and Math.floor(blockerCount / 4). LevelDef.schema.json win_score declared integer >= 1000. No new Math.random() or Date.now() in scoring paths.",
   "float_violations": [],
   "math_random_violations": [],
   "date_now_violations": [],
@@ -10,7 +10,7 @@
     "Math.random() in gameRoom.ts (T6 additions): NOT FOUND",
     "Math.random() in LevelDef.schema.json: NOT_APPLICABLE (JSON Schema)",
     "Math.random() in levelSchema.test.ts: NOT FOUND",
-    "Float arithmetic in gridUtils.ts blockerCount path: NOT FOUND (removed — replaced with / 2, / 4)",
+    "Float arithmetic in gridUtils.ts blockerCount path: NOT FOUND (removed — replaced with Math.floor(blockerCount / 2), Math.floor(blockerCount / 4))",
     "Float arithmetic in MATCH_START payload: NOT FOUND — all fields are strings or integer arrays",
     "Float arithmetic in MATCH_END payload: NOT FOUND — rtp_final is Math.round(integer) result",
     "Float in LevelDef types.ts: NOT FOUND — win_score typed as number, doc comment says Q×1000",

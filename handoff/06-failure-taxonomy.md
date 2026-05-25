@@ -47,7 +47,7 @@ proposed calibration approach.
 
 | Level | Tag | Cell | Resolved |
 |---|---|---|---|
-| L1 | L1-gridUtils-SEVERITY-C | Governance Auditor | YES — / 2 / 4 integer division |
+| L1 | L1-gridUtils-SEVERITY-C | Governance Auditor | YES — Math.floor(blockerCount / 2), Math.floor(blockerCount / 4) integer division |
 | L0 | Pre-existing tsconfig node:crypto errors | Governance Auditor | No (deferred — not T6 scope) |
 | L0 | ADR-010 calibration: PROPOSE ONLY | Contradiction Hunter | No (deferred — Human approval required) |
 | L0 | RALLY_FREE/HEIST_FREE deviance 0.1158 | Contradiction Hunter (T4, carried) | No (deferred — T7/T8) |
