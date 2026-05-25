@@ -30,7 +30,7 @@ into the `EmotionalState` type consumed by `setMusicState()`.
 
 **Emotional state mapping (non-sacred, read-only):**
 
-```
+```text
 tension  = clamp(multiplierStep / 10, 0, 1)
 momentum = chainLength >= 3 ? 0.8 : chainLength / 3
 risk     = unbanked / max(banked + unbanked, 1)
@@ -139,7 +139,7 @@ Decisions to document:
 ### Task 7 — Audit cells + session artifacts
 
 Run all 6 audit cells. Write `runs/2026-05-25/session-11.json` and append
-`docs/sessions/session-log.md`.
+`sessions/session-log.md`.
 
 ---
 

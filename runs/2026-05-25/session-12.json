@@ -1,0 +1,94 @@
+{
+  "session_id": "tier/T8-economy-farnzy-20260525",
+  "tier": "T8",
+  "branch": "tier/T8-economy-farnzy-20260525",
+  "timestamp": "2026-05-25T20:00:00.000Z",
+  "score_total": 97,
+  "dimensions": {
+    "mathematical_purity": {
+      "score": 20,
+      "max": 20,
+      "fixed_point_check": "PASS",
+      "float_violations": 0,
+      "notes": "writeWithRetry: no float arithmetic. MATCH_SCORE payload: score_delta and running_total are integers from integer banking arithmetic. delays array [100,200,400] are integer ms values. No Math.random() in any new code path. Full 20/20."
+    },
+    "sacred_core_integrity": {
+      "score": 20,
+      "max": 20,
+      "violations": [],
+      "notes": "gameRoom.ts is NOT on the Sacred Core list. No Sacred Core files modified. ClassArchetypeBadge import fix reads from replay/types.ts (not Sacred Core). 0 Sacred Core writes across T0-T8."
+    },
+    "performance_delta": {
+      "score": 19,
+      "max": 20,
+      "heap_allocations_added": 1,
+      "notes": "writeWithRetry adds one async function frame per write call (MATCH_START, MATCH_END, MATCH_SCORE×2 per session). All are fire-and-forget — do not block game loop. setTimeout allocations are GC'd after firing. -1 for non-zero allocation delta."
+    },
+    "grade_elevation": {
+      "score": 14,
+      "max": 15,
+      "transitions": [
+        "gameRoom.ts: B→A (fire-and-forget retry now compliant with IEventStore.v1.md §3; MATCH_SCORE wired)",
+        "ClassArchetypeBadge.tsx: B→A (14 TS errors resolved; import path corrected)"
+      ],
+      "notes": "2 formal B→A transitions. ADR-019 authored at Grade A. Inline documentation fixes at Grade A. 14/15 — deducted 1 for no pre-existing grade baseline verification."
+    },
+    "regression_count": {
+      "score": 10,
+      "max": 10,
+      "bugs_fixed": 2,
+      "bugs_introduced": 0,
+      "notes": "L0-event-store-retry RESOLVED (IEventStore.v1.md §3 compliance). ClassArchetypeBadge 14 TS errors RESOLVED. 41/41 tests pass (0 regressions). 0 new bugs introduced."
+    },
+    "tier_gate_progress": {
+      "score": 10,
+      "max": 10,
+      "gates_advanced": [
+        "T8: writeWithRetry present; MATCH_START/MATCH_END use it",
+        "T8: MATCH_SCORE event wired at both banking paths",
+        "T8: ClassArchetypeBadge 14 TS errors resolved",
+        "T8: pnpm type-check 0 new errors",
+        "T8: 41/41 tests pass",
+        "T8: L0-event-store-retry resolved",
+        "T8: ADR-019 written"
+      ],
+      "notes": "All T8 pass gates from mesh/prompt-09-economy-farnzy.md satisfied."
+    },
+    "evidence_coverage": {
+      "score": 2,
+      "max": 3,
+      "corpus_citations": 4,
+      "notes": "ADR-019 cites: IEventStore.v1.md §3 (retry requirement), sacred-core-spec.md (gameRoom.ts not sacred), hashing-strategy.md (score_delta integer, not Q×1000 currency), event-versioning-spec.md (MINOR payload addition, no version bump). -1: No external citation for retry backoff strategy (100/200/400ms values are conventional, not spec-cited)."
+    },
+    "mcp_utilization": {
+      "score": 2,
+      "max": 2,
+      "tools_used": ["filesystem (read/write)", "grep (FIXED_POINT_CHECK)", "bash (type-check, test)"],
+      "notes": "MCP tools used appropriately throughout. No hallucinated tool calls."
+    }
+  },
+  "flags": [
+    {
+      "level": 0,
+      "tag": "L0-ADR010-calibration",
+      "cell": "Governance Auditor",
+      "description": "ADR-010 Monte Carlo calibration is PROPOSE ONLY — pending Human approval.",
+      "file_affected": "docs/adr/ADR-010-rtp-variance-tightening.md",
+      "resolved": false,
+      "resolution": "Pending Human decision"
+    }
+  ],
+  "escalation_level": 0,
+  "verdict": "PASS_PROPOSE_COMMIT",
+  "audit_signature": {
+    "pathway_deps": [
+      "core/apps/server/src/gameRoom.ts",
+      "core/apps/web/src/components/ClassArchetypeBadge.tsx",
+      "docs/adr/ADR-019-t8-economy-farnzy.md",
+      "mesh/prompt-09-economy-farnzy.md"
+    ],
+    "current_grade": "Grade A",
+    "entropy_vector": "writeWithRetry adds max 700ms async overhead on triple failure (100+200+400ms); fire-and-forget; MATCH_SCORE fires at both banking paths; integer payload only",
+    "fixed_point_check": "PASS"
+  }
+}

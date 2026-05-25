@@ -523,6 +523,63 @@ T5 or per Human direction.
 
 ---
 
+## Session 10 — T6 Content Pipeline
+
+| Field | Value |
+|---|---|
+| session_id | tier/T6-content-pipeline-20260525 |
+| date | 2026-05-25 |
+| score | 94/100 |
+| verdict | PASS_PROPOSE_COMMIT |
+| branch | tier/T6-content-pipeline-20260525 |
+
+### Deliverables
+
+- `mesh/prompt-06-content-pipeline.md` — T6 tier prompt (8 tasks)
+- `core/apps/server/src/gameRoom.ts` — SupabaseEventStore wired (MATCH_START + MATCH_END); processChain msg param fixed; rtp_final as Math.round(netRTP×1000)
+- `core/packages/farkle-engine/src/gridUtils.ts` — SEVERITY-C floats removed (blockerCount / 2 / 4)
+- `core/packages/game-core/src/level/LevelDef.schema.json` — JSON Schema v7; win_score Q×1000 integer
+- `core/packages/game-core/src/level/types.ts` — TypeScript types: LevelDef, BlockerDensity, LatticeModule, ArchetypeBias
+- `core/packages/game-core/src/level/__tests__/levelSchema.test.ts` — 6 tests (3 valid + 3 rejection cases)
+- `docs/level-taxonomy.md` — 50-stage taxonomy; all 20 lattice modules; Q×1000 win_scores
+- `docs/adr/ADR-017-t6-content-pipeline.md` — 6 decisions; test table 35→41
+
+### Tests
+
+- farkleScorer.test.ts: 16/16 PASS
+- replay.test.ts: 5/5 PASS
+- spawn.test.ts: 3/3 PASS
+- inputQueue.test.ts: 2/2 PASS
+- chain.test.ts: 2/2 PASS
+- rtp.harness.test.ts: 3/3 PASS
+- spawnQueue.test.ts: 4/4 PASS
+- levelSchema.test.ts: 6/6 PASS (new)
+- **TOTAL: 41/41**
+
+**FIXED_POINT_CHECK:** PASS — gridUtils SEVERITY-C floats removed; rtp_final Q×1000 integer.
+**Sacred Core:** Not modified — monteCarlo.ts and rtpConfig.ts read-only.
+**L1-gridUtils-SEVERITY-C:** RESOLVED.
+
+### Flags
+
+- [L0] Pre-existing InMemoryEventStore node:crypto type errors — not T6 scope
+- [L0] SupabaseEventStore fire-and-forget retry — deferred to T8
+- [L0] ADR-010 calibration PROPOSE ONLY — pending Human approval
+- [L0] MATCH_SCORE event wiring deferred to T7/T8
+
+### Deferred to Later Tier
+
+- SupabaseEventStore retry mechanism — T8 production hardening
+- MATCH_SCORE per-player class archetype tracking — T8
+- ADR-010 Monte Carlo calibration — Human decision pending
+
+### Next Session
+
+T7 or per Human direction.
+`memory.tier_gate_status.T6 = 'PASS'`
+
+---
+
 ## Session 11 — T7 Visual Overhaul
 
 | Field | Value |
@@ -575,5 +632,50 @@ T5 or per Human direction.
 
 T8 or per Human direction.
 `memory.tier_gate_status.T7 = 'PASS'`
+
+---
+
+## Session 12 — T8 Economy & Production Hardening
+
+| Field | Value |
+|---|---|
+| session_id | tier/T8-economy-farnzy-20260525 |
+| date | 2026-05-25 |
+| score | 97/100 |
+| verdict | PASS_PROPOSE_COMMIT |
+| branch | tier/T8-economy-farnzy-20260525 |
+
+### Deliverables
+
+- `mesh/prompt-09-economy-farnzy.md` — T8 tier prompt (5 tasks)
+- `core/apps/server/src/gameRoom.ts` — `writeWithRetry` helper (3 attempts, exponential backoff); MATCH_START/MATCH_END upgraded; MATCH_SCORE event wired at both banking paths
+- `core/apps/web/src/components/ClassArchetypeBadge.tsx` — import path corrected (3→4 levels up); 14 TS errors resolved
+- `docs/adr/ADR-019-t8-economy-farnzy.md` — 3 decisions documented
+- Inline fixes: `handoff/02-session-snapshot.json` (status), `mesh/prompt-07-visual-overhaul.md` (path + lang tag), `sessions/session-log.md` (Session 10 inserted)
+
+### Tests
+
+- farkleScorer.test.ts: 16/16 PASS (regression)
+- rtp.harness.test.ts: 3/3 PASS (regression)
+- game-core (all): 22/22 PASS (regression)
+- **TOTAL: 41/41**
+
+**FIXED_POINT_CHECK:** PASS — writeWithRetry integer-only; MATCH_SCORE payload integers.
+**Sacred Core:** Not modified — gameRoom.ts not on Sacred Core list.
+**L0-event-store-retry:** RESOLVED — writeWithRetry satisfies IEventStore.v1.md §3.
+**ClassArchetypeBadge:** 14 TS errors resolved — import path corrected.
+
+### Flags
+
+- [L0] ADR-010 calibration PROPOSE ONLY — pending Human approval (carried from T6)
+
+### Deferred to Later Tier
+
+- ADR-010 Monte Carlo calibration — Human decision pending
+
+### Next Session
+
+T9 or per Human direction.
+`memory.tier_gate_status.T8 = 'PASS'`
 
 ---

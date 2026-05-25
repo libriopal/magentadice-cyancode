@@ -1,48 +1,42 @@
 {
-  "session_id": "tier/T7-visual-overhaul-20260525",
+  "session_id": "tier/T8-economy-farnzy-20260525",
   "cell": "02-replay-archivist",
-  "snapshot_timestamp": "2026-05-25T18:00:00.000Z",
-  "git_head": "tier/T7-visual-overhaul-20260525:uncommitted (core submodule at 5eb6135)",
-  "git_base_commit": "c8eaf2d",
+  "snapshot_timestamp": "2026-05-25T20:00:00.000Z",
+  "git_head": "tier/T8-economy-farnzy-20260525:uncommitted (core submodule at 0a64159 + T8 changes)",
+  "git_base_commit": "2b9f47b",
   "files_modified_count": 7,
-  "memory_state_hash": "T0-T6_PASS_T7_IN_PROGRESS",
+  "memory_state_hash": "T0-T7_PASS_T8_IN_PROGRESS",
   "chain_head_valid": true,
-  "chain_head_event_id": "levelSchema.test.ts 6/6 PASS (T6 chain — no new chain events in T7)",
+  "chain_head_event_id": "levelSchema.test.ts 6/6 PASS (T6 chain — MATCH_SCORE now extends chain in production)",
   "rng_lineage_intact": true,
   "session_seed_committed_before_events": true,
-  "t7_tasks_complete": [
-    {"task": "Create mesh/prompt-07-visual-overhaul.md", "status": "COMPLETE"},
-    {"task": "Create core/apps/web/src/audio/erkConductor.ts", "status": "COMPLETE"},
-    {"task": "Wire useERKConductor into GameScreen.tsx", "status": "COMPLETE"},
-    {"task": "Create core/art/manifest/design_tokens.json", "status": "COMPLETE"},
-    {"task": "Upgrade NFTItemCard.tsx to ExtendedRarity + VoidShard tier", "status": "COMPLETE"},
-    {"task": "WinLoseScreen.tsx full token adoption", "status": "COMPLETE"},
-    {"task": "Create ADR-018", "status": "COMPLETE"},
+  "t8_tasks_complete": [
+    {"task": "Create mesh/prompt-09-economy-farnzy.md", "status": "COMPLETE"},
+    {"task": "Apply inline fixes (snapshot status, prompt path, session log continuity)", "status": "COMPLETE"},
+    {"task": "Add writeWithRetry to gameRoom.ts; update MATCH_START/MATCH_END", "status": "COMPLETE"},
+    {"task": "Wire MATCH_SCORE event at both banking paths", "status": "COMPLETE"},
+    {"task": "Fix ClassArchetypeBadge import path (3→4 levels up)", "status": "COMPLETE"},
+    {"task": "Create ADR-019", "status": "COMPLETE"},
     {"task": "Audit cells + session artifacts", "status": "IN_PROGRESS"}
   ],
   "tests_pass": {
     "farkleScorer.test.ts": "16/16",
-    "replay.test.ts": "5/5",
-    "spawn.test.ts": "3/3",
-    "inputQueue.test.ts": "2/2",
-    "chain.test.ts": "2/2",
     "rtp.harness.test.ts": "3/3",
-    "spawnQueue.test.ts": "4/4",
-    "levelSchema.test.ts": "6/6",
+    "game-core (all)": "22/22",
     "TOTAL": "41/41"
   },
   "type_check": {
     "new_errors_introduced": 0,
-    "pre_existing_errors": "InMemoryEventStore node:crypto + node:test errors in game-core tsconfig (pre-T7, unchanged)",
-    "web_app_new_errors": 0
+    "resolved_errors": 14,
+    "resolved_detail": "ClassArchetypeBadge.tsx 1 module-not-found + 13 style-possibly-undefined — all from bad import path",
+    "pre_existing_errors": "InMemoryEventStore node:crypto / node:test (tsconfig — unchanged)"
   },
   "fixed_point_check": "PASS",
   "sacred_core_touched": false,
   "escalation_raised": null,
-  "l1_findings_carried": [],
+  "l0_findings_resolved": ["L0-event-store-retry"],
   "l0_observations_carried": [
-    "gameRoom.ts tsc: pre-existing InMemoryEventStore node:crypto errors (tsconfig — not T7 scope)",
     "ADR-010 calibration: PROPOSE ONLY — pending Human approval (carried from T6)"
   ],
-  "notes": "T7 is purely L5 ADORNMENT. No scoring paths touched. No Sacred Core writes. erkConductor.ts reads farkleStore/gameStore via Zustand selector hooks. 3-second hold timer prevents ERK state flickering. design_tokens.json is a new canonical export artifact — no code consumers yet."
+  "notes": "T8 resolves L0-event-store-retry via writeWithRetry. MATCH_SCORE event now wired. ClassArchetypeBadge 14 TS errors resolved. 41/41 tests green."
 }

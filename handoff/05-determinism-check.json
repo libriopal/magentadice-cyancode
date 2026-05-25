@@ -1,29 +1,27 @@
 {
-  "session_id": "tier/T7-visual-overhaul-20260525",
+  "session_id": "tier/T8-economy-farnzy-20260525",
   "fixed_point_check": "PASS",
-  "fixed_point_rationale": "T7 is purely L5 ADORNMENT. No new scoring paths. No new Math.random(). erkConductor.ts deriveEmotionalState() uses Math.min() on bounded integer/float inputs to produce an EmotionalState enum value used only for audio routing — does not enter any scoring, ledger, or event-chain path. NFTItemCard geometry selection uses modulo arithmetic on deterministicSeed (integer). WinLoseScreen changes are CSS/style only.",
+  "fixed_point_rationale": "writeWithRetry contains only async/await, setTimeout, and string operations. MATCH_SCORE payload fields (score_delta, running_total) are derived from integer arithmetic only — profile.banked is always integer (accumulated via += gain where gain is always integer from Farkle scoring). ClassArchetypeBadge fix is import path only — no numeric operations. No floats enter any scoring, payout, or event-chain path.",
   "float_violations": [],
   "math_random_violations": [],
   "date_now_violations": [],
   "new_float32array_violations": [],
   "checks_performed": [
-    "Math.random() in erkConductor.ts: NOT FOUND",
-    "Math.random() in GameScreen.tsx (T7 additions): NOT FOUND",
-    "Math.random() in NFTItemCard.tsx: NOT FOUND (comment 'never Math.random()' confirmed)",
-    "Math.random() in WinLoseScreen.tsx: NOT FOUND",
-    "Math.random() in design_tokens.json: NOT_APPLICABLE (JSON data)",
-    "Float in scoring path in erkConductor.ts: NOT APPLICABLE — tension/chaos/resolution are audio routing weights, not scoring values; never written to event store",
-    "Date.now() in erkConductor.ts: NOT FOUND",
-    "Date.now() in GameScreen.tsx (T7 additions): NOT FOUND — pre-existing VoxelPhysicsSystem.create(Date.now()) unchanged",
-    "Date.now() in WinLoseScreen.tsx (T7 additions): NOT FOUND — pre-existing lastUpdated: Date.now() unchanged",
-    "new Float32Array in erkConductor.ts: NOT FOUND",
+    "Math.random() in writeWithRetry: NOT FOUND",
+    "Math.random() in MATCH_SCORE event write paths: NOT FOUND",
+    "Float arithmetic in score_delta: NOT FOUND — gain is integer from banking arithmetic",
+    "Float arithmetic in running_total: NOT FOUND — profile.banked is integer accumulation",
+    "Date.now() in writeWithRetry: NOT FOUND (uses setTimeout with integer ms)",
+    "Date.now() in MATCH_SCORE payload: NOT FOUND",
+    "Float in ClassArchetypeBadge.tsx (T8 change): NOT APPLICABLE (import path fix only)",
     "Sacred Core files modified: NOT FOUND",
-    "Rapier dt=1/60: NOT APPLICABLE — physics layer not touched in T7"
+    "Rapier dt=1/60: NOT APPLICABLE — physics layer not touched in T8",
+    "new Float32Array in T8 files: NOT FOUND"
   ],
   "not_applicable_paths": [
     {
-      "path": "tension/chaos/resolution in deriveEmotionalState()",
-      "reason": "These values are bounded [0, 1] floats used solely to select an EmotionalState enum value ('calm'|'melancholic'|'tense'|'euphoric'). They are not written to any event store, scoring ledger, or RNG seed. Audio routing is L5 ADORNMENT — outside FIXED_POINT_CHECK scope."
+      "path": "setTimeout(r, delays[attempt]!) in writeWithRetry",
+      "reason": "delays array [100, 200, 400] contains integer millisecond values. Not floating-point. Not in scoring path. setTimeout is async infrastructure only."
     }
   ],
   "rng_lineage_compliant": true,
@@ -32,8 +30,8 @@
   "sha256_chain_compliant": true,
   "blake3_not_used_in_audit_paths": true,
   "sacred_core_untouched": true,
-  "erkconductor_math_random_absent": true,
-  "erkconductor_deterministic": true,
+  "match_score_integer_payload": true,
+  "write_retry_no_float": true,
   "escalation_raised": null,
-  "notes": "All T7 production code paths pass FIXED_POINT_CHECK. T7 is L5 ADORNMENT with zero scoring path contact. The only floating-point arithmetic introduced is in audio routing (deriveEmotionalState axes) — L5 only, never enters scoring or event chain."
+  "notes": "All T8 production code paths pass FIXED_POINT_CHECK. The retry wrapper is purely async infrastructure. MATCH_SCORE payload carries integer game scores (not currency amounts). ClassArchetypeBadge fix is structural."
 }

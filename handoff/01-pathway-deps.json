@@ -1,33 +1,34 @@
 {
-  "session_id": "tier/T7-visual-overhaul-20260525",
+  "session_id": "tier/T8-economy-farnzy-20260525",
   "cell": "01-systems-architect",
   "modified_files": [
-    "core/apps/web/src/audio/erkConductor.ts",
-    "core/apps/web/src/components/GameScreen.tsx",
-    "core/apps/web/src/components/NFTItemCard.tsx",
-    "core/apps/web/src/components/WinLoseScreen.tsx",
-    "core/art/manifest/design_tokens.json",
-    "docs/adr/ADR-018-t7-visual-overhaul.md",
-    "mesh/prompt-07-visual-overhaul.md"
+    "core/apps/server/src/gameRoom.ts",
+    "core/apps/web/src/components/ClassArchetypeBadge.tsx",
+    "docs/adr/ADR-019-t8-economy-farnzy.md",
+    "mesh/prompt-09-economy-farnzy.md",
+    "handoff/02-session-snapshot.json",
+    "mesh/prompt-07-visual-overhaul.md",
+    "sessions/session-log.md"
   ],
   "dependency_map": {
-    "core/apps/web/src/audio/erkConductor.ts": [
-      "core/apps/web/src/components/GameScreen.tsx"
+    "core/apps/server/src/gameRoom.ts": [
+      "core/apps/server/src/SupabaseEventStore.ts",
+      "game_events (Supabase table — MATCH_SCORE now written)"
     ],
-    "core/apps/web/src/components/GameScreen.tsx": [],
-    "core/apps/web/src/components/NFTItemCard.tsx": [],
-    "core/apps/web/src/components/WinLoseScreen.tsx": [
-      "core/apps/web/src/App.tsx"
+    "core/apps/web/src/components/ClassArchetypeBadge.tsx": [
+      "core/packages/game-core/src/replay/types.ts"
     ],
-    "core/art/manifest/design_tokens.json": [],
-    "docs/adr/ADR-018-t7-visual-overhaul.md": [],
-    "mesh/prompt-07-visual-overhaul.md": []
+    "docs/adr/ADR-019-t8-economy-farnzy.md": [],
+    "mesh/prompt-09-economy-farnzy.md": [],
+    "handoff/02-session-snapshot.json": [],
+    "mesh/prompt-07-visual-overhaul.md": [],
+    "sessions/session-log.md": []
   },
-  "sacred_core_boundary_approached": true,
+  "sacred_core_boundary_approached": false,
   "sacred_core_files_modified": [],
   "wasm_layer_risk": false,
   "bridge_overhead_risk": false,
   "gc_spike_risk": false,
   "escalation_raised": null,
-  "notes": "erkConductor.ts reads farkleStore and gameStore via Zustand selector hooks (read-only). Sacred Core boundary approached in the read-only sense; no Sacred Core files written. All T7 files are L5 ADORNMENT layer per Five-Layer Architecture. Date.now() in GameScreen.tsx (VoxelPhysicsSystem.create line 212) and WinLoseScreen.tsx (lastUpdated record line 173) are pre-existing, not introduced by T7. NFTItemCard has no downstream consumers in codebase. WinLoseScreen consumed by App.tsx — exported API unchanged (WinScreen/LoseScreen named exports retained). design_tokens.json is a new artifact with no code consumers yet."
+  "notes": "gameRoom.ts is NOT on the Sacred Core list (sacred-core-spec.md enumerates: farkleStore.ts, gameStore.ts, farkleScorer.ts, rtpConfig.ts, monteCarlo.ts, csprng.ts, ledger tables, replay_hash_chain). writeWithRetry is a module-level helper — no scoring arithmetic. MATCH_SCORE events write payload fields that are integers derived from existing integer arithmetic in profile.banked. ClassArchetypeBadge fix is import path only — no logic change. Inline fixes (snapshot status, prompt path, session log continuity) are documentation artifacts only."
 }
