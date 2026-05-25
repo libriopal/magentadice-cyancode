@@ -1,33 +1,43 @@
 {
-  "session_id": "tier/T4-ledger-replay-20260524",
-  "snapshot_timestamp": "2026-05-24T22:00:00.000Z",
-  "git_head": "tier/T4-ledger-replay-20260524:uncommitted",
-  "git_base_commit": "6ab8185",
-  "files_modified_count": 7,
-  "memory_state_hash": "T0-T3_PASS_T4_IN_PROGRESS",
+  "session_id": "tier/T5-core-loop-excellence-20260524",
+  "cell": "02-replay-archivist",
+  "snapshot_timestamp": "2026-05-24T23:30:00.000Z",
+  "git_head": "tier/T5-core-loop-excellence-20260524:uncommitted",
+  "git_base_commit": "48d90b4",
+  "files_modified_count": 9,
+  "memory_state_hash": "T0-T4_PASS_T5_IN_PROGRESS",
   "chain_head_valid": true,
-  "chain_head_event_id": "chain.test.ts: 100 events verified via InMemoryEventStore",
+  "chain_head_event_id": "chain.test.ts + spawnQueue.test.ts: all tests PASS",
   "rng_lineage_intact": true,
   "session_seed_committed_before_events": true,
-  "t4_tasks_complete": [
-    {"task": "Create mesh/prompt-04-ledger-replay.md", "status": "COMPLETE"},
-    {"task": "Create 002_event_store_ledger.sql (4 tables)", "status": "COMPLETE"},
-    {"task": "Create SupabaseEventStore.ts", "status": "COMPLETE"},
-    {"task": "Create chain.test.ts (100 events + tamper)", "status": "COMPLETE"},
-    {"task": "Create rtp.harness.test.ts (8 modes)", "status": "COMPLETE"},
-    {"task": "Create ADR-015", "status": "COMPLETE"},
-    {"task": "Audit cells + session artifacts", "status": "COMPLETE"}
+  "t5_tasks_complete": [
+    {"task": "Create mesh/prompt-05-core-loop-excellence.md", "status": "COMPLETE"},
+    {"task": "Fix game-core package.json test scripts (NODE_ENV=test)", "status": "COMPLETE"},
+    {"task": "Extend PhysicsAction with 'spawn' type + spawnBodyQueued()", "status": "COMPLETE"},
+    {"task": "Create spawnQueue.test.ts (4 tests)", "status": "COMPLETE"},
+    {"task": "Create ClassArchetypeBadge.tsx (display only)", "status": "COMPLETE"},
+    {"task": "Create docs/softlock-verification.md (0 softlocks / 50 paths)", "status": "COMPLETE"},
+    {"task": "Create docs/ff-v4-gap-analysis.md (6 sections)", "status": "COMPLETE"},
+    {"task": "Create docs/adr/ADR-016-t5-core-loop-excellence.md", "status": "COMPLETE"},
+    {"task": "Audit cells + session artifacts", "status": "IN_PROGRESS"}
   ],
   "tests_pass": {
+    "farkleScorer.test.ts": "16/16",
+    "replay.test.ts": "5/5",
+    "spawn.test.ts": "3/3",
+    "inputQueue.test.ts": "2/2",
     "chain.test.ts": "2/2",
     "rtp.harness.test.ts": "3/3",
-    "replay.test.ts": "5/5",
-    "farkleScorer.test.ts": "16/16",
-    "spawn.test.ts": "3/3",
-    "inputQueue.test.ts": "2/2"
+    "spawnQueue.test.ts": "4/4",
+    "TOTAL": "35/35"
   },
   "fixed_point_check": "PASS",
   "sacred_core_touched": false,
   "escalation_raised": null,
-  "notes": "L1-Supabase-empty flag from T1B resolved. L0-Observation: pre-existing tsconfig missing @types/node in game-core and farkle-engine packages (not T4 scope). gameRoom.ts pre-existing error (not T4 scope)."
+  "l1_findings_resolved": ["L1-test-script-NODE_ENV"],
+  "l0_observations_carried": [
+    "Pre-existing tsconfig missing node:test declarations in game-core and farkle-engine (not T5 scope)",
+    "gameRoom.ts type error at line 646 (pre-existing, T6 scope)"
+  ],
+  "notes": "T5 scope complete. SupabaseEventStore still not wired to server routes — deferred to T6. ADR-010 Monte Carlo calibration (RALLY_FREE/HEIST_FREE deviance 0.1158) — deferred to T6. spawnBodyQueued() adds queued spawn path; spawnBody() synchronous path preserved (backward compatible). ClassArchetypeBadge imports ClassArchetype type only — no Sacred Core multiplier values."
 }

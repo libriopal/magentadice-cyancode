@@ -1,0 +1,122 @@
+{
+  "session_id": "tier/T5-core-loop-excellence-20260524",
+  "tier": "T5",
+  "branch": "tier/T5-core-loop-excellence-20260524",
+  "timestamp": "2026-05-24T23:59:00.000Z",
+  "score_total": 96,
+  "dimensions": {
+    "mathematical_purity": {
+      "score": 20,
+      "max": 20,
+      "fixed_point_check": "PASS",
+      "float_violations": 0,
+      "notes": "All new production paths free of float arithmetic. spawnBodyQueued() uses integer idCounter + string ID. ClassArchetypeBadge renders visual tokens only — no arithmetic. COLUMN_X world-space floats are NOT_APPLICABLE (physics coordinate, pre-existing, ADR-014 scope). Math.random() absent from all new files."
+    },
+    "sacred_core_integrity": {
+      "score": 20,
+      "max": 20,
+      "violations": [],
+      "notes": "Sacred Core files untouched. ClassArchetype multipliers (1.15x, 2.5x, 1.85x) never referenced. ClassArchetype type imported from game-core/replay/types.ts (canonical source) — not from Sacred Core. spawnBodyQueued() is in the physics layer, below the event-store boundary. 0 Sacred Core writes across T0–T5."
+    },
+    "performance_delta": {
+      "score": 19,
+      "max": 20,
+      "heap_allocations_added": 1,
+      "notes": "spawnBodyQueued() adds one PhysicsAction heap allocation per queued spawn (O(1), GC'd in same frame drain). Between-round spawns only — not in hot physics path. ClassArchetypeBadge is a React component with no render loop impact on physics. -1 for the bounded allocation delta."
+    },
+    "grade_elevation": {
+      "score": 12,
+      "max": 15,
+      "transitions": [],
+      "notes": "9 new files all authored at Grade A (per Cell 03 Governance Auditor). No B→A or C→B transitions — all files are new. Score 12/15 consistent with T4 scoring methodology for new Grade A files without prior grade baseline."
+    },
+    "regression_count": {
+      "score": 10,
+      "max": 10,
+      "bugs_fixed": 1,
+      "bugs_introduced": 0,
+      "notes": "L1-test-script-NODE_ENV fixed: game-core test scripts now include NODE_ENV=test, resolving InMemoryEventStore production guard throws. 35/35 tests pass; 31/31 pre-T5 regression tests all pass. 0 new bugs introduced."
+    },
+    "tier_gate_progress": {
+      "score": 10,
+      "max": 10,
+      "gates_advanced": [
+        "T5: spawnQueue.test.ts 4/4 PASS — queued spawn pre-allocation, drain, spike, backward compat",
+        "T5: ClassArchetypeBadge.tsx — display badge, type import only, Sacred Core boundary respected",
+        "T5: softlock-verification.md — 0 unrecoverable states / 50 synthetic paths",
+        "T5: ff-v4-gap-analysis.md — 6 sections, full FF_V4 deliverables",
+        "T5: ADR-016 — 5 decisions, test table, outstanding items",
+        "T5: 35/35 total tests passing (35/35)"
+      ],
+      "notes": "All T5 pass gates from mesh/prompt-05-core-loop-excellence.md satisfied."
+    },
+    "evidence_coverage": {
+      "score": 3,
+      "max": 3,
+      "corpus_citations": 7,
+      "notes": "ADR-016 cites: DELTA-VERIFY DVP-2026-R72-NEXUS (spawn queue legal rationale), IEventStore v1.0.0 (contract boundary), sacred-core-spec.md (multiplier protection), hashing-strategy.md (chain integrity), authority-model.md (FF_V4 supplemental decision), EXECUTE.md §T5 (tier spec), diecode.md Track A gates."
+    },
+    "mcp_utilization": {
+      "score": 2,
+      "max": 2,
+      "mcps_used": ["memory", "filesystem"],
+      "mcps_misused": [],
+      "notes": "Memory MCP used for session state tracking (T0–T4 PASS confirmation, tier gate status). Filesystem MCP used for codebase exploration."
+    }
+  },
+  "flags": [
+    {
+      "level": 1,
+      "tag": "L1-test-script-NODE_ENV",
+      "cell": "Governance Auditor",
+      "description": "game-core test scripts missing NODE_ENV=test prefix. InMemoryEventStore T4 production guard (env !== 'test') threw without this env var, causing silent test failures.",
+      "file_affected": "core/packages/game-core/package.json",
+      "resolved": true,
+      "resolution": "NODE_ENV=test added to all game-core test scripts. All 35 tests now pass cleanly."
+    },
+    {
+      "level": 0,
+      "tag": "L0-tsconfig-node-test",
+      "cell": "Governance Auditor",
+      "description": "Pre-existing tsconfig missing node:test and node:assert/strict type declarations in game-core and farkle-engine. Not introduced by T5.",
+      "file_affected": "core/packages/game-core/tsconfig.json",
+      "resolved": false,
+      "resolution": "Deferred — pre-existing, not T5 scope"
+    },
+    {
+      "level": 0,
+      "tag": "L0-gameRoom-type-error",
+      "cell": "Governance Auditor",
+      "description": "Pre-existing type error: gameRoom.ts(646,22) Cannot find name 'msg'. Not introduced by T5.",
+      "file_affected": "core/apps/server/src/gameRoom.ts",
+      "resolved": false,
+      "resolution": "Deferred — pre-existing, T6 scope"
+    },
+    {
+      "level": 0,
+      "tag": "L0-rtp-deviance-carried",
+      "cell": "Contradiction Hunter (T4, carried)",
+      "description": "RALLY_FREE/HEIST_FREE RTP deviance 0.1158 vs ±0.005 AA+ gate. monteCarlo.ts is Sacred Core — calibration deferred to T6 (ADR-010).",
+      "file_affected": "core/packages/farkle-engine/src/monteCarlo.ts",
+      "resolved": false,
+      "resolution": "Deferred to T6 — ADR-010 Monte Carlo calibration pass"
+    }
+  ],
+  "escalation_level": 0,
+  "verdict": "PASS_PROPOSE_COMMIT",
+  "audit_signature": {
+    "pathway_deps": [
+      "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts",
+      "core/packages/game-core/package.json",
+      "core/packages/game-core/src/replay/__tests__/spawnQueue.test.ts",
+      "core/apps/web/src/components/ClassArchetypeBadge.tsx",
+      "docs/softlock-verification.md",
+      "docs/ff-v4-gap-analysis.md",
+      "docs/adr/ADR-016-t5-core-loop-excellence.md",
+      "mesh/prompt-05-core-loop-excellence.md"
+    ],
+    "current_grade": "Grade A",
+    "entropy_vector": "spawn queue defers spawn by one physics step (33ms) — between-round only; ClassArchetypeBadge display only; SupabaseEventStore still not wired to server routes (T6)",
+    "fixed_point_check": "PASS"
+  }
+}
