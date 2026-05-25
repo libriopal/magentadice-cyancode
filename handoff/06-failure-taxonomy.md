@@ -42,7 +42,7 @@ Score reflects new Grade A quality without a prior lower-grade baseline, consist
 | Level | Tag | Cell | Resolved |
 |---|---|---|---|
 | L1 | L1-test-script-NODE_ENV | Governance Auditor | YES — NODE_ENV=test added to all test scripts |
-| L0 | Pre-existing tsconfig node:test declarations missing | Governance Auditor | No (deferred, not T5 scope) |
+| L0 | Pre-existing tsconfig missing node:test declarations | Governance Auditor | No (deferred, not T5 scope) |
 | L0 | gameRoom.ts type error at line 646 | Governance Auditor | No (deferred, T6 scope) |
 | L0 | RALLY_FREE/HEIST_FREE RTP deviance 0.1158 | Contradiction Hunter (T4) | No (deferred, T6 ADR-010) |
 

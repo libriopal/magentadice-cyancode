@@ -78,9 +78,9 @@ production guard throws without it.
 
 Changes:
 - Add `NODE_ENV=test` prefix to all test scripts
-- Expand `test` script to run all 4 test files: replay, spawn, inputQueue, chain
+- Expand `test` script to run all 5 test files: replay, spawn, inputQueue, chain, spawnQueue
 
-Pass condition: `pnpm --filter @match3d/game-core test` exits 0 with 14 tests passing.
+Pass condition: `pnpm --filter @match3d/game-core test` exits 0 with 16 tests passing.
 
 ---
 
@@ -193,7 +193,7 @@ display, never compute with.
 
 ## Pass Gate
 
-- game-core test: `pnpm --filter @match3d/game-core test` → 14/14 PASS (NODE_ENV=test)
+- game-core test: `pnpm --filter @match3d/game-core test` → 16/16 PASS (NODE_ENV=test)
 - farkle-engine test: 16/16 PASS (no regression)
 - spawnQueue.test.ts: 4/4 PASS
 - rtp.harness: 3/3 PASS (deviance < 0.20 — T4 gate maintained)

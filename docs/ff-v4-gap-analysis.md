@@ -62,7 +62,7 @@ AUDIT::FIXED_POINT_CHECK: NOT_APPLICABLE
 
 ### Internal Package Graph
 
-```
+```text
 @match3d/web (apps/web)
   ├── @match3d/game-core      (physics, replay, event store)
   ├── @match3d/farkle-engine  (scoring, CSPRNG, Monte Carlo) [SACRED]
@@ -194,7 +194,7 @@ writes to these files. Game-core and server packages import them read-only.
 ## 6. FF_V4 Execution Order Verification
 
 Per `docs/protocols/FF_V4_Claude_Code_Directive.xml`:
-```
+```text
 Audit→MapDependencies→PreserveSacredFiles→Implement→Test→Balance→Security→Compliance→Production
 ```
 
