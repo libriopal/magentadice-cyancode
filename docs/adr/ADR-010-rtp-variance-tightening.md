@@ -50,14 +50,42 @@ Implementation SHALL NOT proceed until:
 
 ---
 
+## T6 Harness Results (2026-05-25 — rtp.harness.test.ts, T4 gate 0.20)
+
+| Mode | Target | Realized | Deviance | AA+ Gate (±0.005) |
+|---|---|---|---|---|
+| SOLO_FREE | 0.9200 | 0.9558 | 0.0358 | FAIL |
+| SOLO_CASINO | 0.9200 | 0.9558 | 0.0358 | FAIL |
+| VS_FREE | 1.0000 | 1.0358 | 0.0358 | FAIL |
+| VS_CASINO | 0.9200 | 0.9558 | 0.0358 | FAIL |
+| **RALLY_FREE** | 0.9200 | 1.0358 | **0.1158** | **FAIL** |
+| RALLY_CASINO | 0.9200 | 0.9558 | 0.0358 | FAIL |
+| **HEIST_FREE** | 0.9200 | 1.0358 | **0.1158** | **FAIL** |
+| HEIST_CASINO | 0.9200 | 0.9558 | 0.0358 | FAIL |
+
+**Root cause (PROPOSE ONLY — Sacred Core):** RALLY_FREE/HEIST_FREE over-pay because the
+cooperative/vault mechanics effectively add to the prize pool without reducing target RTP.
+`monteCarlo.ts` adjusts the normalization factor for FREE modes. Current normalization
+applies the same factor as CASINO modes, causing the +0.1158 overshoot.
+
+**Proposed calibration:** In `monteCarlo.ts`, adjust FREE-mode RTP normalization:
+- RALLY_FREE target → 0.9200; normalization factor to account for cooperative split math
+- HEIST_FREE target → 0.9200; vault contribution factored into normalization
+
+**Implementation Gate:** PROPOSE ONLY — monteCarlo.ts is Sacred Core.
+- [ ] Human reviews proposed calibration approach
+- [ ] Human approves modification to monteCarlo.ts
+- [ ] Monte Carlo 10,000-generation pass confirms ±0.003 after calibration
+- [ ] ADR-010 status updated to Accepted
+
 ## Implementation Gate
 
-This ADR is **Proposed**. It becomes **Accepted** only when:
-1. Monte Carlo harness exists and produces results
-2. Results meet ±0.003 bound
-3. Human signs off
+This ADR remains **Proposed**. It becomes **Accepted** only when:
+1. Human approves calibration approach above
+2. 10,000-generation Monte Carlo pass confirms ±0.003 across all 8 modes
+3. Human signs off on results
 
-Until then: `rtpConfig.ts` is NOT modified. This ADR serves as Human-approved intent.
+Until then: `rtpConfig.ts` and `monteCarlo.ts` are NOT modified.
 
 ---
 

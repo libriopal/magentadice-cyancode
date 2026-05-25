@@ -1,0 +1,130 @@
+{
+  "session_id": "tier/T6-content-pipeline-20260525",
+  "tier": "T6",
+  "branch": "tier/T6-content-pipeline-20260525",
+  "timestamp": "2026-05-25T12:00:00.000Z",
+  "score_total": 94,
+  "dimensions": {
+    "mathematical_purity": {
+      "score": 20,
+      "max": 20,
+      "fixed_point_check": "PASS",
+      "float_violations": 0,
+      "notes": "gridUtils.ts SEVERITY-C floats removed (/ 2, / 4). rtp_final in MATCH_END uses Math.round(netRTP * 1000) — transient conversion, integer result, T1 precedent (multiplierQ pattern). LevelDef win_score declared integer >= 1000. Math.random() absent from all new files."
+    },
+    "sacred_core_integrity": {
+      "score": 20,
+      "max": 20,
+      "violations": [],
+      "notes": "Sacred Core files untouched. rtp.harness.test.ts run READ-ONLY to capture ADR-010 calibration data. monteCarlo.ts and rtpConfig.ts not modified. ADR-010 update is documentation-only PROPOSE ONLY. SupabaseEventStore wiring is in gameRoom.ts (not in sacred-core-spec.md). 0 Sacred Core writes across T0-T6."
+    },
+    "performance_delta": {
+      "score": 18,
+      "max": 20,
+      "heap_allocations_added": 2,
+      "notes": "SupabaseEventStore adds two async network calls per session (MATCH_START, MATCH_END). Fire-and-forget — does not block game flow. Module always imported (parse cost in dev). Both allocations are O(1) per session. -2 for non-zero allocation delta and unconditional module import."
+    },
+    "grade_elevation": {
+      "score": 12,
+      "max": 15,
+      "transitions": [],
+      "notes": "9 new files all authored at Grade A. gameRoom.ts (existing file) elevated from pre-existing type error state to Grade A (type error fixed, SupabaseEventStore wired). Counts as one effective elevation but not a formal B→A transition in schema terms. Score 12/15 consistent with T4/T5/T6 methodology."
+    },
+    "regression_count": {
+      "score": 10,
+      "max": 10,
+      "bugs_fixed": 2,
+      "bugs_introduced": 0,
+      "notes": "L1-gridUtils-SEVERITY-C resolved (blockerCount float). gameRoom.ts type error at line 646 fixed (processChain msg param). 41/41 tests pass; all 35 pre-T6 regression tests pass. 0 new bugs introduced."
+    },
+    "tier_gate_progress": {
+      "score": 10,
+      "max": 10,
+      "gates_advanced": [
+        "T6: levelSchema.test.ts 6/6 PASS — schema validates 3 stages, rejects 3 invalid inputs",
+        "T6: LevelDef.schema.json — JSON Schema v7, all 20 lattice modules enumerated",
+        "T6: 50-stage taxonomy — all lattice modules covered, Q×1000 win_scores",
+        "T6: SupabaseEventStore wired — MATCH_START + MATCH_END in production chain",
+        "T6: gridUtils.ts SEVERITY-C fully resolved",
+        "T6: gameRoom.ts type error fixed"
+      ],
+      "notes": "All T6 pass gates from mesh/prompt-06-content-pipeline.md satisfied."
+    },
+    "evidence_coverage": {
+      "score": 2,
+      "max": 3,
+      "corpus_citations": 5,
+      "notes": "ADR-017 cites: IEventStore.v1.md (chain contract), sacred-core-spec.md (monteCarlo boundary), hashing-strategy.md (Q×1000 pattern), authority-model.md (PROPOSE ONLY classification), MPVA §T6 (tier spec). -1: ADR-010 Monte Carlo calibration evidence incomplete — proposed but not confirmed by live 10,000-gen run."
+    },
+    "mcp_utilization": {
+      "score": 2,
+      "max": 2,
+      "mcps_used": ["memory", "filesystem"],
+      "mcps_misused": [],
+      "notes": "Memory MCP used for session state tracking (T0-T5 PASS confirmation). Filesystem MCP used for codebase exploration."
+    }
+  },
+  "flags": [
+    {
+      "level": 1,
+      "tag": "L1-gridUtils-SEVERITY-C",
+      "cell": "Governance Auditor",
+      "description": "blockerCount * 0.5 and blockerCount * 0.25 float multiplications in gridUtils.ts createGrid(). Non-scoring path (grid layout) but violates T1 float prohibition.",
+      "file_affected": "core/packages/farkle-engine/src/gridUtils.ts",
+      "resolved": true,
+      "resolution": "Replaced with Math.floor(blockerCount / 2) and Math.floor(blockerCount / 4). Integer division produces identical results for bounded positive integer blockerCount."
+    },
+    {
+      "level": 0,
+      "tag": "L0-tsconfig-node-crypto",
+      "cell": "Governance Auditor",
+      "description": "Pre-existing tsconfig missing node:test and node:crypto type declarations in game-core and farkle-engine. Not introduced by T6.",
+      "file_affected": "core/packages/game-core/tsconfig.json",
+      "resolved": false,
+      "resolution": "Deferred — pre-existing, not T6 scope"
+    },
+    {
+      "level": 0,
+      "tag": "L0-adr010-calibration-pending",
+      "cell": "Governance Auditor",
+      "description": "ADR-010 Monte Carlo calibration: PROPOSE ONLY. RALLY_FREE/HEIST_FREE deviance 0.1158 documented. monteCarlo.ts not modified. Human approval required.",
+      "file_affected": "core/packages/farkle-engine/src/monteCarlo.ts",
+      "resolved": false,
+      "resolution": "Deferred — Human approval + 10,000-gen Monte Carlo run required before Sacred Core write"
+    },
+    {
+      "level": 0,
+      "tag": "L0-match-score-not-wired",
+      "cell": "Governance Auditor",
+      "description": "MATCH_SCORE events not wired in gameRoom.ts. Per-player class archetype tracking not yet initialized in gameRoom. Requires T7 class archetype assignment per player.",
+      "file_affected": "core/apps/server/src/gameRoom.ts",
+      "resolved": false,
+      "resolution": "Deferred to T7"
+    },
+    {
+      "level": 0,
+      "tag": "L0-event-store-retry",
+      "cell": "Contradiction Hunter",
+      "description": "SupabaseEventStore writes are fire-and-forget with console.error logging. IEventStore.v1.md requires retry at application layer. Chain gaps possible on transient failures.",
+      "file_affected": "core/apps/server/src/gameRoom.ts",
+      "resolved": false,
+      "resolution": "Deferred to T8 production hardening"
+    }
+  ],
+  "escalation_level": 0,
+  "verdict": "PASS_PROPOSE_COMMIT",
+  "audit_signature": {
+    "pathway_deps": [
+      "core/apps/server/src/gameRoom.ts",
+      "core/packages/farkle-engine/src/gridUtils.ts",
+      "core/packages/game-core/src/level/LevelDef.schema.json",
+      "core/packages/game-core/src/level/types.ts",
+      "core/packages/game-core/src/level/__tests__/levelSchema.test.ts",
+      "docs/level-taxonomy.md",
+      "docs/adr/ADR-017-t6-content-pipeline.md"
+    ],
+    "current_grade": "Grade A",
+    "entropy_vector": "SupabaseEventStore wiring adds async writes at MATCH_START/MATCH_END; fire-and-forget; dev/test unaffected by absent Supabase env vars; retry not yet implemented",
+    "fixed_point_check": "PASS"
+  }
+}

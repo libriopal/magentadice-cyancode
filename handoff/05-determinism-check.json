@@ -1,33 +1,31 @@
 {
-  "session_id": "tier/T5-core-loop-excellence-20260524",
+  "session_id": "tier/T6-content-pipeline-20260525",
   "fixed_point_check": "PASS",
-  "fixed_point_rationale": "All new production code paths are free of float arithmetic, Math.random(), and Date.now() in scoring paths. spawnBodyQueued() pre-allocates a string ID using integer counter (++this.idCounter). _createBody() uses integer column index and enum entityType — no scoring arithmetic. ClassArchetypeBadge renders visual tokens (color strings, labels) — zero arithmetic. NODE_ENV=test fix adds no arithmetic paths.",
+  "fixed_point_rationale": "All new production code paths are free of float arithmetic in scoring/payout paths. rtp_final in MATCH_END uses Math.round(netRTP * 1000) — transient float in conversion expression only; integer result written to event store. gridUtils.ts float multiplications replaced with integer division (/ 2, / 4). LevelDef.schema.json win_score declared integer >= 1000. No new Math.random() or Date.now() in scoring paths.",
   "float_violations": [],
   "math_random_violations": [],
   "date_now_violations": [],
   "new_float32array_violations": [],
   "checks_performed": [
-    "Math.random() in VoxelPhysicsSystem.ts (T5 changes): NOT FOUND",
-    "Math.random() in ClassArchetypeBadge.tsx: NOT FOUND",
-    "Math.random() in spawnQueue.test.ts: NOT FOUND",
-    "Float arithmetic in spawnBodyQueued(): NOT FOUND — idCounter is integer, ID is string",
-    "Float arithmetic in _createBody(): NOT FOUND — column is integer index, face is integer|null",
-    "Float arithmetic in _drainPendingActions() spawn case: NOT FOUND — delegates to _createBody()",
-    "Scoring arithmetic in ClassArchetypeBadge: NOT FOUND — display only, no multiplier values",
-    "Multiplier values (1.15, 2.5, 1.85) in ClassArchetypeBadge.tsx: NOT FOUND",
+    "Math.random() in gameRoom.ts (T6 additions): NOT FOUND",
+    "Math.random() in LevelDef.schema.json: NOT_APPLICABLE (JSON Schema)",
+    "Math.random() in levelSchema.test.ts: NOT FOUND",
+    "Float arithmetic in gridUtils.ts blockerCount path: NOT FOUND (removed — replaced with / 2, / 4)",
+    "Float arithmetic in MATCH_START payload: NOT FOUND — all fields are strings or integer arrays",
+    "Float arithmetic in MATCH_END payload: NOT FOUND — rtp_final is Math.round(integer) result",
+    "Float in LevelDef types.ts: NOT FOUND — win_score typed as number, doc comment says Q×1000",
+    "Float in level-taxonomy.md win_scores: NOT_APPLICABLE (doc) — all values are multiples of 500",
+    "Math.round() transient float in rtp_final: PRESENT but NOT_APPLICABLE — conversion expression only; result is integer",
+    "SupabaseEventStore.write() called with float fields: NOT FOUND — only string, integer, boolean fields",
     "Date.now() in new production paths: NOT FOUND",
-    "PHYSICS_TIMESTEP changed: NOT FOUND — 1/30 unchanged",
-    "COLUMN_X positions (world-space floats): PRESENT but NOT_APPLICABLE — physics coordinate, not scoring",
-    "NODE_ENV=test in package.json test scripts: PRESENT — correct, intended fix",
-    "Math.random() in mesh/prompt-05-core-loop-excellence.md: NOT_APPLICABLE (doc)",
-    "Math.random() in docs/softlock-verification.md: NOT_APPLICABLE (doc)",
-    "Math.random() in docs/ff-v4-gap-analysis.md: NOT_APPLICABLE (doc)",
-    "Math.random() in docs/adr/ADR-016-t5-core-loop-excellence.md: NOT_APPLICABLE (doc)"
+    "blockerCount * 0.5 in gridUtils.ts: NOT FOUND (removed)",
+    "blockerCount * 0.25 in gridUtils.ts: NOT FOUND (removed)",
+    "Sacred Core files modified: NOT FOUND"
   ],
   "not_applicable_paths": [
     {
-      "path": "COLUMN_X world-space positions in VoxelPhysicsSystem.ts",
-      "reason": "Physics coordinate space floats — established in T3, not scoring arithmetic. FIXED_POINT_CHECK NOT_APPLICABLE per ADR-014 §FIXED_POINT_SCOPE."
+      "path": "Math.round(netRTP * 1000) in endSession()",
+      "reason": "Transient float in Q×1000 conversion expression — identical pattern to T1 multiplierQ = Math.round(m * 1000). The float exists only during the multiplication; Math.round() produces an integer. FIXED_POINT_CHECK PASS per T1 precedent."
     }
   ],
   "rng_lineage_compliant": true,
@@ -36,8 +34,10 @@
   "sha256_chain_compliant": true,
   "blake3_not_used_in_audit_paths": true,
   "sacred_core_untouched": true,
-  "spawn_id_counter_type": "integer (++this.idCounter) — no float risk",
-  "class_archetype_multipliers_absent": true,
+  "level_win_score_integer": true,
+  "grids_utils_float_removed": true,
+  "event_store_retry_implemented": false,
+  "event_store_retry_note": "L0 Observation — retry not implemented in T6; fire-and-forget with console.error logging. Deferred to T8.",
   "escalation_raised": null,
-  "notes": "All T5 production code paths pass FIXED_POINT_CHECK. The only floats present are pre-existing COLUMN_X physics world-space constants (NOT_APPLICABLE). No new scoring arithmetic, no Math.random(), no Sacred Core contact. spawnBodyQueued() backward compat with spawnBody() confirmed — both use integer idCounter."
+  "notes": "All T6 production code paths pass FIXED_POINT_CHECK. rtp_final Q×1000 conversion pattern is identical to T1 multiplierQ precedent. gridUtils.ts SEVERITY-C float violations fully removed. SupabaseEventStore wiring does not introduce any float in scoring or payout arithmetic."
 }

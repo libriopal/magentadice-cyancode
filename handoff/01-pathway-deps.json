@@ -1,64 +1,77 @@
 {
-  "session_id": "tier/T5-core-loop-excellence-20260524",
+  "session_id": "tier/T6-content-pipeline-20260525",
   "cell": "01-systems-architect",
-  "timestamp": "2026-05-24T23:00:00.000Z",
-  "AUDIT_SIGNATURE": {
-    "PATHWAY_DEPS": [
-      "mesh/prompt-05-core-loop-excellence.md",
-      "core/packages/game-core/package.json",
-      "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts",
-      "core/packages/game-core/src/replay/__tests__/spawnQueue.test.ts",
-      "core/apps/web/src/components/ClassArchetypeBadge.tsx",
-      "docs/softlock-verification.md",
-      "docs/ff-v4-gap-analysis.md",
-      "docs/adr/ADR-016-t5-core-loop-excellence.md",
-      "sessions/session-log.md",
-      "runs/2026-05-24/session-9.json"
-    ],
-    "CURRENT_GRADE": "Grade A",
-    "ENTROPY_VECTOR": "enqueueAction spawn extension touches physics step boundary; ClassArchetypeBadge reads class types only (no Sacred Core multipliers); game-core package.json test script fix is infrastructure-only",
-    "FIXED_POINT_CHECK": "NOT_APPLICABLE"
-  },
-  "modified_files": [
-    "mesh/prompt-05-core-loop-excellence.md",
-    "core/packages/game-core/package.json",
-    "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts",
-    "core/packages/game-core/src/replay/__tests__/spawnQueue.test.ts",
-    "core/apps/web/src/components/ClassArchetypeBadge.tsx",
-    "docs/softlock-verification.md",
-    "docs/ff-v4-gap-analysis.md",
-    "docs/adr/ADR-016-t5-core-loop-excellence.md"
-  ],
-  "dependency_map": {
-    "core/packages/game-core/src/systems/VoxelPhysicsSystem.ts": [
-      "core/packages/game-core/src/replay/__tests__/spawnQueue.test.ts",
-      "core/apps/web/src/hooks/useFarkleGame.ts (physicsRef consumer)"
-    ],
-    "core/packages/game-core/package.json": [
-      "CI test pipeline"
-    ],
-    "core/apps/web/src/components/ClassArchetypeBadge.tsx": [
-      "core/apps/web/src/components/GameScreen.tsx (future consumer)"
-    ],
-    "mesh/prompt-05-core-loop-excellence.md": [],
-    "docs/ff-v4-gap-analysis.md": [],
-    "docs/adr/ADR-016-t5-core-loop-excellence.md": []
-  },
-  "sacred_core_boundary_approached": false,
-  "sacred_core_files_modified": [],
-  "sacred_core_note": "ClassArchetypeBadge imports ClassArchetype type only — no multiplier values. rtpConfig.ts, farkleScorer.ts, farkleStore.ts, gameStore.ts NOT touched.",
-  "wasm_layer_risk": false,
-  "bridge_overhead_risk": false,
-  "gc_spike_risk": false,
-  "l1_findings": [
+  "files_modified": [
     {
-      "tag": "L1-test-script-NODE_ENV",
-      "description": "game-core package.json test scripts missing NODE_ENV=test. InMemoryEventStore production guard throws without it. Fixed in Task 2.",
-      "severity": "L1",
-      "file": "core/packages/game-core/package.json",
-      "resolved": true
+      "path": "core/apps/server/src/gameRoom.ts",
+      "change": "Import SupabaseEventStore; add _eventStore + _eventReplayTick fields; wire MATCH_START in handleStartGame(), MATCH_END in endSession(); fix processChain() msg param; rtp_final as Math.round(netRTP*1000) Q×1000",
+      "downstream": ["game_events Supabase table", "IEventStore chain integrity"]
+    },
+    {
+      "path": "core/packages/farkle-engine/src/gridUtils.ts",
+      "change": "Replace blockerCount * 0.5 / 0.25 with / 2 / 4 (integer division — SEVERITY-C resolution)",
+      "downstream": ["createGrid() blocker distribution — functionally identical, no float"]
+    },
+    {
+      "path": "core/packages/game-core/src/level/LevelDef.schema.json",
+      "change": "New — JSON Schema v7 for LevelDef; win_score Q×1000 integer",
+      "downstream": ["levelSchema.test.ts", "level-taxonomy.md"]
+    },
+    {
+      "path": "core/packages/game-core/src/level/types.ts",
+      "change": "New — TypeScript types: LevelDef, BlockerDensity, LatticeModule, ArchetypeBias",
+      "downstream": ["levelSchema.test.ts"]
+    },
+    {
+      "path": "core/packages/game-core/src/level/__tests__/levelSchema.test.ts",
+      "change": "New — 6 tests: 3 valid stages (L01/L25/L50) + 3 rejection cases",
+      "downstream": ["package.json test script"]
+    },
+    {
+      "path": "core/packages/game-core/package.json",
+      "change": "Add levelSchema.test.ts to main test script",
+      "downstream": ["pnpm --filter @match3d/game-core test"]
+    },
+    {
+      "path": "docs/level-taxonomy.md",
+      "change": "New — 50-stage taxonomy; all 20 lattice modules covered",
+      "downstream": ["T7 level authoring"]
+    },
+    {
+      "path": "docs/adr/ADR-010-rtp-variance-tightening.md",
+      "change": "Updated with T6 harness results + proposed calibration approach (READ-ONLY — no Sacred Core write)",
+      "downstream": ["monteCarlo.ts calibration — Human approval required before write"]
+    },
+    {
+      "path": "docs/adr/ADR-017-t6-content-pipeline.md",
+      "change": "New — 6 decisions, test table (35→41), outstanding items",
+      "downstream": []
+    },
+    {
+      "path": "mesh/prompt-06-content-pipeline.md",
+      "change": "New — T6 tier prompt with all 8 tasks",
+      "downstream": []
     }
   ],
-  "escalation_raised": null,
-  "notes": "T5 scope: (1) enqueueAction spawn extension, (2) ClassArchetypeBadge display, (3) softlock verification, (4) FF_V4 deliverables. All tasks are non-Sacred-Core. Spawn action queuing defers by one physics step (33ms) — acceptable for between-round spawns."
+  "dependency_graph": {
+    "gameRoom.ts → SupabaseEventStore.ts": "direct import (same server/src/ directory)",
+    "gameRoom.ts → game_events (Supabase)": "write at MATCH_START (handleStartGame) and MATCH_END (endSession)",
+    "levelSchema.test.ts → level/types.ts": "TypeScript import",
+    "level-taxonomy.md → LevelDef.schema.json": "documentation reference; all ids match schema pattern",
+    "ADR-010 → monteCarlo.ts": "PROPOSE ONLY — no write; Human approval required",
+    "ADR-017 → all T6 files": "governance record"
+  },
+  "tests_pass": {
+    "farkleScorer.test.ts": "16/16",
+    "replay.test.ts": "5/5",
+    "spawn.test.ts": "3/3",
+    "inputQueue.test.ts": "2/2",
+    "chain.test.ts": "2/2",
+    "rtp.harness.test.ts": "3/3",
+    "spawnQueue.test.ts": "4/4",
+    "levelSchema.test.ts": "6/6",
+    "TOTAL": "41/41"
+  },
+  "sacred_core_files_modified": false,
+  "sacred_core_files_approached": false
 }
