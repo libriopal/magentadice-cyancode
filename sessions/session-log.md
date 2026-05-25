@@ -522,3 +522,58 @@ T5 or per Human direction.
 `memory.tier_gate_status.T4 = 'PASS'`
 
 ---
+
+## Session 11 — T7 Visual Overhaul
+
+| Field | Value |
+|---|---|
+| session_id | tier/T7-visual-overhaul-20260525 |
+| date | 2026-05-25 |
+| score | 96/100 |
+| verdict | PASS_PROPOSE_COMMIT |
+| branch | tier/T7-visual-overhaul-20260525 |
+
+### Deliverables
+
+- `mesh/prompt-07-visual-overhaul.md` — T7 tier prompt (7 tasks)
+- `core/apps/web/src/audio/erkConductor.ts` — Live ERK conductor (new); reads farkleStore + gameStore; 3-second hold debounce; `deriveEmotionalState()` pure function
+- `core/apps/web/src/components/GameScreen.tsx` — `useERKConductor(winScore)` wired; static erkState retained as seed
+- `core/apps/web/src/components/NFTItemCard.tsx` — ExtendedRarity 5-tier (common/rare/epic/legendary/voidshard); VoidShard UV wireframe + halo animation
+- `core/apps/web/src/components/WinLoseScreen.tsx` — 0 hardcoded hex palette; all literals replaced with OV/PILLAR/CURRENCY tokens
+- `core/art/manifest/design_tokens.json` — Canonical machine-readable token export; 7 sections
+- `docs/adr/ADR-018-t7-visual-overhaul.md` — 4 decisions; pass gates table
+
+### Tests
+
+- farkleScorer.test.ts: 16/16 PASS (regression)
+- replay.test.ts: 5/5 PASS (regression)
+- spawn.test.ts: 3/3 PASS (regression)
+- inputQueue.test.ts: 2/2 PASS (regression)
+- chain.test.ts: 2/2 PASS (regression)
+- rtp.harness.test.ts: 3/3 PASS (regression)
+- spawnQueue.test.ts: 4/4 PASS (regression)
+- levelSchema.test.ts: 6/6 PASS (regression)
+- **TOTAL: 41/41**
+
+**FIXED_POINT_CHECK:** PASS — T7 L5 ADORNMENT only; no scoring path contact.
+**Sacred Core:** Not modified — farkleStore.ts and gameStore.ts read-only via Zustand selectors.
+**type-check:** 0 new errors (pre-existing InMemoryEventStore node:crypto errors unchanged).
+
+### Flags
+
+- [L0] Pre-existing InMemoryEventStore node:crypto / node:test type errors — not T7 scope
+- [L0] SupabaseEventStore fire-and-forget retry — deferred to T8
+- [L0] ADR-010 calibration PROPOSE ONLY — pending Human approval
+
+### Deferred to Later Tier
+
+- MATCH_SCORE event wiring (per-player class archetype tracking) — T8
+- SupabaseEventStore retry mechanism — T8 production hardening
+- ADR-010 Monte Carlo calibration — Human decision pending
+
+### Next Session
+
+T8 or per Human direction.
+`memory.tier_gate_status.T7 = 'PASS'`
+
+---

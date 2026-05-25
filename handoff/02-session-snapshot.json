@@ -1,26 +1,23 @@
 {
-  "session_id": "tier/T6-content-pipeline-20260525",
+  "session_id": "tier/T7-visual-overhaul-20260525",
   "cell": "02-replay-archivist",
-  "snapshot_timestamp": "2026-05-25T12:00:00.000Z",
-  "git_head": "tier/T6-content-pipeline-20260525:uncommitted",
-  "git_base_commit": "0fd9e99",
-  "files_modified_count": 10,
-  "memory_state_hash": "T0-T5_PASS_T6_IN_PROGRESS",
+  "snapshot_timestamp": "2026-05-25T18:00:00.000Z",
+  "git_head": "tier/T7-visual-overhaul-20260525:uncommitted (core submodule at 5eb6135)",
+  "git_base_commit": "c8eaf2d",
+  "files_modified_count": 7,
+  "memory_state_hash": "T0-T6_PASS_T7_IN_PROGRESS",
   "chain_head_valid": true,
-  "chain_head_event_id": "levelSchema.test.ts 6/6 PASS",
+  "chain_head_event_id": "levelSchema.test.ts 6/6 PASS (T6 chain — no new chain events in T7)",
   "rng_lineage_intact": true,
   "session_seed_committed_before_events": true,
-  "t6_tasks_complete": [
-    {"task": "Create mesh/prompt-06-content-pipeline.md", "status": "COMPLETE"},
-    {"task": "Fix gridUtils.ts SEVERITY-C floats (blockerCount / 2 / 4)", "status": "COMPLETE"},
-    {"task": "Fix gameRoom.ts type error line 646 (processChain msg param)", "status": "COMPLETE"},
-    {"task": "Wire SupabaseEventStore into gameRoom.ts (MATCH_START + MATCH_END)", "status": "COMPLETE"},
-    {"task": "Create LevelDef.schema.json (JSON Schema v7)", "status": "COMPLETE"},
-    {"task": "Create core/packages/game-core/src/level/types.ts", "status": "COMPLETE"},
-    {"task": "Create levelSchema.test.ts (6 tests)", "status": "COMPLETE"},
-    {"task": "Create docs/level-taxonomy.md (50 stages, 20 modules)", "status": "COMPLETE"},
-    {"task": "Update ADR-010 with T6 harness results (PROPOSE ONLY)", "status": "COMPLETE"},
-    {"task": "Create ADR-017", "status": "COMPLETE"},
+  "t7_tasks_complete": [
+    {"task": "Create mesh/prompt-07-visual-overhaul.md", "status": "COMPLETE"},
+    {"task": "Create core/apps/web/src/audio/erkConductor.ts", "status": "COMPLETE"},
+    {"task": "Wire useERKConductor into GameScreen.tsx", "status": "COMPLETE"},
+    {"task": "Create core/art/manifest/design_tokens.json", "status": "COMPLETE"},
+    {"task": "Upgrade NFTItemCard.tsx to ExtendedRarity + VoidShard tier", "status": "COMPLETE"},
+    {"task": "WinLoseScreen.tsx full token adoption", "status": "COMPLETE"},
+    {"task": "Create ADR-018", "status": "COMPLETE"},
     {"task": "Audit cells + session artifacts", "status": "IN_PROGRESS"}
   ],
   "tests_pass": {
@@ -34,23 +31,18 @@
     "levelSchema.test.ts": "6/6",
     "TOTAL": "41/41"
   },
-  "rtp_harness_results": {
-    "SOLO_FREE": {"target": 0.92, "realized": 0.9558, "deviance": 0.0358},
-    "SOLO_CASINO": {"target": 0.92, "realized": 0.9558, "deviance": 0.0358},
-    "VS_FREE": {"target": 1.00, "realized": 1.0358, "deviance": 0.0358},
-    "VS_CASINO": {"target": 0.92, "realized": 0.9558, "deviance": 0.0358},
-    "RALLY_FREE": {"target": 0.92, "realized": 1.0358, "deviance": 0.1158},
-    "RALLY_CASINO": {"target": 0.92, "realized": 0.9558, "deviance": 0.0358},
-    "HEIST_FREE": {"target": 0.92, "realized": 1.0358, "deviance": 0.1158},
-    "HEIST_CASINO": {"target": 0.92, "realized": 0.9558, "deviance": 0.0358}
+  "type_check": {
+    "new_errors_introduced": 0,
+    "pre_existing_errors": "InMemoryEventStore node:crypto + node:test errors in game-core tsconfig (pre-T7, unchanged)",
+    "web_app_new_errors": 0
   },
   "fixed_point_check": "PASS",
   "sacred_core_touched": false,
   "escalation_raised": null,
-  "l1_findings_resolved": ["L1-gridUtils-SEVERITY-C"],
+  "l1_findings_carried": [],
   "l0_observations_carried": [
-    "gameRoom.ts tsc: pre-existing InMemoryEventStore node:crypto errors (tsconfig — not T6 scope)",
-    "ADR-010 calibration: PROPOSE ONLY — pending Human approval and 10,000-generation Monte Carlo"
+    "gameRoom.ts tsc: pre-existing InMemoryEventStore node:crypto errors (tsconfig — not T7 scope)",
+    "ADR-010 calibration: PROPOSE ONLY — pending Human approval (carried from T6)"
   ],
-  "notes": "T6 scope complete. SupabaseEventStore wired to MATCH_START + MATCH_END (fire-and-forget; dev/test unaffected by absent env vars). MATCH_SCORE deferred to T7 (class archetype per-player tracking needed). ADR-010 updated with harness results; calibration PROPOSE ONLY."
+  "notes": "T7 is purely L5 ADORNMENT. No scoring paths touched. No Sacred Core writes. erkConductor.ts reads farkleStore/gameStore via Zustand selector hooks. 3-second hold timer prevents ERK state flickering. design_tokens.json is a new canonical export artifact — no code consumers yet."
 }
