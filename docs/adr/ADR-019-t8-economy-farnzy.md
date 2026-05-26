@@ -51,16 +51,16 @@ async function writeWithRetry(
 
 **Decision:** Write `MATCH_SCORE` events via `writeWithRetry` immediately after `activePlayer.profile.banked += gain` in both banking paths:
 
-- **Auto-bank path** (~line 700): fires when `chain.length < 6`; `bank_type: 'auto'`
-- **Explicit bank path** (~line 848): fires on `handleBank()` message; `bank_type: 'explicit'`
+- **Auto-bank path** (~line 700): fires when `chain.length < 6`
+- **Explicit bank path** (~line 848): fires on `handleBank()` message
 
-**Payload:**
+**Payload** (per `ReplayEvent.v1.md MatchScorePayload`):
 ```json
 {
   "player_id": "string",
-  "score_delta": integer,     // raw Farkle score units (not Q×1000 currency)
-  "running_total": integer,   // activePlayer.profile.banked after update
-  "bank_type": "auto|explicit"
+  "score_delta": integer,        // raw Farkle score units (not Q×1000 currency)
+  "running_total": integer,      // activePlayer.profile.banked after update
+  "class_archetype": "Paladin|Rogue|Bard"
 }
 ```
 

@@ -79,7 +79,7 @@ if (activePlayer) {
         player_id: playerId,
         score_delta: gain,           // Q×1 integer — raw Farkle score units
         running_total: activePlayer.profile.banked,
-        bank_type: 'auto',
+        class_archetype: activePlayer.classArchetype,
       },
     }, 'MATCH_SCORE(auto)');
   }
@@ -99,7 +99,7 @@ if (activePlayer) {
         player_id: playerId,
         score_delta: gain,
         running_total: activePlayer.profile.banked,
-        bank_type: 'explicit',
+        class_archetype: activePlayer.classArchetype,
       },
     }, 'MATCH_SCORE(explicit)');
   }
@@ -147,7 +147,7 @@ Also inline-fix two hardcoded colors in ARCHETYPE_STYLE:
 
 Document:
 - D1: SupabaseEventStore retry (3 attempts, exponential backoff 100/200/400ms)
-- D2: MATCH_SCORE event payload shape (score_delta, running_total, bank_type)
+- D2: MATCH_SCORE event payload shape (score_delta, running_total, class_archetype)
 - D3: ClassArchetypeBadge import path correction
 - Pass gates table
 - Sacred Core compliance section
@@ -174,7 +174,7 @@ Append `sessions/session-log.md`.
 
 ## Audit Signature (append to each modified file)
 
-```
+```text
 AUDIT::PATHWAY_DEPS: [list]
 AUDIT::CURRENT_GRADE: Grade A
 AUDIT::ENTROPY_VECTOR: [description]

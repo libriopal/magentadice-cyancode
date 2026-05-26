@@ -17,7 +17,7 @@ AUDIT::FIXED_POINT_CHECK: PASS
 | core/apps/web/src/components/ClassArchetypeBadge.tsx | A | Import path corrected (3→4 levels); 14 TS errors resolved; no logic change |
 | docs/adr/ADR-019-t8-economy-farnzy.md | A | 3 decisions; pass gates table; sacred core compliance section |
 | handoff/02-session-snapshot.json | A | Status corrected from IN_PROGRESS to COMPLETE |
-| mesh/prompt-07-visual-overhaul.md | A | Two inline fixes: path correction + markdown language tag |
+| mesh/prompt-07-visual-overhaul.md | A | Two inline fixes: path correction + Markdown language tag |
 | sessions/session-log.md | A | Session 10 (T6) entry inserted to restore chronological continuity |
 
 ### Sacred Core Status
