@@ -30,7 +30,7 @@ Per `mesh/sacred-core-spec.md`:
 
 Files changed between those SHAs (`git diff b7c790b..07c9963 --name-only` in `core/`):
 
-```
+```text
 apps/server/src/__tests__/twoPlayer.determinism.test.ts  (new)
 apps/server/src/analytics.ts                              (modified)
 apps/server/src/gameRoom.ts                               (modified)

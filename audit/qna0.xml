@@ -1,0 +1,1081 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- QNA0 — Paradox Pay Pre-Architecture Requirements Audit -->
+<!-- Format: AuditML-Lite | Generated: 2026-05-25 | Status: AUTHORITATIVE -->
+<!-- C = Confidence (0.00–1.00) | E = Evidence file refs | RISK = assumption risk if wrong -->
+
+<QNA0>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     DICTIONARY — all file paths referenced by token
+     ═══════════════════════════════════════════════════════════════════════ -->
+<DICT>
+  <F1>core/packages/farkle-shared/src/types.ts</F1>
+  <F2>core/packages/farkle-engine/src/farkleScorer.ts</F2>
+  <F3>core/packages/farkle-engine/src/gridUtils.ts</F3>
+  <F4>core/packages/farkle-engine/src/rtpConfig.ts</F4>
+  <F5>core/packages/farkle-engine/src/monteCarlo.ts</F5>
+  <F6>core/packages/farkle-engine/src/csprng.ts</F6>
+  <F7>core/apps/server/src/gameRoom.ts</F7>
+  <F8>newmodespec.md</F8>
+  <F9>core/FARKLEFRENZY.md</F9>
+  <F10>core/packages/farkle-engine/src/farkleStore.ts</F10>
+  <F11>core/packages/farkle-engine/src/gameStore.ts</F11>
+  <F12>mesh/EXECUTE.md</F12>
+  <F13>mesh/sacred-core-spec.md</F13>
+  <F14>core/apps/server/src/analytics.ts</F14>
+  <F15>design/OpportunityWeightController.md</F15>
+  <F16>audit/COMPONENT_AUDIT.md</F16>
+  <F17>mesh/authority-model.md</F17>
+  <F18>mesh/hashing-strategy.md</F18>
+  <F19>core/packages/farkle-engine/src/chainIndex.ts</F19>
+  <F20>docs/adr/ADR-020-t9-social-platform-liveops.md</F20>
+  <F21>core/apps/server/src/playIntegrity.ts</F21>
+  <F22>core/packages/compliance/src/index.ts</F22>
+  <F23>contracts/ReplayEvent.v1.md</F23>
+  <F24>contracts/IEventStore.v1.md</F24>
+</DICT>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q1 — CORE GAMEPLAY LOOP
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q1">
+  <QUESTION>What is the current core gameplay loop? Identify actual implemented loop. Compare against intended Paradox Pay loop. List gaps.</QUESTION>
+  <E>F7:16-26,F7:208-235,F2:32-54,F3:295-364,F1:101-103,F8:100-186</E>
+  <C>0.97</C>
+  <R>
+    IMPLEMENTED_LOOP:
+      1. CLIENT sends CREATE_ROOM → GameRoom constructor: CSPRNG(nanoid(32)), SixPoolManager(playerCount,csprng), createGrid(dim,settings,pool), SHA256(seed) committed.
+      2. CLIENT sends JOIN_ROOM → addPlayer(ws,playerId,playerName,classArchetype='Paladin').
+      3. CLIENT sends START_GAME → handleStartGame(): energy tick interval 200ms, turn timer set, MATCH_START event emitted.
+      4. CLIENT sends SUBMIT_CHAIN(positions[]) → processChain():
+         a. Extract faces from grid positions.
+         b. scoreFarkle(faces, multiplierQ) → {score, scaledScore, isFarkle, combo, triggersBomb}.
+         c. FARKLE PATH: unbanked=0, farklePool+=unbanked_before, multiplierStep=0, phase=FARKLE_ANIM, nextTurn().
+         d. SCORE PATH (chain.length lt 6): scaledScore added to unbanked, auto-bank (unbanked→banked), multiplierStep=0, gravity+spawn.
+         e. SCORE PATH (chain.length=6): scaledScore added to unbanked, multiplierStep++, timer restart, NO auto-bank.
+         f. triggersBomb=BOMB_STANDARD → applyStandardBomb(3×3). triggersBomb=BOMB_RAINBOW → applyRainbowBomb(most-common-face).
+         g. Every 5 bankCycleCount increments: applyGravityFlip(grid).
+      5. CLIENT sends BANK → handleBank(): unbanked→banked, multiplierStep=0, win-check (banked≥levelWinScore).
+      6. Win: endSession() → SESSION_END broadcast with seed reveal, payout computed per mode.
+
+    PARADOX_PAY_LOOP_AS_SPECIFIED: NOT DEFINED in codebase. No file, type, mode, or function uses the string "Paradox Pay" or "paradox_pay". The brand name exists only as the directive id PARADOX_PAY_QNA0.
+
+    INFERRED_PARADOX_PAY_INTENT (from game vision docs F9, F8):
+      - Skill-reads spatial board → informs Farkle risk → player decision to chain or bank.
+      - Provably fair RNG → sweepstakes PDX payout → verifiable by player post-session.
+      - Progressive value systems competing simultaneously (score + currency + social + progression).
+      - PvP (VS), co-op (RALLY), betrayal (HEIST) on same Sacred Core.
+
+    GAPS_BETWEEN_IMPLEMENTED_AND_VISION:
+      G1: No lobby classArchetype selection UI — defaults to 'Paladin' (T9 L0 flag, F7:111).
+      G2: spawnTiles has zero board-state awareness — cascades are physics-only, no opportunity shaping (F3:335-364, F15).
+      G3: dead-state detection (hasValidChain F3:515-543) has no implemented reshuffle recovery in gameRoom.ts; unclear what gameRoom does when hasValidChain returns false.
+      G4: DRAFT phase (facet selection, F8:121-126) not wired in gameRoom.ts; newmodespec.md specifies it but implementation shows no DRAFT message type.
+      G5: 20 genre modules specified in F8 but implementation in gameRoom.ts imports only: eventHorizon, comboBreaker, slipstream, facet, shard, rhythm, gravityFlip, flowMultiplier. Remainder (Horror, Metroidvania, Battle Royale, Sandbox, MOBA) not wired.
+      G6: HollaEx PDX on-ramp not implemented (design/02-hollaex-integration.md, ADR-022 pending).
+      G7: Lobby JOIN_ROOM message does not carry classArchetype field.
+      G8: Session analytics (chain_decisions, skill_score) written only in casino modes; free modes produce no audit trail.
+  </R>
+  <RISK>HIGH — gap G3 (dead-state recovery) could cause game freeze in production; G4 (DRAFT) means genre system is largely unimplemented despite spec.</RISK>
+  <MISSING>
+    - Exact gameRoom.ts handling of hasValidChain=false (need lines 250+).
+    - Whether DRAFT phase was intentionally deferred or accidentally omitted.
+    - Whether all 20 genres in F8 are committed scope or speculative.
+  </MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q2 — SACRED FILES
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q2">
+  <QUESTION>Which files are truly sacred? Exact paths. Why sacred. What depends on them.</QUESTION>
+  <E>F13,F2:1-10,F3:1-10,F4:1-10,F5:1-10,F6:1-10,F7:59-67,F1:1-10,CLAUDE.md</E>
+  <C>0.92</C>
+  <R>
+    CLAUDE_MD_LIST (authoritative per mesh/sacred-core-spec.md):
+      S1: core/packages/farkle-engine/src/farkleStore.ts
+          WHY: Zustand store for FarkleGameState — energy, chain[], chainScore, multiplierStep, banked, unbanked. Authoritative client-side score state. Direct modification would desync server (F7) and client.
+          DEPENDS: apps/web (FarkleHUD, VoxelPileScene), apps/server (state mirror), gameStore.ts.
+
+      S2: core/packages/farkle-engine/src/gameStore.ts
+          WHY: Zustand store for AppState — userId, sessionId, complianceProfile, activeScreen, economyBalance. Cross-cutting identity and compliance state.
+          DEPENDS: all UI components that read user identity or wallet, ComplianceService (F22).
+
+      S3: core/packages/farkle-engine/src/farkleScorer.ts
+          WHY: Exhaustive scoring via lookup table (chainIndex.ts). Legal invariant — any change to scoring is a regulatory change. Q×1000 fixed-point. T1 authorized 1 modification (multiplierQ fix). PRESERVATION_SPEC W6: Two-Triplets must return 2500 not 1200.
+          DEPENDS: F3 (gridUtils scan), F5 (monteCarlo), F7 (game loop scoring), tests (16 cases).
+
+      S4: core/packages/farkle-engine/src/rtpConfig.ts
+          WHY: Declares targetRTP/grossRTP/netRTP per mode. Any change alters payout math — legal violation risk. ADR-010 calibration is PROPOSE ONLY (pending Human approval since T6).
+          DEPENDS: F5 (monteCarlo normalizer), F7 (endSession payout), F8 (RTP convergence algorithm).
+
+      S5: core/packages/farkle-engine/src/monteCarlo.ts
+          WHY: Audit harness — validates realized RTP within ±2% of declared netRTP over 10,000 sessions. Changing it invalidates compliance evidence.
+          DEPENDS: F4 (RTP_CONFIGS), F19 (chainIndex table), regulatory audit trail.
+
+      S6: core/packages/farkle-engine/src/csprng.ts
+          WHY: HMAC-SHA256 CSPRNG + commit-reveal scheme. Any change breaks provable fairness chain. seededRng() also used in F3 (createGrid, SixPoolManager) and F5 (monteCarlo).
+          DEPENDS: F3 (SixPoolManager seed), F7 (constructor CSPRNG), F6 self (deriveCombinedSeed, verifyServerSeed).
+
+    ADDITIONAL_SACRED_BY_FILE_HEADER (not in CLAUDE.md list):
+      S7: core/apps/server/src/gameRoom.ts
+          WHY: Header comment says "SACRED FILE — see modification rules at top" (F7:57). Server-side game loop authority. All scoring, banking, win conditions, payouts flow here.
+          STATUS: Listed as NOT Sacred in session-13.json, handoff/03 (T9 governance), but file self-declares sacred. CONTRADICTION — resolve before modification.
+          DEPENDS: index.ts (WebSocket handler), analytics.ts (persistence), multiplayerStore.ts (client mirror).
+
+      S8: core/packages/farkle-shared/src/types.ts
+          WHY: Sacred header present (F1:1-10). Contains SPAWN_WEIGHTS, GAME_CONSTANTS, RTP interface, MULTIPLIER_LADDER, ANTE_SCHEDULES.
+          STATUS: SPAWN_WEIGHTS at F1:47-49 specifically listed as NOT Sacred in design/OpportunityWeightController.md (modifiable for OWC). Types.ts overall is ambiguous.
+          DEPENDS: All packages import from @match3d/farkle-shared.
+
+      S9: core/packages/farkle-engine/src/gridUtils.ts
+          WHY: Sacred header present (F3:1-10). SixPoolManager, createGrid, spawnTiles, applyGravityFlip, applyStandardBomb, applyRainbowBomb.
+          STATUS: Not in CLAUDE.md list. OWC design (F15) proposes backward-compatible modification to spawnTiles. Awaiting Human approval.
+          DEPENDS: F7 (GameRoom uses createGrid, spawnTiles, stepGravity, applyGravityFlip, bombs), F3 self.
+
+    AUTHORIZED_MODIFICATIONS_HISTORY:
+      T1: farkleScorer.ts — Q×1000 multiplier (7d512bf) — authorized legal compliance fix.
+      T8: gameRoom.ts — writeWithRetry, MATCH_SCORE payload — authorized T8 scope.
+      T9: gameRoom.ts — classArchetype, postHogTrack — authorized T9 scope.
+      T9: analytics.ts — postHogTrack added — authorized T9 scope.
+  </R>
+  <RISK>HIGH — S7 (gameRoom.ts) has conflicting sacred classification. Treating it as not-sacred could allow unauthorized modification of payout logic.</RISK>
+  <MISSING>
+    - mesh/sacred-core-spec.md exact classification of gameRoom.ts and gridUtils.ts.
+    - Whether .ff-core-lock manifest file exists and what it contains.
+  </MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q3 — SPAWN CONTROL AUTHORITY
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q3">
+  <QUESTION>What currently controls: tile spawning, blocker spawning, creature spawning, bomb spawning, wild spawning, board generation, cascade generation.</QUESTION>
+  <E>F3:74-174,F3:230-291,F3:335-364,F3:295-318,F2:41-45,F1:47-49,F1:77-81</E>
+  <C>0.99</C>
+  <R>
+    TILE_SPAWNING:
+      Controller: F3:spawnTiles(grid,pool) lines 335-364.
+      Mechanism: For each col c where grid[0][c].state=EMPTY → pool.drawWild() → if w===3 makeWildCell else pool.drawDie() → makeDieCell(face).
+      Board state inputs: NONE. spawnTiles has no grid scan, no cascade analysis, no score awareness.
+      Pool: SixPoolManager.drawDie() → pre-shuffled dieLive pool (equal face distribution, perFace = diePoolSize/6). Pool is seeded at room creation, not per-spawn.
+
+    BLOCKER_SPAWNING:
+      Controller: F3:createGrid(size,settings,pool,seedNum) lines 230-291.
+      Mechanism: seededRng(seedNum), blockerCount from BLOCKER_DENSITY_RANGES[settings.blockerDensity] {LOW:3-4, MEDIUM:5-7, HIGH:8-12}, stoneCount=floor(blockerCount/2), iceCount=floor(blockerCount/4), lockCount=remainder.
+      Stone placement: _clusterPlace(candidates, stoneCount, rng) — 70% biased adjacency (vein formation).
+      Ice placement: random from shuffled candidate pool.
+      Lock placement: random from remaining candidate pool.
+      Called once at game start. Blockers do NOT respawn mid-game.
+      Board state inputs: NONE beyond initial density setting.
+
+    CREATURE_SPAWNING:
+      NONE. No creature system exists in implemented code. ghost tile (F1:27) drifts but is a tile, not a creature. No creature type, no creature spawn function, no creature ability system implemented.
+
+    BOMB_SPAWNING:
+      Controller: F2:41-45 (scoreFarkle trigger detection).
+      Mechanism: BOMB_STANDARD triggered when combo==='Six of a Kind' AND faces.length===6. BOMB_RAINBOW triggered when combo==='Straight' AND faces.length===6. Both triggered deterministically by scoring — NOT dynamically spawned.
+      Applied: F3:applyStandardBomb, F3:applyRainbowBomb called from gameRoom.ts processChain.
+      Spawn: bombs do NOT appear on board as tiles via spawnTiles. They are board states set by game logic (BOMB_FUSE phase).
+
+    WILD_SPAWNING:
+      Controller: F3:SixPoolManager.drawWild() lines 135-148.
+      Pool composition: wildLive initialized as: r<0.60→type0(blank), r<0.75→type1, r<0.90→type2, else type3(true-wild). Pool size=ceil(dim*dim/4).
+      True-wild probability: ~10% of wild draws (type3 only triggers makeWildCell at w===3 in spawnTiles).
+      Effective wild spawn rate on board: ~10% of non-blocker fill positions at creation/refill.
+      Board state inputs: NONE. wildLive pool is pre-built, static distribution, no stagnation response.
+      Catalyst modifier: CATALYST_WILD_BOOST=2% per committed catalyst, CATALYST_MAX_BOOST=10% (F1:76-77). Not wired to wildLive pool probability — implementation unclear.
+
+    BOARD_GENERATION:
+      Controller: F3:createGrid lines 230-291.
+      Inputs: size (from multiplayerGridSize), settings.blockerDensity, SixPoolManager, seedNum=Date.now().
+      Note: seedNum=Date.now() is NOT deterministic — different from CSPRNG seed. This means grid layout differs per wall-clock, not per CSPRNG. POTENTIAL FAIRNESS GAP.
+      Grid fill: each non-blocker cell → drawWild() → w===3: makeWildCell(drawDie()), else: makeDieCell(drawDie()).
+
+    CASCADE_GENERATION:
+      Controller: F3:stepGravity(grid) lines 295-318.
+      Mechanism: Pure downward physics. For each cell (top to bottom): if canFall AND cell below is EMPTY → swap. canFall = state=WILD OR type=ICE OR (state=NORMAL AND isDieTile).
+      Dynamic cascade: NONE. No intentional combo-chain generation. No board analysis to plan cascades.
+      Board state inputs: NONE beyond gravity physics.
+      Dead-state check: F3:hasValidChain(grid) — BFS across all chainable tiles checking if any 2+ path scores gt 0. Called externally; no internal recovery trigger in F3.
+  </R>
+  <RISK>MEDIUM — seedNum=Date.now() in createGrid breaks deterministic replay; CSPRNG seed covers RNG but not grid layout seed.</RISK>
+  <MISSING>
+    - Where gameRoom.ts calls hasValidChain and what it does on false (lines 250+ not read).
+    - Catalyst wild boost wiring — types.ts defines it, unclear if spawnTiles uses it.
+  </MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q4 — TILE INVENTORY
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q4">
+  <QUESTION>What are all current tile types? Full inventory. Purpose. Value contribution. Retention contribution.</QUESTION>
+  <E>F1:16-28,F1:52-64,F1:117-125,F3:44-68,F16</E>
+  <C>0.99</C>
+  <R>
+    T01: die (DieColor: RED/ORANGE/YELLOW/GREEN/BLUE/PURPLE = faces 1-6)
+         PURPOSE: Core scoring tile. Face determines scoring value.
+         VALUE: Face1=100pts solo, Face5=50pts solo; combos (Three-of-a-kind N×100, Straight=1500, etc).
+         RETENTION: Primary skill expression. Board reading skill derives from face distribution.
+         COMPONENT_AUDIT_SCORE: 0.85 (S-tier, F16).
+
+    T02: sphere (green NRG orb)
+         PURPOSE: Energy resource. Tap removes tile, grants +8 energy (GAME_CONSTANTS).
+         VALUE: Zero scoring value. Energy gate transition value only.
+         RETENTION: Enables PRIME→FRENZY transitions. Strategic in energy management.
+         SPAWN_WEIGHT: NORMAL=25%, PRIME=18%, FRENZY=12%.
+         COMPONENT_AUDIT_SCORE: 0.61 (A-tier, F16, listed as Sphere).
+
+    T03: ice (FROZEN state)
+         PURPOSE: Blocker. Unchainable. Thaws to die on adjacent commit. Bomb-destructible.
+         VALUE: Zero direct score. Indirectly scores when thawed and subsequently chained.
+         RETENTION: Creates planning horizon (thaw mechanic). Good chain planning.
+         SPAWN_WEIGHT: NORMAL=1%, PRIME=6%, FRENZY=6%.
+         COMPONENT_AUDIT_SCORE: 0.66 (A-tier, F16).
+
+    T04: lock (LOCKED state, health 1-3)
+         PURPOSE: Blocker. Must be included in scoring chain to damage. Reduces to die at 0HP.
+         VALUE: Must appear in chain — forces chain constraint choices.
+         RETENTION: Decision pressure. Low cascade contribution.
+         SPAWN_WEIGHT: NORMAL=0%, PRIME=3%, FRENZY=4%.
+         COMPONENT_AUDIT_SCORE: 0.49 (B-tier, F16). Recommended: hidden-face variant.
+
+    T05: wild (WILD state, face=underlying_value)
+         PURPOSE: Scoring optimizer. Adopts optimal face at commit (exhaustive 6^n search in _resolveWilds).
+         VALUE: Always chooses max-scoring face combination. Dramatically lowers Farkle risk.
+         RETENTION: Strategic board reading — wild density visible. High anticipation.
+         SPAWN_WEIGHT: NORMAL=0%, PRIME=2%, FRENZY=9%.
+         SPAWN_TRIGGER: pool.drawWild() type3 (10% of wild draws, ~10% non-blocker cells).
+         COMPONENT_AUDIT_SCORE: 0.82 (S-tier, F16).
+
+    T06: bomb / BOMB_STANDARD
+         PURPOSE: Area clear. 3×3 blast centered on bomb tile. Triggered by Six-of-a-Kind combo.
+         VALUE: ptsEarned=25 (self) + blast hits: face1=100, face5=50, others=0, stone=50, lock=50.
+         RETENTION: Satisfying clear. Feels random not earned (not spawned dynamically).
+         SPAWN_WEIGHT: PRIME=1%, FRENZY=7%. Also triggered by scoring (farkleScorer).
+         COMPONENT_AUDIT_SCORE: 0.73 (A-tier, BOMB_STANDARD, F16).
+
+    T07: rainbow_bomb / BOMB_RAINBOW
+         PURPOSE: Board-wide color clear. Triggered by Straight combo (1-2-3-4-5-6).
+         VALUE: Clears all tiles of most common face. Configurable per-face reward (rainbowRedReward, rainbowBlueReward).
+         RETENTION: Requires board reading (Straight is spatial). High anticipation.
+         SPAWN_WEIGHT: FRENZY=1% only.
+         COMPONENT_AUDIT_SCORE: 0.78 (A-tier, BOMB_RAINBOW, F16).
+
+    T08: mirror
+         PURPOSE: Face = opposite of chain neighbor (MIRROR_OPPOSITES: 1↔6, 2↔5, 3↔4).
+         VALUE: Scoring contribution depends on placement relative to chain.
+         RETENTION: Situational. Low cascade contribution. Weak mechanic.
+         SPAWN_WEIGHT: NORMAL=4%, PRIME=6%, FRENZY=7%.
+         COMPONENT_AUDIT_SCORE: 0.49 (B-tier, F16). Recommended: clarify or merge into wild.
+
+    T09: stone (STONE type, health=1-2 per makeStoneCell rng)
+         PURPOSE: Persistent blocker. Unchainable. Bomb or adjacent-chain damage only.
+         NOTE: GAME_CONSTANTS.STONE_HP=2 but makeStoneCell uses rng→Math.floor(rng()*maxHp)+1 → hp 1 or 2.
+         VALUE: 50pts on destroy (BOMB_STONE_PTS). Does NOT drop bioSteel in current implementation (types.ts mentions it, no code found).
+         RETENTION: Time consumption gt decision creation. Frustration risk.
+         SPAWN_WEIGHT: NORMAL=4%, PRIME=5%, FRENZY=5%.
+         COMPONENT_AUDIT_SCORE: 0.51 (B-tier, F16). Recommended: weakness-face mechanic.
+
+    T10: multiplier_orb (blue-gold sphere)
+         PURPOSE: Tactical bonus. Tap grants next commit ×1.5. Single use.
+         VALUE: Multiplies next chain's scaledScore by 1.5.
+         RETENTION: Creates anticipation window. Timing decisions.
+         SPAWN_WEIGHT: NORMAL=3%, PRIME=4%, FRENZY=5%.
+         COMPONENT_AUDIT_SCORE: 0.64 (A-tier, F16). Recommended: 3-turn commitment window.
+
+    T11: ghost
+         PURPOSE: Ignores column constraint. Drifts. Tap to anchor → becomes die.
+         VALUE: Unclear mechanical purpose. No column constraint is rarely relevant.
+         RETENTION: Mechanic confusion. Lowest ValueScore.
+         SPAWN_WEIGHT: NORMAL=1%, PRIME=2%, FRENZY=3%.
+         COMPONENT_AUDIT_SCORE: 0.42 (C-tier, F16). Recommended: redesign to Echo tile.
+
+    T12: catalyst
+         PURPOSE: Committed in chain → +2% wild spawn weight (max +10% total, CATALYST_WILD_BOOST=2, CATALYST_MAX_BOOST=10).
+         VALUE: Cumulative wild spawn boost. Strategic investment.
+         RETENTION: Long-term board shaping. Good skill expression.
+         SPAWN_WEIGHT: NORMAL=0%, PRIME=1%, FRENZY=2%.
+         BOMB_PTS: 40 (BOMB_CONSTANTS.CATALYST_PTS).
+         COMPONENT_AUDIT_SCORE: 0.64 (A-tier, F16).
+         NOTE: Wiring between catalyst commit and actual wildLive pool probability not confirmed in spawnTiles code.
+  </R>
+  <RISK>LOW — inventory complete from types.ts EntityType enum and SPAWN_WEIGHTS. Ghost/catalyst wiring uncertainty is medium risk.</RISK>
+  <MISSING>
+    - Catalyst wild boost wiring in spawnTiles (only drawWild() w===3 threshold, no CATALYST_MAX_BOOST applied).
+    - bioSteel mechanic from stone destroy (mentioned in types.ts comment, no implementation found).
+  </MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q5 — BLOCKERS
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q5">
+  <QUESTION>All current blockers. Inventory. Frequency. Function. Frustration score. Decision score. Removal recommendation.</QUESTION>
+  <E>F1:79-81,F3:72,F3:185-220,F3:224-228,F3:452-481,F1:175-181,F16</E>
+  <C>0.97</C>
+  <R>
+    B01: STONE
+         FREQUENCY: MEDIUM density: 2-3 tiles; HIGH: 4-6 tiles. Clustered (70% adjacency bias). Spawned at game start only.
+         FUNCTION: Unchainable. Takes 1-2 bomb hits or adjacent chain damage (damageAdjacentBlockers, F3:452-481) to destroy. HEADHUNTER role doubles damage.
+         FRUSTRATION_SCORE: HIGH (4/5). Blocks chain paths without providing decisions. Consumes turns via adjacent-damage attrition.
+         DECISION_SCORE: LOW (1/5). Player decides to chain adjacent but this is rarely meaningful — any adjacent chain triggers damage.
+         REMOVAL_RECOMMENDATION: Keep but add weakness-face mechanic (COMPONENT_AUDIT priority 7). STONE gets a hidden face; chain that face → 2× damage. Creates board reading value.
+         COMPONENT_AUDIT_SCORE: 0.51 (B-tier, F16).
+
+    B02: ICE
+         FREQUENCY: MEDIUM: 1-1 tile (floor(blockerCount/4)); LOW: 0-1. Randomly placed.
+         FUNCTION: Frozen die — face visible, unchainable. Adjacent commit (any direction) thaws to normal die. Bomb destroys immediately.
+         FRUSTRATION_SCORE: LOW (2/5). Thaw mechanic is clear. Player can plan around it.
+         DECISION_SCORE: HIGH (4/5). Creates chain planning (thaw sequence, bomb targeting).
+         REMOVAL_RECOMMENDATION: Keep. Highest blocker ValueScore. No change needed.
+         COMPONENT_AUDIT_SCORE: 0.66 (A-tier, F16).
+
+    B03: LOCK
+         FREQUENCY: MEDIUM: 1-2 tiles (remainder of blockerCount after stone+ice). Randomly placed.
+         FUNCTION: Shows face, health 1-3. Must be INCLUDED in a scoring chain to take damage. 0HP → becomes normal die.
+         FRUSTRATION_SCORE: MEDIUM-HIGH (3/5). Mandatory chain inclusion can block optimal plays.
+         DECISION_SCORE: MEDIUM (3/5). Forces inclusion decision. Currently hidden-face variant absent.
+         REMOVAL_RECOMMENDATION: Add hidden-face variant — face revealed only when chain attempts include it. Increases decision value.
+         COMPONENT_AUDIT_SCORE: 0.49 (B-tier, F16).
+
+    BLOCKER_DENSITY_TABLE:
+      LOW:    blockerCount 3-4 → stone 1-2, ice 0-1, lock 1.
+      MEDIUM: blockerCount 5-7 → stone 2-3, ice 1, lock 1-3.
+      HIGH:   blockerCount 8-12 → stone 4-6, ice 2-3, lock 2-4.
+      NOTE: BLOCKER_DENSITY_COUNTS in SixPoolManager constructor hardcodes MEDIUM=6 (F3:72) regardless of lobby setting — potential bug.
+  </R>
+  <RISK>MEDIUM — BLOCKER_DENSITY_COUNTS=6 hardcoded in SixPoolManager constructor despite LobbySettings.blockerDensity being configurable. SixPoolManager does not use density for pool sizing.</RISK>
+  <MISSING>
+    - Whether HEADHUNTER role (damageAdjacentBlockers isHeadhunter=true) is fully implemented in gameRoom.ts role assignment.
+    - Lock health random range (makeStoneCell uses rng for stone, makeLockCell does not — lock always max HP 1-3 from type?).
+  </MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q6 — CREATURES
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q6">
+  <QUESTION>All current creatures. Inventory. Abilities. Balance concerns. Skill contribution. Retention contribution. Paradox Pay potential.</QUESTION>
+  <E>F1:16-28,F3:44-68,F8:100-186</E>
+  <C>0.99</C>
+  <R>
+    CREATURE_COUNT: 0.
+    No creature system exists in the implemented codebase. EntityType (F1:16-28) does not contain any creature type. gridUtils.ts (F3) has no creature spawn function. gameRoom.ts imports no creature system. newmodespec.md (F8) does not describe a creature system.
+
+    CLOSEST_ANALOGUE: ghost tile (T11 in Q4). Drifts, ignores column constraint, tap to anchor. This is a tile mechanic, not a creature. No abilities, health, AI, or progression.
+
+    PARADOX_PAY_POTENTIAL: HIGH if implemented. Creature layer could provide:
+      - Named antagonists tied to HEIST vault guardian role.
+      - Skill expression: predict creature movement, chain around it.
+      - Retention: creature kill = social story moment.
+      - RTP-safe if creature effects are cosmetic or bounded multiplier (same anti-stacking rules as genre wrappers).
+    RISK: Any creature that affects scoring must pass FIXED_POINT_CHECK and be bounded by anti-stacking Rule A (max 3 simultaneous modifiers, F8:282).
+  </R>
+  <RISK>LOW — absence of creatures is confirmed, not an oversight in reading.</RISK>
+  <MISSING>Nothing. Creatures do not exist.</MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q7 — BOMBS
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q7">
+  <QUESTION>All current bombs. Inventory. Trigger conditions. Counterplay. Strategic depth. Replacement recommendations.</QUESTION>
+  <E>F2:41-45,F3:380-448,F1:52-64,F1:101-103</E>
+  <C>0.98</C>
+  <R>
+    BOM01: BOMB_STANDARD
+      TRIGGER: scoreFarkle returns combo='Six of a Kind' AND faces.length===6 (F2:43).
+      MECHANISM: applyStandardBomb(grid, bombRow, bombCol, isHeadhunter) F3:380-419.
+        Radius: BOMB_RADIUS=1 (3×3 grid area). Each cell in blast:
+          STONE: damage 1 (or 2 if HEADHUNTER), destroy if hp≤0 (+50pts).
+          ICE/FROZEN: → EMPTY immediately.
+          BOMB_STANDARD/BOMB_RAINBOW: → EMPTY (chain detonation possible).
+          Die face1: +100pts. Die face5: +50pts. Other die faces: +0pts.
+          LOCKED cells: skip (state=LOCKED, F3:398).
+        ptsEarned starts at 25 (BOMB_CONSTANTS.SELF_PTS).
+      COUNTERPLAY: NONE — once Six-of-a-Kind is formed the bomb fires. Player cannot cancel.
+      STRATEGIC_DEPTH: LOW-MEDIUM. Chain positioning matters (target stone clusters). But trigger requires rare 6-of-a-kind.
+      COMPONENT_AUDIT_SCORE: 0.73. Deduction: feels random not earned.
+      REPLACEMENT_RECOMMENDATION: Add pre-trigger indicator: when 4/6 dice in chain match, show blast preview overlay. Increases strategic depth without changing mechanic.
+
+    BOM02: BOMB_RAINBOW
+      TRIGGER: scoreFarkle returns combo='Straight' AND faces.length===6 (F2:44). Straight = all 6 faces (1,2,3,4,5,6) present.
+      MECHANISM: applyRainbowBomb(grid, targetColor, multiplier, rainbowRedReward, rainbowBlueReward) F3:421-448.
+        targetColor = most common die face color on board.
+        Clears ALL tiles of that color (entire board scan). Locked cells skipped.
+        Points: targetColor=RED → +rainbowRedReward×multiplier per tile. targetColor=BLUE → +rainbowBlueReward×multiplier. Other colors → +0pts.
+      COUNTERPLAY: Indirect — player can influence most-common-face by chaining to reduce density, shifting which color rainbow targets.
+      STRATEGIC_DEPTH: HIGH. Requires board reading: Straight combo + targetColor selection. Best in class.
+      COMPONENT_AUDIT_SCORE: 0.78. Highest bomb score.
+      REPLACEMENT_RECOMMENDATION: Add "Straight in progress" indicator (5/6 chain approaching Straight). Increases mastery expression.
+
+    NOTE: Bombs cannot be spawned mid-game by any non-scoring path. PRIME/FRENZY spawn weights include 'bomb' and 'rainbow_bomb' (F1:48-49) but this refers to tile types that appear on board as fuse-state entities — the mechanism for transitioning them into BOMB_FUSE phase was not confirmed in read code. POTENTIAL AMBIGUITY.
+  </R>
+  <RISK>MEDIUM — bomb spawn via SPAWN_WEIGHTS (not scoring trigger) mechanism not confirmed in read code. If PRIME/FRENZY bomb weights spawn fused tiles directly, bomb frequency is higher than scoring-trigger-only path implies.</RISK>
+  <MISSING>
+    - Whether SPAWN_WEIGHTS bomb weight causes direct tile spawns (BOMB_FUSE phase) or is vestigial.
+    - Cascade detonation logic (if one bomb blast hits another bomb, does chain detonate?).
+  </MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q8 — WILD SYSTEMS
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q8">
+  <QUESTION>All current wild systems. Inventory. Trigger conditions. Frequency. Strategic value. Redesign opportunities.</QUESTION>
+  <E>F3:85-148,F3:349-363,F3:492-513,F1:76-77,F15</E>
+  <C>0.96</C>
+  <R>
+    W01: Wild tile (WILD state)
+      SOURCE: SixPoolManager.drawWild() type3 (w===3). Probability ~10% of draws.
+      POOL: wildLive built at init: 60% type0, 15% type1, 15% type2, 10% type3. Pre-shuffled.
+      SPAWN_CONDITION: spawnTiles checks pool.drawWild()===3 → makeWildCell. Same in createGrid.
+      RESOLUTION: _resolveWilds() in gridUtils.ts (F3:492-513). Exhaustive 6^n search over all wild positions. Selects face assignment maximizing lookupScore. Fully optimal — player has no input.
+      FREQUENCY: NORMAL mode spawn weight=0% (SPAWN_WEIGHTS), PRIME=2%, FRENZY=9%. But SixPoolManager wild pool is always 10% type3 regardless of energy mode — SPAWN_WEIGHT wild field and SixPoolManager are INDEPENDENT systems. Possible architectural split: spawn weights may govern different spawn path than SixPoolManager pool.
+      STRATEGIC_VALUE: HIGH. Eliminates Farkle risk for wild-heavy chains. Reduces need for board reading.
+      REDESIGN: OWC wildBoostPct can push pool threshold from 3 to 2 (threshold = 3 - floor(wildBoostPct/3.3)) during stagnation. See F15.
+
+    W02: Wild Scatter (energy system)
+      SOURCE: newmodespec.md (F8) mentions Wild Scatter as L2 energy gate mechanic: 3+ wilds simultaneously on board → force all players into FRENZY + destroy all tiles matching wilds' underlying face colors.
+      IMPLEMENTATION: NOT CONFIRMED in read code. gameRoom.ts (F7:73) imports do not show a wildScatter function. scanForWilds() exists in F3:558-566 (counts wilds) but no scatter trigger visible in first 235 lines of F7.
+      FREQUENCY: Unknown (tied to wild density).
+      STRATEGIC_VALUE: HIGH if implemented. Game-changing board reset.
+
+    W03: Catalyst wild boost
+      SOURCE: Catalyst tile committed in chain → +CATALYST_WILD_BOOST (2%) to wild spawn weight, max CATALYST_MAX_BOOST (10%).
+      IMPLEMENTATION: F1:76-77 defines constants. spawnTiles (F3:348-349) only checks pool.drawWild()===3 — no boost applied to the 10% base probability. Wiring gap: catalyst effect on spawn probability not confirmed.
+      FREQUENCY: Accumulates per committed catalyst (PRIME=1%, FRENZY=2% spawn weight).
+      STRATEGIC_VALUE: SPECULATIVE — if wired, long-game board shaping. If not wired, dead mechanic.
+  </R>
+  <RISK>HIGH — Wild scatter (W02) and Catalyst boost (W03) may not be implemented despite being specified. If dead mechanics, removing them from UI docs is required before launch.</RISK>
+  <MISSING>
+    - scanForWilds threshold trigger in gameRoom.ts (lines 250+).
+    - Catalyst boost application in spawnTiles or equivalent.
+  </MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q9 — CASCADE ARCHITECTURE
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q9">
+  <QUESTION>What currently creates cascades? Static? Dynamic? Random? Controlled? Architecture.</QUESTION>
+  <E>F3:295-318,F3:320-333,F3:335-364,F3:515-543,F7:82-97</E>
+  <C>0.98</C>
+  <R>
+    CASCADE_TYPE: STATIC + RANDOM. No dynamic or controlled cascade generation.
+
+    STEP1_CHAIN_REMOVAL: processChain in gameRoom.ts removes scored tiles from grid (sets cells to EMPTY state). Bomb tiles also removed per applyStandardBomb/applyRainbowBomb.
+
+    STEP2_GRAVITY: stepGravity(grid) F3:295-318. Pure downward physics. Bottom-up iteration (r from rows-2 to 0). canFall tiles: WILD, ICE, or (NORMAL and isDieTile). Falls one row per call if cell below is EMPTY. Called in loop until hasEmptyBelow returns false.
+
+    STEP3_SPAWN: spawnTiles(grid,pool) F3:335-364. Fills top row (row 0) empty cells from SixPoolManager. Zero board-state awareness — draws next tile from pre-shuffled pool.
+
+    STEP4_DEADSTATE: hasValidChain(grid) F3:515-543. BFS from every chainable tile, checks if any 2+ length path has lookupScore>0. This is detection only — no recovery in F3.
+
+    RANDOMNESS_CHARACTERIZATION:
+      - Tile faces: RANDOM but controlled distribution (pool = equal per-face distribution, pre-shuffled).
+      - Tile type: RANDOM but controlled distribution (10% wild, 90% die from pool draws).
+      - Cascade depth: RANDOM (depends on grid gaps created by chains — no planning).
+      - Board dead state: RANDOM occurrence — no mechanism to guarantee productive refill.
+
+    MISSING_DYNAMIC_LAYER: OWC (F15) is the designed solution to add board-state awareness to spawn decisions. Currently F15 is design-only; implementation requires Human approval and ADR-021.
+
+    GRAVITY_FLIP: applyGravityFlip(grid) F3:578-590. Triggered every 5 bank cycles (bankCycleCount, F7:195). Reverses row order, applies 7-face complement to all die faces. RTP preserved (symmetric face distribution). Not a cascade mechanic — it's a board restructuring event.
+  </R>
+  <RISK>LOW — cascade architecture fully visible in read code.</RISK>
+  <MISSING>
+    - Whether gameRoom.ts calls hasValidChain and has a reshuffle path (lines 250+ not read).
+    - cascadeMs=80 (GAME_CONSTANTS) — frame timing for cascade animation, confirmed in F1:177.
+  </MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q10 — DEAD STATE FREQUENCY
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q10">
+  <QUESTION>What is current board dead-state frequency? Estimate. Measurement method. Evidence.</QUESTION>
+  <E>F3:515-543,F3:335-364,F5:51-99,F14</E>
+  <C>0.55</C>
+  <R>
+    DEAD_STATE_DEFINED: hasValidChain(grid)=false — no 2+ tile chain exists that scores gt 0.
+
+    MEASUREMENT_METHOD_EXISTING: NONE. No telemetry for dead state events. analytics.ts (F14) logs chain_decisions and session data but no dead_state_event type. PostHog tracks session_start and level_complete but not board states.
+
+    ESTIMATE_METHOD: Inferred from spawn model.
+      - 7×7 grid = 49 cells. MEDIUM density: ~6 blockers (stones cluster, ices random). ~43 chainable positions.
+      - Die pool: equal face distribution (perFace = diePoolSize/6). After chains, refill from pool.
+      - Dead state requires: no 2+ adjacent same-face pair AND no face1/face5 singletons.
+      - With equal face distribution and grid size 7×7, probability of zero-1s AND zero-5s in entire 43-cell playfield is extremely low.
+      - Dead state probability estimate: lt 1% per refill cycle under NORMAL conditions.
+      - FRENZY mode: wild tiles (9%) reduce dead state risk further.
+      - Stone clustering (Q5:B01) can create isolated regions — potential dead state if cluster splits board.
+
+    ESTIMATED_FREQUENCY: lt 0.5% of refill cycles. CONFIDENCE: 0.40 (no empirical data).
+
+    RECOVERY_MECHANISM: Unknown — hasValidChain is exported but recovery trigger in gameRoom.ts not confirmed in read code. Risk of game freeze if no recovery path.
+  </R>
+  <RISK>HIGH — no measurement and unknown recovery path. If dead state occurs and no reshuffle fires, game stalls. Regulatory issue if stall requires game exit.</RISK>
+  <MISSING>
+    - gameRoom.ts dead state handling (lines 250+).
+    - Any PostHog event or analytics tracking for board dead states.
+  </MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q11 — DECISION QUALITY TAXONOMY
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q11">
+  <QUESTION>Which mechanics create: meaningful decisions, non-meaningful decisions, fake choices, frustration loops.</QUESTION>
+  <E>F1:101-103,F1:144-153,F8:121-186,F2:32-54,F3:492-513,F1:396-403</E>
+  <C>0.88</C>
+  <R>
+    MEANINGFUL_DECISIONS:
+      M1: BANK vs CONTINUE (core Farkle). Unbanked at risk. Multiplier ladder. Board scan informs risk.
+      M2: Chain selection (spatial). Which 2-6 tiles to connect — different faces → different scores → different Farkle risk.
+      M3: Tile targeting for bombs. Position chain to maximize blast coverage on stone clusters.
+      M4: HEIST trigger timing. Vault≥5000, HEIST_ENERGY_COST=50. Team blocks within 5s window.
+      M5: Stealth Pocket — sacrifice chain slot to stash 1 die for later. Delayed gratification.
+      M6: RALLY role selection — ARCHIVIST takes 15% tax on banked score for team benefit. Genuine sacrifice.
+
+    NON_MEANINGFUL_DECISIONS:
+      NM1: Auto-bank on chain.length lt 6. Forced — no player choice.
+      NM2: Turn timer forced bank. Forced — no player choice beyond time pressure.
+      NM3: Wild face resolution — _resolveWilds() automatically picks optimal. Player cannot influence wild face selection.
+      NM4: multiplier_orb tap. When to use it is trivially obvious (use before highest-score chain). Low strategic depth.
+
+    FAKE_CHOICES:
+      FK1: Ghost tile anchor — ignores column constraint, but column constraint is rarely the limiting factor in chain building. Mechanic has near-zero strategic surface.
+      FK2: Facet draft (ROGUELIKE DRAFT phase) — specified in F8 but NOT implemented in gameRoom.ts. Players may see UI elements for a system that has no effect.
+      FK3: Energy management in NORMAL mode — energy only enters PRIME at 150. In NORMAL, sphere collection is binary (hit 150 or don't). No gradual strategy.
+
+    FRUSTRATION_LOOPS:
+      FR1: STONE cluster. Adjacent chain required for damage, but chain may not score if forced to include non-scoring faces adjacent to stone. Player watches HP slowly drain with no satisfying payoff.
+      FR2: LOCK in non-scoring column. Lock must be in chain, but if lock's column has no scoring neighbors, player is stuck.
+      FR3: Farkle with full multiplier. Farkle resets multiplierStep=0. If achieved ×3.0 or ×4.0 and Farkle, loss magnitude feels disproportionate.
+      FR4: Board dead state (if no recovery) — game becomes unplayable, no user feedback.
+  </R>
+  <RISK>MEDIUM — FK2 (unimplemented DRAFT phase) is a live UX debt if genre selection UI is visible.</RISK>
+  <MISSING>Whether DRAFT phase has any UI or is fully server-side deferred.</MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q12 — RETENTION MECHANICS RANKING
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q12">
+  <QUESTION>Which mechanics generate: mastery, anticipation, escalation, comeback moments, betrayal moments, social stories. Rank each.</QUESTION>
+  <E>F8:231-305,F1:199-203,F1:212-217,F1:183-188,F1:219-266,F7:176-197</E>
+  <C>0.85</C>
+  <R>
+    MASTERY (skill ceiling):
+      RANK1: Board reading for Farkle risk — distinguishing safe from risky chains.
+      RANK2: Wild optimization — understanding which chain maximizes wild face resolution.
+      RANK3: Bomb positioning — chain location to maximize 3×3 blast coverage.
+      RANK4: Class ability timing (Rogue ×2 burst windows, Paladin shield use).
+      RANK5: HEIST vault threshold management — staying under 5000 to control heist timing.
+
+    ANTICIPATION (tension before outcome):
+      RANK1: BOMB_FUSE timer (bombFuseMs=3000ms) — 3 second countdown before blast.
+      RANK2: Multiplier ladder advancement toward ×4.0 — 5th and 6th consecutive 6-chains.
+      RANK3: HEARTBEAT phase (Horror) — 1 die remaining before Farkle, 300-600ms reveal delay.
+      RANK4: HEIST_WINDOW_MS (5000ms) — vault threshold hit, waiting for team block.
+      RANK5: Straight combo detection — building toward BOMB_RAINBOW requires all 6 faces.
+
+    ESCALATION (rising stakes):
+      RANK1: Energy → PRIME → FRENZY transition. Simultaneous play + increased special density.
+      RANK2: MULTIPLIER_LADDER [1.0→1.25→1.5→2.0→3.0→4.0]. Each 6-chain raises stakes.
+      RANK3: RALLY_MILESTONES [10k→25k→50k→100k] with escalating multipliers [0.5→1.0→2.0→5.0].
+      RANK4: HEIST vault accumulation → threshold → heist resolution.
+
+    COMEBACK_MOMENTS:
+      RANK1: Slipstream (F8:245-252) — trailing player gets wider beat window (1.5×), higher flow cap (2.0). Dynamic per round.
+      RANK2: Farkle Pool recovery — farklePool accumulated from all farkling players; drainFarklePool returns points.
+      RANK3: Paladin shield (RPG) — first Farkle absorbed. One-shot per match.
+      RANK4: Combo Breaker token (Fighting) — reverse Farkle if token available. 250ms window.
+
+    BETRAYAL_MOMENTS:
+      RANK1: HEIST mode — vault threshold triggers heist; teammates have 5s to block. Attacker vs defender tension.
+      RANK2: HEIST vault split (70/30) — banking goes to vault, not personal score. Psychological loss of control.
+      RANK3: RALLY CONDUCTOR role — can redirect team chains. Social power dynamic.
+      RANK4: DisruptionEvent (ice_send, lock_send, scramble) — send blockers to opponent's board.
+
+    SOCIAL_STORIES:
+      RANK1: HEIST block/success moment — 5-second real-time team vote → resolved publicly.
+      RANK2: RALLY milestone bonuses — team achievement visible to all.
+      RANK3: ReactionVote (UP/DOWN per player) — lightweight social signal per chain.
+      RANK4: UserProfile.asciiArt + UsernameColor — identity expression in chat.
+      RANK5: DisruptionEvent broadcasts — attack visible to all players.
+  </R>
+  <RISK>LOW — rankings are design judgments based on mechanics, not quantified retention data.</RISK>
+  <MISSING>Actual session length and retention data. PostHog data would validate rankings empirically.</MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q13 — COMPARABLE SYSTEM MAPPING
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q13">
+  <QUESTION>Which systems currently resemble Buggin, Skydom, Farkle. Which do not?</QUESTION>
+  <E>F9:1-80,F1:16-28,F3:74-174,F2:32-54,F8:62-86</E>
+  <C>0.75</C>
+  <R>
+    FARKLE_RESEMBLANCE (HIGH):
+      - scoreFarkle() exhaustive combo table: identical to traditional Farkle scoring (1s=100, 5s=50, Three-of-a-kind=N×100, Two-Triplets=2500, Straight=1500).
+      - BANK vs CONTINUE risk decision: direct Farkle inheritance.
+      - Farkle (zero-score chain) = lose unbanked: identical to Farkle rule.
+      - multiplierStep (hot dice equivalent): similar to Farkle hot dice house rule.
+      DOES_NOT_RESEMBLE_FARKLE: Spatial board, tile types, blockers, bombs — all beyond Farkle.
+
+    SKYDOM_RESEMBLANCE (MEDIUM):
+      - SixPoolManager pre-shuffled pool with equal face distribution: closely matches Skydom's "pouch" mechanic (draws without replacement, guaranteed equal distribution).
+      - Tile gravity and refill from top: standard Skydom-style cascade.
+      DOES_NOT_RESEMBLE_SKYDOM: Scoring is Farkle-derived (not match-N colored gems), energy gate system, bomb trigger via combo not spatial match.
+
+    BUGGIN_RESEMBLANCE (LOW-MEDIUM):
+      - Ghost tile drift mechanic: loose resemblance to creature movement in Buggin.
+      - No creature system: primary Buggin distinction (creature abilities, movement AI) is entirely absent.
+      - Disruption events (ice_send, lock_send): resembles Buggin's bug-to-opponent mechanic.
+      DOES_NOT_RESEMBLE_BUGGIN: No creature types, no creature AI, no creature kill scoring, no creature-specific abilities.
+
+    NOT_RESEMBLING_ANY_CITED_GAME:
+      - CSPRNG commit-reveal fairness chain: unique to casino sweepstakes compliance.
+      - Energy gate (NORMAL/PRIME/FRENZY): custom.
+      - 20 genre composability layer: custom.
+      - HEIST vault mechanic: custom.
+      - RALLY role system: custom.
+      - Provable fairness + sweepstakes compliance: unique requirement.
+  </R>
+  <RISK>LOW — comparison is conceptual, not code-derived. Confidence reduced because Buggin game design doc was not read.</RISK>
+  <MISSING>Buggin game design document if it exists in this repository.</MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q14 — PARADOX PAY CONFLICTS
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q14">
+  <QUESTION>What systems conflict with the vision: Paradox Pay. Explain each conflict.</QUESTION>
+  <E>F15,F16,F1:47-49,F3:335-364,F1:76-77,F8:237-305,F9:23-43</E>
+  <C>0.80</C>
+  <R>
+    PARADOX_PAY_INFERRED_VISION: Skill-reads-board → informed risk → PDX sweepstakes payout → verifiable fairness. Players pay attention to opportunities, not luck. The "paradox" is skill+luck coexisting with provable fairness.
+
+    CONFLICT_01: Static spawn weights (F1:47-49)
+      VISION: Spawns should respond to board state to create opportunities (maximize skill expression).
+      CONFLICT: SPAWN_WEIGHTS are fixed constants. spawnTiles has zero board state awareness. Dead boards refill randomly — not shaped to create chains. Luck dominates over skill in refill phase.
+      SEVERITY: HIGH. Directly undermines "skill informs risk" thesis.
+      RESOLUTION: OWC (F15, ADR-021 pending Human approval).
+
+    CONFLICT_02: Wild face resolution is automatic (F3:492-513)
+      VISION: Player should be able to exercise skill in resolving wilds (which face to assign).
+      CONFLICT: _resolveWilds() exhaustively picks optimal — player has no input. Reduces skill expression for wild-heavy chains.
+      SEVERITY: MEDIUM. Wild resolution removes a decision moment.
+      RESOLUTION: Optional manual wild assignment UI (player can accept auto or choose face). Low-complexity addition.
+
+    CONFLICT_03: Ghost tile (F1:27, F16:C-tier 0.42)
+      VISION: Every tile on board should create decisions and skill expression.
+      CONFLICT: Ghost mechanic (ignore column constraint, drift, anchor) has near-zero strategic surface. Creates confusion, not skill. COMPONENT_AUDIT lowest score.
+      SEVERITY: MEDIUM. Dilutes board reading with mechanic players cannot internalize.
+      RESOLUTION: Redesign to Echo tile (scores as 1-face die, doubles chain score if chained last).
+
+    CONFLICT_04: DRAFT phase unimplemented
+      VISION: Facet system (Roguelike) adds draft-round meta-decisions between rounds.
+      CONFLICT: newmodespec.md specifies DRAFT as phase 1 of every round. gameRoom.ts does not emit DRAFT phase — not wired. Players miss the primary meta-decision system.
+      SEVERITY: HIGH. Genre system (20 genres) largely inaccessible without DRAFT.
+      RESOLUTION: Implement DRAFT message type in gameRoom.ts and wire facet draft to client.
+
+    CONFLICT_05: Catalyst wild boost wiring gap (F1:76-77, W03 in Q8)
+      VISION: Catalyst tiles enable long-game board shaping — strategic investment.
+      CONFLICT: CATALYST_WILD_BOOST and CATALYST_MAX_BOOST defined in types.ts but not applied in spawnTiles. Player commits catalyst tiles with no effect. Mechanic is dead.
+      SEVERITY: MEDIUM. Breaks strategic promise of catalyst tile.
+
+    CONFLICT_06: No lobby classArchetype selection (F7:110-111)
+      VISION: 4 RPG classes with asymmetric skill profiles (PALADIN low-variance, ROGUE high-variance, BARD mid, ARTIFICER mid+build). Player chooses identity.
+      CONFLICT: classArchetype defaults to 'Paladin' in addPlayer(). No JOIN_ROOM field for class. All players are de facto Paladins regardless of class preference.
+      SEVERITY: MEDIUM. Class system inaccessible at lobby — key Paradox Pay identity mechanic.
+  </R>
+  <RISK>MEDIUM — DRAFT status (wired vs not) needs line-level confirmation in gameRoom.ts beyond line 100.</RISK>
+  <MISSING>
+    - gameRoom.ts DRAFT/FACET message handling (lines 250+).
+    - Catalyst commit handler in processChain.
+  </MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q15 — VALUE SYSTEMS
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q15">
+  <QUESTION>Define every value system currently present. Score, Currency, Progression, Social, Team, Reputation, Other. Explain interactions.</QUESTION>
+  <E>F1:111-113,F1:143-153,F1:183-188,F1:219-266,F1:285-354,F7:181-197,F1:396-403</E>
+  <C>0.95</C>
+  <R>
+    SCORE:
+      banked: int, per-player, authoritative (profile.banked in RoomPlayer, F7:107). Persists through session.
+      unbanked: int, current-turn risk. Lost on Farkle. Auto-banked if chain lt 6 or turn timer expires.
+      multiplierStep: 0-5 index → MULTIPLIER_LADDER[step] (1.0, 1.25, 1.5, 2.0, 3.0, 4.0). Applied as Q×multiplierQ/1000.
+      farklePool: communal. Accumulated from all players' farkled unbanked. displayonly per design.
+      vaultTotal: HEIST only. 70% of all banked goes to vault (HEIST_CONSTANTS.VAULT_SPLIT=0.70).
+      rallyPot: RALLY only. Running total of all banks; split evenly at session end.
+
+    CURRENCY:
+      FD (Fun Dollars): FD_HAS_MONETARY_VALUE=false. Starter balance=1000 (DEFAULT_WALLET). Used for FD_WAGER/FD_AWARD cycles.
+      PDX: PDX_USD_RATE=1 (1:1 USD). DAILY_PDX_BONUS=10. pdxPlaythroughRequired=100 (PDX_PLAYTHROUGH_RATE=10 means 10× playthrough before redemption). HollaEx on-ramp planned.
+      TransactionTypes: FD_PURCHASE, PDX_GIFT, FD_WAGER, PDX_WAGER, FD_AWARD, PDX_AWARD, PDX_DAILY_BONUS, PDX_REDEEM, PDX_PROMO.
+      FD_TO_PDX_GIFT_RATE=0.01 (100 FD → 1 PDX via gift mechanic, not purchase).
+
+    PROGRESSION:
+      multiplierStep: within-session ladder. Resets on Farkle or lt 6 chain bank.
+      anteSchedule: PRE_GAME (required, 10% of stake) + optional MILESTONE antes at score thresholds. RALLY: MILESTONE_2 at 25k (5%). HEIST: MILESTONE_1 at 10k (5%), MILESTONE_3 at 50k (5%).
+      RALLY_MILESTONES: [10k×0.5, 25k×1.0, 50k×2.0, 100k×5.0]. Payout multipliers.
+      classArchetype: PALADIN/ROGUE/BARD/ARTIFICER. Per-match identity. Currently defaults to Paladin.
+      Facets (Roguelike DRAFT): per-round modifier that mutates after 3 rounds. NOT wired (see Q14:CONFLICT_04).
+      Shards (Abstract): temporary scoring rules, 30s duration. Imported in F7:73 but DRAFT not wired.
+
+    SOCIAL:
+      DisruptionEvent: {ice_send, lock_send, scramble}. Send blockers or scramble opponent grid. Targets: targetColumns[].
+      ReactionVote: UP/DOWN/null per player. Lightweight signal.
+      ChatMessage: encrypted (encryptedContent + iv). End-to-end.
+      UserProfile.asciiArt: identity expression.
+      UserProfile.color: 6 options (red/orange/yellow/green/blue/purple).
+
+    TEAM:
+      RALLY: rallyPot shared equally at session end. Roles (RAINMAKER, HEADHUNTER, ARCHIVIST, CONDUCTOR) affect individual contribution.
+      HEIST: vault (70% accumulation) distributed on heist success. Block window creates team conflict.
+      ARCHIVIST_PCT=0.15 — Archivist receives 15% of team pot.
+
+    REPUTATION:
+      NO formal reputation system. UserProfile tracks username, color, asciiArt. No win rate, rank, ELO, or reputation score in types.ts.
+      getSkillDifferentialReport() compares top-10% vs bottom-50% for regulatory evidence only — not player-facing.
+
+    INTERACTIONS:
+      score × currency: endSession() computes payout = f(banked, stakeAmount, netRTP). Score → PDX/FD payout.
+      score × progression: multiplierStep amplifies scaledScore. Higher ladder = higher payout potential = higher Farkle risk.
+      currency × social: DisruptionEvent triggered by PDX wager? NOT confirmed — disruption trigger mechanism not found in read code.
+      team × currency: RALLY/HEIST pot is sum of all player antes + stakes; split per mode formula.
+      team × score: RALLY rallyPot accumulates all individual banks. Individual score irrelevant to final payout.
+  </R>
+  <RISK>LOW — value systems clearly enumerated in types.ts. Interaction completeness at MEDIUM confidence.</RISK>
+  <MISSING>DisruptionEvent trigger mechanism (what causes ice_send/lock_send/scramble). HollaEx PDX on-ramp (design only).</MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q16 — SIMULTANEOUS VALUE SYSTEM COMPETITION
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q16">
+  <QUESTION>Can multiple value systems compete simultaneously? If not, what architecture changes are required?</QUESTION>
+  <E>F7:163-197,F1:143-153,F8:281-305,F1:239-266</E>
+  <C>0.82</C>
+  <R>
+    CURRENTLY_SIMULTANEOUS:
+      - score (banked+unbanked) AND multiplierStep: YES — always active together.
+      - FD balance AND PDX balance: YES — both maintained in PlayerWallet simultaneously.
+      - Individual score AND team pot (RALLY/HEIST): YES — per-player banked tracked + rallyPot/vaultTotal separately.
+      - Energy gate AND multiplier ladder: YES — energy determines spawn mode while multiplier ladder applies to scoring.
+      - Ante obligations AND game scoring: YES — antes paid at PRE_GAME and MILESTONE thresholds during play.
+
+    NOT_SIMULTANEOUSLY_COMPETITIVE:
+      - FD wager AND PDX wager: EXCLUSIVE per session (currencyMode in LobbySettings — 'FD' OR 'PDX'). Cannot wager both.
+      - classArchetype abilities AND facet modifiers: UNCONFIRMED — both specified in F8 but DRAFT not wired (Q14).
+      - Individual progression AND team reputation: reputation system absent.
+
+    ARCHITECTURE_GAPS_FOR_FULL_COMPETITION:
+      A1: Cross-currency competition — FD and PDX in same match. Requires stakeAmount to support split contributions. Currently LobbySettings.currencyMode is single-valued.
+      A2: Reputation competing with score — no reputation system. Would require per-player ELO or standing tracked across sessions in Supabase.
+      A3: Social sacrifice competing with score — DisruptionEvent trigger mechanism unconfirmed. If disruptions are free (no cost), they don't create genuine sacrifice.
+      A4: Genre modifier stack competing with Sacred Core multiplier — anti-stacking rules (F8:281-291) set ceiling at 4.0× combined. Architecture exists; DRAFT wiring required.
+  </R>
+  <RISK>MEDIUM — currencyMode=exclusive prevents FD/PDX simultaneous wager. Not necessarily a design conflict but limits mixed-stake scenarios.</RISK>
+  <MISSING>DisruptionEvent cost mechanism. DRAFT wiring status (gameRoom.ts lines 250+).</MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q17 — GRATIFICATION TIMING
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q17">
+  <QUESTION>Which mechanics currently reward: immediate gratification, delayed gratification, strategic sacrifice, social sacrifice, future opportunity. Rank effectiveness.</QUESTION>
+  <E>F1:143-153,F1:183-188,F8:140-185,F1:212-217,F7:181-197</E>
+  <C>0.83</C>
+  <R>
+    IMMEDIATE_GRATIFICATION (feedback within 500ms):
+      RANK1: scoreFarkle → CHAIN_RESULT with scaledScore. Instant. Visual popups.
+      RANK2: Bomb blast → ptsEarned display + board clear animation. Instant.
+      RANK3: AUTO-BANK on chain lt 6 → banked counter increments.
+      RANK4: Sphere tap → +8 energy. Instant energy bar update.
+      RANK5: multiplier_orb tap → ×1.5 for next chain. Instant activation.
+      EFFECTIVENESS: HIGH. Core game loop feedback is tight and clear.
+
+    DELAYED_GRATIFICATION (outcome dependent on future turns):
+      RANK1: MULTIPLIER_LADDER advancement via 6-chains. Each step requires consecutive 6-chain. Ceiling ×4.0. Payoff session-spanning.
+      RANK2: RALLY_MILESTONES at [10k,25k,50k,100k]. Team-accumulated score threshold payoffs.
+      RANK3: HEIST vault accumulation → heist payout. 70% of banks accumulate; payout at threshold.
+      RANK4: Catalyst wild boost (if wired) — accumulated across chains, manifests as higher wild spawn rate.
+      RANK5: Facet mutation after 3 rounds (if DRAFT wired) — compound modifier evolution.
+      EFFECTIVENESS: MEDIUM. Multiplier ladder is effective. Milestones and heist are well-designed. Catalyst/facet effectiveness LOW due to implementation gaps.
+
+    STRATEGIC_SACRIFICE (spend now to gain later):
+      RANK1: HEIST initiation — spend 50 energy to trigger vault heist. Risk of block.
+      RANK2: Stealth Pocket — sacrifice chain slot to stash die. Spend now, deploy later.
+      RANK3: ARCHIVIST role (15% tax) — player sacrifices personal score for team multiplier.
+      RANK4: Combo Breaker token use — spend token to reverse Farkle. One-shot per supply.
+      EFFECTIVENESS: MEDIUM. Heist is well-designed. Pocket and Archivist require DRAFT/role system to be wired.
+
+    SOCIAL_SACRIFICE (give up personal for social outcome):
+      RANK1: ARCHIVIST 15% tax: genuine personal loss for team benefit.
+      RANK2: DisruptionEvent (if costed): sacrifice resources to attack opponents.
+      RANK3: RALLY role selection: choosing non-optimal role for team composition.
+      EFFECTIVENESS: LOW-MEDIUM. ARCHIVIST works. Disruption effectiveness unknown.
+
+    FUTURE_OPPORTUNITY (actions that create later possibilities):
+      RANK1: Catalyst committed → higher wild spawn rate (future chains score more safely).
+      RANK2: Stone damage via adjacency → clearing stone opens board paths.
+      RANK3: Ice thaw positioning — plan adjacent chain to thaw desired face.
+      RANK4: Build-a-Die shard investment (if wired) — 6 shards → custom 7th face.
+      EFFECTIVENESS: LOW-MEDIUM due to wiring gaps. Catalyst, DRAFT, Sandbox not confirmed wired.
+  </R>
+  <RISK>LOW — rankings are design judgments, not behavioral data.</RISK>
+  <MISSING>Empirical session analytics showing which mechanics players engage with most. PostHog level_complete events exist but chain-level data only in casino mode.</MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q18 — RTP MODEL
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q18">
+  <QUESTION>What is the current RTP model? Exact implementation. Dependencies. Risk areas.</QUESTION>
+  <E>F4:27-36,F5:48-99,F5:150-231,F1:309-315,F1:246-266,F7:34-39</E>
+  <C>0.99</C>
+  <R>
+    RTP_CONFIG_TABLE (F4:27-36):
+      SOLO_FREE:    targetRTP=0.92, grossRTP=0.92, netRTP=0.92, poolSize=60, margin=0.00.
+      SOLO_CASINO:  targetRTP=0.92, grossRTP=0.92, netRTP=0.92, poolSize=60, margin=0.00.
+      VS_FREE:      targetRTP=1.00, grossRTP=1.00, netRTP=1.00, poolSize=66, margin=0.00.
+      VS_CASINO:    targetRTP=0.92, grossRTP=1.00, netRTP=0.92, poolSize=66, margin=0.08.
+      RALLY_FREE:   targetRTP=0.92, grossRTP=0.92, netRTP=0.92, poolSize=66, margin=0.00.
+      RALLY_CASINO: targetRTP=0.92, grossRTP=1.00, netRTP=0.92, poolSize=66, margin=0.08.
+      HEIST_FREE:   targetRTP=0.92, grossRTP=0.92, netRTP=0.92, poolSize=66, margin=0.08.
+      HEIST_CASINO: targetRTP=0.92, grossRTP=1.00, netRTP=0.92, poolSize=66, margin=0.08.
+      NOTE: ADR-010 calibration PROPOSE ONLY (pending Human approval since T6). rtpConfig.ts is Sacred (S4). These values are immutable without Human authorization.
+
+    PAYOUT_FORMULAS (F7:34-39):
+      SOLO_CASINO:  payout = (playerBanked / levelWinScore) × stakeAmount × targetRTP.
+      VS_CASINO:    highestBanked wins totalPot × targetRTP.
+      RALLY_CASINO: highestBanked wins totalPot × targetRTP.
+      HEIST_CASINO: highestBanked wins totalPot × targetRTP.
+      NOTE: RALLY formula in gameRoom.ts comment says winner-takes-all, but monteCarlo.ts and newmodespec.md describe equal split. CONTRADICTION — F7:34-39 may be stale comments.
+
+    MONTE_CARLO_VALIDATION (F5):
+      calibrateNormalizer: 4000 sessions, greedy-optimal play (bestSubsetScore), seededRng(i).
+      runFullAuditHarness: 10000 sessions, ±0.02 deviance threshold. All 8 modes.
+      skillJitter: ±5% max perturbation around theoretical RTP (avgScore=3500 empirical baseline, F5:215).
+      Test result (session-13.json): 3/3 PASS via rtp.harness.test.ts.
+
+    FIXED_POINT_COMPLIANCE:
+      scoreFarkle: multiplierQ=Q×1000. scaledScore=Math.round(score×multiplierQ/1000). No floats in scoring path.
+      MULTIPLIER_LADDER: [1.0, 1.25, 1.5, 2.0, 3.0, 4.0] — stored as JS numbers. Multiplication via Math.round preserves integer output.
+      CSPRNG: uint32/0xffffffff → float for RNG draws. Not in scoring path.
+
+    DEPENDENCIES:
+      F2 (scoreFarkle) → scoring output → payout calculation.
+      F6 (CSPRNG/seededRng) → RNG sequence → pool draws.
+      F3 (SixPoolManager) → face distribution → scoring opportunity distribution.
+      F5 (monteCarlo) → audit validation.
+      F21 (playIntegrity) → geofence → access control.
+      F22 (ComplianceService) → PDX eligibility → payout gate.
+
+    RISK_AREAS:
+      R1: ADR-010 pending — 0.92 netRTP not Monte Carlo validated for all modes. Risk that realized RTP deviates outside ±2% in production.
+      R2: RALLY payout formula contradiction (winner-takes-all in gameRoom comments vs equal-split in monteCarlo). If implemented as winner-takes-all, RALLY RTP is highly sensitive to skill differential.
+      R3: createGrid uses seedNum=Date.now() (not CSPRNG) — board layout not covered by commit-reveal fairness proof. Risk if regulators require full board provability.
+      R4: skillJitter in monteCarlo is ±5% max synthetic perturbation — empirical basis (avgScore=3500) is hardcoded, not derived from real session data.
+  </R>
+  <RISK>HIGH — RALLY payout formula contradiction could mean production game pays differently than audited. R3 (Date.now grid seed) is a provable fairness gap.</RISK>
+  <MISSING>
+    - RALLY payout implementation in gameRoom.ts endSession() (lines 250+).
+    - Whether createGrid seedNum has been moved to CSPRNG-derived value post T9.
+  </MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q19 — SAFE MODIFICATION SURFACE
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q19">
+  <QUESTION>What systems could be safely modified without affecting: RTP, scoring, fairness, compliance, sacred files.</QUESTION>
+  <E>F1:46-50,F1:76-77,F1:162-173,F1:183-188,F3:224-228,F15,F16,F14</E>
+  <C>0.94</C>
+  <R>
+    SAFE_MODIFICATIONS (confirmed no RTP/scoring/fairness/sacred impact):
+
+      SM01: SPAWN_WEIGHTS (F1:47-49)
+        CONFIRMED NOT SACRED per OWC design (F15): SPAWN_WEIGHTS in farkle-shared/src/types.ts are modifiable.
+        IMPACT: Changes tile density distribution. Does NOT affect scoring (scoreFarkle operates on presented faces only). Does NOT affect RTP (RTP is a payout formula, not a spawn formula). DOES require monteCarlo re-run if face-1/face-5 weights change significantly.
+        OWC_CONSTRAINT: Any modification must keep face distribution balanced across pool (SixPoolManager perFace=equal). OWC adjusts wild threshold, not die face weights.
+
+      SM02: BLOCKER_DENSITY_RANGES (F3:224-228)
+        {LOW:{min:3,max:4}, MEDIUM:{min:5,max:7}, HIGH:{min:8,max:12}}
+        Safe to adjust ranges. Affects board accessibility but not scoring or RTP.
+
+      SM03: CATALYST_WILD_BOOST, CATALYST_MAX_BOOST (F1:76-77)
+        Safe if catalyst boost is wiring-only (doesn't change face distribution). Increase max from 10% to higher bounded value is safe. SixPoolManager pool not affected.
+
+      SM04: RALLY_MILESTONES thresholds and multipliers (F1:183-188)
+        [{10k,0.5}, {25k,1.0}, {50k,2.0}, {100k,5.0}]
+        Safe to adjust point thresholds. Multipliers affect payout — REQUIRE monteCarlo re-validation if changed.
+
+      SM05: BOMB_CONSTANTS non-scoring values (F1:52-64)
+        SPHERE_ENERGY=20, MULTIPLIER_ORB_ENERGY=15: energy rewards, not scoring.
+        Safe to modify. Does NOT enter scoreFarkle.
+
+      SM06: LobbySettings defaults (F1:290-302)
+        turnTimerSeconds, blockerDensity, threeOnesScore (custom rules), singleOneScore: game config.
+        NOTE: threeOnesScore=1000|300 is a client-specified override to scoreFarkle — this may affect scoring. VERIFY before changing.
+
+      SM07: postHogTrack properties (F14)
+        Analytics payload fields. No game state dependency. Safe.
+
+      SM08: HEIST_CONSTANTS (F1:212-217)
+        VAULT_THRESHOLD=5000, HEIST_ENERGY_COST=50, HEIST_WINDOW_MS=5000.
+        Safe to adjust WINDOW_MS (UX). VAULT_THRESHOLD and ENERGY_COST affect game balance but not RTP directly.
+
+      SM09: UserProfile, ChatMessage, DisruptionEvent types (F1)
+        Social/display layer. No RTP impact.
+
+      SM10: analytics.ts (F14)
+        postHogTrack, insertChainDecision, insertSession: observation-only. No scoring path.
+
+    REQUIRES_CAUTION_BEFORE_MODIFICATION:
+      C01: SixPoolManager wildLive distribution (60/15/15/10 split) — affects wild spawn probability. If 10% type3 changes, effective wild rate changes. Not Sacred per CLAUDE.md but affects board character.
+      C02: MULTIPLIER_LADDER values — directly in scaledScore formula. Any change is a scoring change requiring monteCarlo re-run.
+      C03: GAME_CONSTANTS.STONE_HP — affects blocker permanence. If changed, impacts board density over time.
+      C04: DEFAULT_SETTINGS.levelWinScore=100000 — payout denominator in SOLO endSession formula.
+  </R>
+  <RISK>LOW — safe surface clearly bounded by Sacred Core list and Fixed-Point constraint.</RISK>
+  <MISSING>Whether threeOnesScore LobbySettings override is passed to scoreFarkle. If yes, it affects scoring and is NOT safe without monteCarlo.</MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Q20 — HIGHEST LEVERAGE CHANGE
+     ═══════════════════════════════════════════════════════════════════════ -->
+<Q id="Q20">
+  <QUESTION>What is the single highest leverage change? Explain. Provide proof. Estimate impact.</QUESTION>
+  <E>F15,F16,F3:335-364,F1:47-49,F8:237-253</E>
+  <C>0.85</C>
+  <R>
+    RECOMMENDATION: OpportunityWeightController (OWC) — board-state-aware spawn adjustment.
+
+    PROOF_OF_PROBLEM:
+      spawnTiles (F3:335-364): zero board state inputs. Pool draw is purely sequential from pre-shuffled pool.
+      Current: refill is random within distribution constraints. Stagnation boards refill with same distribution regardless of dead-state risk.
+      Symptom: dead-state frequency unknown but non-zero; no mechanism to increase cascade potential when board is stuck.
+
+    PROOF_OF_SOLUTION (F15):
+      OWCContext inputs: grid, comboCount, cascadePotential(0-1), farkleRisk(0-1), turnNumber, playerBanked, leaderBanked, mode, energyMode.
+      OWCAdjustment outputs: wildBoostPct(0-10), cascadeEnablerBoostPct(0-10), deadStatePenaltyPct, blockerBoostPct.
+      Adaptive logic:
+        Stagnation (cascadePotential lt 0.2 AND farkleRisk gt 0.6): wildBoostPct+5%, stone weight-3%.
+        Explosive board (cascadePotential gt 0.8): normalize toward baseline.
+        Behind (playerBanked lt leaderBanked×0.7): cascadeEnablerBoostPct+5%.
+      Implementation: spawnTiles(grid, pool, owc?) backward-compatible. gridUtils.ts modification required (needs Human approval). No Sacred Core files touched.
+
+    ESTIMATED_IMPACT:
+      F15 design estimate: +15-25% cascade frequency.
+      Retention proxy: more cascades → more scoring events → more BANK decisions → more skill expression → stronger session-length.
+      RTP constraint: OWC adjustments bounded at max ±10% per dimension. RTP simulation via monteCarlo.ts required before merge. Equal face distribution in SixPoolManager die pool unchanged — face odds preserved.
+
+    LEVERAGE_RANKING:
+      1. OWC (spawn awareness): core gameplay experience. Addresses Q9 cascade gap, Q10 dead state, Q11:FK1 ghost (no — separate), Q14:CONFLICT_01.
+      2. DRAFT phase wiring: unlocks 20 genre system (Q14:CONFLICT_04). Higher complexity, longer timeline.
+      3. classArchetype lobby selection: unlocks class system (Q14:CONFLICT_06). Lower complexity, high identity value.
+      4. Catalyst boost wiring: fixes dead mechanic (Q14:CONFLICT_05). Low complexity.
+      5. Ghost→Echo redesign: removes C-tier tile (Q4:T11, F16). Low complexity, reduces confusion.
+
+    OWC_PREREQUISITES: Human approval of COMPONENT_AUDIT.md (F16) + RTP simulation gate + ADR-021.
+  </R>
+  <RISK>MEDIUM — OWC requires Human approval before implementation. DRAFT wiring may be higher leverage if genre system is the primary retention gap.</RISK>
+  <MISSING>Session length data to confirm OWC impact is the primary retention lever vs. genre system.</MISSING>
+</Q>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PARADOX PAY READINESS SCORE
+     ═══════════════════════════════════════════════════════════════════════ -->
+<PARADOX_PAY_READINESS_SCORE>
+
+  <SCORING_RUBRIC>0=not started, 1=minimal, 2=partial, 3=functional, 4=complete, 5=production-ready</SCORING_RUBRIC>
+
+  <DIMENSION id="ARCHITECTURE">
+    <SCORE>4</SCORE>
+    <MAX>5</MAX>
+    <EVIDENCE>F7,F2,F3,F4,F6,F8</EVIDENCE>
+    <NOTES>5-layer stack (L1-L5) fully specified (F8). Sacred Core immutable invariant enforced. Server-authoritative game loop (F7). -1: DRAFT phase unimplemented (genre system largely unreachable). createGrid uses Date.now() not CSPRNG for grid seed.</NOTES>
+  </DIMENSION>
+
+  <DIMENSION id="GAMEPLAY">
+    <SCORE>3</SCORE>
+    <MAX>5</MAX>
+    <EVIDENCE>F2,F3,F1,F7</EVIDENCE>
+    <NOTES>Core Farkle+Match-3 hybrid functional. 8 game modes typed. Energy gate (PRIME/FRENZY) implemented. -1: Static spawn (no OWC). -1: 6 of 20 genres wired in gameRoom.ts. Ghost tile (C-tier). Catalyst wiring gap. Wild resolution removes player agency.</NOTES>
+  </DIMENSION>
+
+  <DIMENSION id="ECONOMY">
+    <SCORE>3</SCORE>
+    <MAX>5</MAX>
+    <EVIDENCE>F1:111-113,F1:219-266,F1:285-354,F14</EVIDENCE>
+    <NOTES>FD/PDX dual currency typed. Ante system implemented. Wallet transactions typed. Daily PDX bonus defined. -1: HollaEx on-ramp not implemented (design only). -1: DisruptionEvent trigger mechanism unconfirmed. No reputation system.</NOTES>
+  </DIMENSION>
+
+  <DIMENSION id="FAIRNESS">
+    <SCORE>4</SCORE>
+    <MAX>5</MAX>
+    <EVIDENCE>F6,F4,F5,F7:27-33,F21</EVIDENCE>
+    <NOTES>HMAC-SHA256 CSPRNG commit-reveal implemented. RTP_CONFIGS documented with explicit margins. monteCarlo audit harness (10k sessions, ±2% threshold). Geofence (5 states blocked). FIXED_POINT_CHECK PASS T0-T9. -1: createGrid seed=Date.now() not CSPRNG-covered. ADR-010 calibration PROPOSE ONLY.</NOTES>
+  </DIMENSION>
+
+  <DIMENSION id="PVP">
+    <SCORE>3</SCORE>
+    <MAX>5</MAX>
+    <EVIDENCE>F7:163-197,F1:1-92,F8:204-226</EVIDENCE>
+    <NOTES>VS_FREE/CASINO modes typed. 2-player determinism test (3/3 PASS). Slipstream RTP balancer specified. DisruptionEvent types defined. -1: DisruptionEvent trigger mechanism unconfirmed. -1: classArchetype lobby selection missing. Racing/Strategy genres (Slipstream, Territory) wiring status unconfirmed.</NOTES>
+  </DIMENSION>
+
+  <DIMENSION id="COOP">
+    <SCORE>3</SCORE>
+    <MAX>5</MAX>
+    <EVIDENCE>F1:113,F1:183-188,F7:192-197</EVIDENCE>
+    <NOTES>RALLY mode (3-4 players, shared pot, 4 roles) specified. rallyPot accumulator implemented. RALLY_MILESTONES defined. -1: RALLY payout formula contradiction (winner-takes-all comment vs equal-split design). -1: CONDUCTOR/RAINMAKER/HEADHUNTER/ARCHIVIST role mechanics partially wired (HEADHUNTER double-damage confirmed in F3, others unconfirmed).</NOTES>
+  </DIMENSION>
+
+  <DIMENSION id="HEIST">
+    <SCORE>3</SCORE>
+    <MAX>5</MAX>
+    <EVIDENCE>F1:212-217,F7:190-194,F8:100-186</EVIDENCE>
+    <NOTES>HEIST_CONSTANTS defined (vault split, threshold, energy cost, window). vaultTotal, heistInitiatorId, heistExpiresAt in GameRoom. 5-second block window specified. -1: Full heist resolution logic in gameRoom.ts not confirmed (lines 250+). -1: Vault payout formula ambiguity (same contradiction as RALLY).</NOTES>
+  </DIMENSION>
+
+  <DIMENSION id="RETENTION">
+    <SCORE>3</SCORE>
+    <MAX>5</MAX>
+    <EVIDENCE>F8:231-305,F1:183-188,Q12</EVIDENCE>
+    <NOTES>Multiplier ladder (escalation), bomb fuse (anticipation), HEARTBEAT phase (tension), HEIST window (betrayal), Farkle Pool (comeback) all specified. -1: OWC absent — refill randomness limits cascade anticipation. -1: 14 of 20 genres unwired — retention ceiling limited by genre system availability.</NOTES>
+  </DIMENSION>
+
+  <DIMENSION id="PROGRESSION">
+    <SCORE>2</SCORE>
+    <MAX>5</MAX>
+    <EVIDENCE>F1:143-153,F1:183-188,F8:63-86</EVIDENCE>
+    <NOTES>Multiplier ladder per-session. Ante milestones. -1: No cross-session progression (no ELO, rank, achievement, unlock system in types.ts). -1: classArchetype not selectable at lobby. -1: Facet system (per-round meta-progression) not wired. Reputation absent.</NOTES>
+  </DIMENSION>
+
+  <DIMENSION id="REPLAYABILITY">
+    <SCORE>3</SCORE>
+    <MAX>5</MAX>
+    <EVIDENCE>F8:62-86,F1:105-109,F3:74-174</EVIDENCE>
+    <NOTES>8 game modes. 20 genre compositions (specced). 4 player counts → 4 grid sizes. 4 classes (if selectable). CSPRNG seeded fresh each match. -1: Genre system largely inaccessible (DRAFT not wired). -1: No cross-session content unlock or achievement system to drive return visits.</NOTES>
+  </DIMENSION>
+
+  <DIMENSION id="OVERALL">
+    <SCORE>31</SCORE>
+    <MAX>50</MAX>
+    <PCT>62</PCT>
+    <NOTES>Core game loop is functional and provably fair (strong foundation). Primary gaps: DRAFT/genre wiring, OWC, classArchetype lobby, RALLY/HEIST payout formula clarification, cross-session progression, HollaEx PDX on-ramp. Highest priority before Paradox Pay launch: resolve CONFLICT_04 (DRAFT) and CONFLICT_01 (OWC).</NOTES>
+  </DIMENSION>
+
+</PARADOX_PAY_READINESS_SCORE>
+
+</QNA0>
