@@ -1,77 +1,33 @@
 {
-  "session_id": "tier/T6-content-pipeline-20260525",
+  "session_id": "tier/T7-visual-overhaul-20260525",
   "cell": "01-systems-architect",
-  "files_modified": [
-    {
-      "path": "core/apps/server/src/gameRoom.ts",
-      "change": "Import SupabaseEventStore; add _eventStore + _eventReplayTick fields; wire MATCH_START in handleStartGame(), MATCH_END in endSession(); fix processChain() msg param; rtp_final as Math.round(netRTP*1000) Q×1000",
-      "downstream": ["game_events Supabase table", "IEventStore chain integrity"]
-    },
-    {
-      "path": "core/packages/farkle-engine/src/gridUtils.ts",
-      "change": "Replace blockerCount * 0.5 / 0.25 with / 2 / 4 (integer division — SEVERITY-C resolution)",
-      "downstream": ["createGrid() blocker distribution — functionally identical, no float"]
-    },
-    {
-      "path": "core/packages/game-core/src/level/LevelDef.schema.json",
-      "change": "New — JSON Schema v7 for LevelDef; win_score Q×1000 integer",
-      "downstream": ["levelSchema.test.ts", "level-taxonomy.md"]
-    },
-    {
-      "path": "core/packages/game-core/src/level/types.ts",
-      "change": "New — TypeScript types: LevelDef, BlockerDensity, LatticeModule, ArchetypeBias",
-      "downstream": ["levelSchema.test.ts"]
-    },
-    {
-      "path": "core/packages/game-core/src/level/__tests__/levelSchema.test.ts",
-      "change": "New — 6 tests: 3 valid stages (L01/L25/L50) + 3 rejection cases",
-      "downstream": ["package.json test script"]
-    },
-    {
-      "path": "core/packages/game-core/package.json",
-      "change": "Add levelSchema.test.ts to main test script",
-      "downstream": ["pnpm --filter @match3d/game-core test"]
-    },
-    {
-      "path": "docs/level-taxonomy.md",
-      "change": "New — 50-stage taxonomy; all 20 lattice modules covered",
-      "downstream": ["T7 level authoring"]
-    },
-    {
-      "path": "docs/adr/ADR-010-rtp-variance-tightening.md",
-      "change": "Updated with T6 harness results + proposed calibration approach (READ-ONLY — no Sacred Core write)",
-      "downstream": ["monteCarlo.ts calibration — Human approval required before write"]
-    },
-    {
-      "path": "docs/adr/ADR-017-t6-content-pipeline.md",
-      "change": "New — 6 decisions, test table (35→41), outstanding items",
-      "downstream": []
-    },
-    {
-      "path": "mesh/prompt-06-content-pipeline.md",
-      "change": "New — T6 tier prompt with all 8 tasks",
-      "downstream": []
-    }
+  "modified_files": [
+    "core/apps/web/src/audio/erkConductor.ts",
+    "core/apps/web/src/components/GameScreen.tsx",
+    "core/apps/web/src/components/NFTItemCard.tsx",
+    "core/apps/web/src/components/WinLoseScreen.tsx",
+    "core/art/manifest/design_tokens.json",
+    "docs/adr/ADR-018-t7-visual-overhaul.md",
+    "mesh/prompt-07-visual-overhaul.md"
   ],
-  "dependency_graph": {
-    "gameRoom.ts → SupabaseEventStore.ts": "direct import (same server/src/ directory)",
-    "gameRoom.ts → game_events (Supabase)": "write at MATCH_START (handleStartGame) and MATCH_END (endSession)",
-    "levelSchema.test.ts → level/types.ts": "TypeScript import",
-    "level-taxonomy.md → LevelDef.schema.json": "documentation reference; all ids match schema pattern",
-    "ADR-010 → monteCarlo.ts": "PROPOSE ONLY — no write; Human approval required",
-    "ADR-017 → all T6 files": "governance record"
+  "dependency_map": {
+    "core/apps/web/src/audio/erkConductor.ts": [
+      "core/apps/web/src/components/GameScreen.tsx"
+    ],
+    "core/apps/web/src/components/GameScreen.tsx": [],
+    "core/apps/web/src/components/NFTItemCard.tsx": [],
+    "core/apps/web/src/components/WinLoseScreen.tsx": [
+      "core/apps/web/src/App.tsx"
+    ],
+    "core/art/manifest/design_tokens.json": [],
+    "docs/adr/ADR-018-t7-visual-overhaul.md": [],
+    "mesh/prompt-07-visual-overhaul.md": []
   },
-  "tests_pass": {
-    "farkleScorer.test.ts": "16/16",
-    "replay.test.ts": "5/5",
-    "spawn.test.ts": "3/3",
-    "inputQueue.test.ts": "2/2",
-    "chain.test.ts": "2/2",
-    "rtp.harness.test.ts": "3/3",
-    "spawnQueue.test.ts": "4/4",
-    "levelSchema.test.ts": "6/6",
-    "TOTAL": "41/41"
-  },
-  "sacred_core_files_modified": false,
-  "sacred_core_files_approached": false
+  "sacred_core_boundary_approached": true,
+  "sacred_core_files_modified": [],
+  "wasm_layer_risk": false,
+  "bridge_overhead_risk": false,
+  "gc_spike_risk": false,
+  "escalation_raised": null,
+  "notes": "erkConductor.ts reads farkleStore and gameStore via Zustand selector hooks (read-only). Sacred Core boundary approached in the read-only sense; no Sacred Core files written. All T7 files are L5 ADORNMENT layer per Five-Layer Architecture. Date.now() in GameScreen.tsx (VoxelPhysicsSystem.create line 212) and WinLoseScreen.tsx (lastUpdated record line 173) are pre-existing, not introduced by T7. NFTItemCard has no downstream consumers in codebase. WinLoseScreen consumed by App.tsx — exported API unchanged (WinScreen/LoseScreen named exports retained). design_tokens.json is a new artifact with no code consumers yet."
 }

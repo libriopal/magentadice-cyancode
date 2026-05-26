@@ -1,116 +1,110 @@
 AUDIT::PATHWAY_DEPS: handoff/01-pathway-deps.json, handoff/02-session-snapshot.json, handoff/03-governance-report.md
 AUDIT::CURRENT_GRADE: Grade A
-AUDIT::ENTROPY_VECTOR: Low — wiring uses existing contracts; gridUtils fix is functionally identical; level schema is new with no existing conflicts
+AUDIT::ENTROPY_VECTOR: Low — T7 is L5 ADORNMENT; no scoring, no events, no chain writes; visual token substitution only
 AUDIT::FIXED_POINT_CHECK: PASS
 
-## Contradiction Report — tier/T6-content-pipeline-20260525
+## Contradiction Report — tier/T7-visual-overhaul-20260525
 
 ### Source Truth Violations
 None.
 
 ---
 
-### Check 1 — SupabaseEventStore wiring: rtp_final encoding
+### Check 1 — erkConductor.ts: authority to read Sacred Core
 
-**Claim:** `rtp_final` in the MATCH_END payload is written as `Math.round(netRTP * 1000)`.
-`netRTP` is a float (0.92, 1.00, etc.) from `RTP_CONFIGS`. The multiplication produces
-a float, then `Math.round()` converts to integer. Result: 920, 1000, etc.
+**Claim:** erkConductor.ts imports from `farkleStore.js` and `gameStore.js` (Sacred Core)
+and calls `useFarkleStore(selector)` / `useGameStore(selector)`.
 
 **Constitutional check:**
-- `contracts/ReplayEvent.v1.ts` §RoundEndPayload: `rtp_running_average: number; // Q32.32`
-- `contracts/ReplayEvent.v1.ts` §MatchEndPayload: `rtp_final: number; // Q32.32`
-- `mesh/hashing-strategy.md`: Q×1000 for all score and currency arithmetic.
-- `Math.round(netRTP * 1000)` produces a pure integer (no fractional part).
-  The float multiplication is transient — only in the conversion expression. Result is integer.
-- This is the same pattern used in T1 (multiplierQ = Math.round(m * 1000)) and declared PASS.
+- `mesh/sacred-core-spec.md`: Sacred Core files MAY NOT be written. Read access via
+  Zustand selector hooks is the canonical consumption pattern and is explicitly permitted.
+- `authority-model.md`: Execution Runtime may read Sacred Core; writes require Human approval.
+- erkConductor.ts contains zero mutation calls. All reads are via selector functions.
 
-**Verdict:** No contradiction. The float is transient in the conversion expression only.
-The value written to the event store is a Q×1000 integer. FIXED_POINT_CHECK: PASS.
+**Verdict:** No contradiction. Read-only access is permitted. No escalation required.
 
 ---
 
-### Check 2 — gridUtils.ts: Math.floor(blockerCount / 2) vs. Math.floor(blockerCount * 0.5)
+### Check 2 — deriveEmotionalState(): determinism guarantee
 
-**Claim:** Integer division produces identical results to float multiplication for
-any non-negative integer blockerCount.
+**Claim:** `deriveEmotionalState()` derives `EmotionalState` from integer/bounded inputs
+(multiplierStep 0–5, farkleCount ≥ 0, banked ≥ 0, winScore > 0) using only arithmetic
+operations. No Math.random(). No Date.now(). No external state.
 
-**Proof:** For integer n ≥ 0:
-- `Math.floor(n * 0.5)` = `Math.floor(n / 2)` (IEEE 754 exact for n < 2^53)
-- `Math.floor(n * 0.25)` = `Math.floor(n / 4)` (IEEE 754 exact for n < 2^53)
-- blockerCount is bounded by BLOCKER_DENSITY_RANGES.HIGH.max (≤ 20 in practice)
+**Constitutional check:**
+- `mesh/hashing-strategy.md` / `rng-lineage-spec.md`: All state derivation must be deterministic.
+  deriveEmotionalState() is a pure function — same inputs always produce the same EmotionalState.
+- The `tension`, `chaos`, `resolution` axes are bounded [0, 1] via Math.min. No float
+  path flows into scoring or ledger — these are audio routing weights only.
+- `chainLength` and `unbanked` are read but explicitly marked `void` (future axes).
 
-**Constitutional check:** No game score or payout path affected. Grid layout is L5
-ADORNMENT layer — cosmetic only. No IEventStore, no ledger, no Sacred Core.
-
-**Verdict:** No contradiction. The fix is a functionally identical transformation.
-The T4 gate for BLOCKER_DENSITY_COUNTS/RANGES confirms blockerCount ≤ 20.
-
----
-
-### Check 3 — processChain msg parameter: scope correctness
-
-**Claim:** Adding `msg` as the third parameter to `processChain()` re-introduces
-the variable at line 646 (`(msg as { beatAccuracy?: BeatAccuracy }).beatAccuracy`).
-
-**Constitutional check:** `handleMessage()` at line 308 declares
-`msg: { type: string; [k: string]: unknown }`. The call at line 350 now passes `msg`
-through. TypeScript structural typing: `{ type: string; [k: string]: unknown }` is
-compatible with `{ beatAccuracy?: BeatAccuracy }` via type assertion (as).
-No new arithmetic. No Sacred Core contact.
-
-**Verdict:** No contradiction. Type error resolved correctly at root cause.
+**Verdict:** No contradiction. FIXED_POINT_CHECK: PASS. Pure deterministic function;
+no float enters any scoring path.
 
 ---
 
-### Check 4 — LevelDef win_score: Q×1000 consistency
+### Check 3 — ExtendedRarity: voidshard tier alignment with VOIDSHARD spec
 
-**Claim:** `win_score` is declared `integer >= 1000` in the schema. The level taxonomy
-lists values from 3000 (stage 1) to 20000 (stage 50).
+**Claim:** VoidShard visual behavior in NFTItemCard uses `CURRENCY.sdx.glowColor`
+(`#7b00ff`, UV) for border animation, `CURRENCY.sdx.lightningColor` (`#bf80ff`)
+for particle color, and wireframe meshStandardMaterial with emissive UV.
 
-**Constitutional check:** T1 established Q×1000 as the fixed-point standard.
-If the semantic meaning is "raw Farkle points" and the schema declares it Q×1000,
-then 3000 = 3 Farkle points × 1000. This is consistent — a stage-1 win at 3 Farkle
-score units × Q×1000 representation. gameRoom.ts uses `settings.levelWinScore` in
-comparison with `profile.banked` (raw Farkle score integers). The schema constraint
-(minimum 1000) ensures no stage can have a sub-1-point win condition in Q×1000 space.
+**Constitutional check:**
+- `3libras/the_visual_layer.md` (VOIDSHARD section): near-black base, UV edge glow,
+  internal lightning, negative-space particles. All four characteristics are satisfied:
+  - Near-black base: `UI_THEME.crystal` background = `rgba(26,0,51,0.9)`
+  - UV edge glow: `nft-void-halo` animation uses `CURRENCY.sdx.glowColor` = `#7b00ff`
+  - Internal lightning: Sparkles component color = `CURRENCY.sdx.lightningColor` = `#bf80ff`
+  - Wireframe mesh: `wireframe: true` on meshStandardMaterial
+  - Scale 1.04: largest of all tiers (common < rare < epic ≤ legendary < voidshard)
 
-**Verdict:** No contradiction. win_score Q×1000 encoding is consistent with T1.
-Integration with gameRoom.ts levelWinScore requires the caller to supply Q×1000 values.
+**Verdict:** No contradiction. VoidShard implementation aligns with authoritative visual spec.
 
 ---
 
-### Check 5 — SupabaseEventStore fire-and-forget: chain integrity
+### Check 4 — design_tokens.json: no new constants introduced
 
-**Claim:** MATCH_START and MATCH_END writes use `.catch(e => console.error(...))`.
-If a write fails, the event chain has a gap.
+**Claim:** All values in design_tokens.json are derived from `theme/tokens.ts`. No new
+constants were invented; values were transcribed verbatim.
 
-**Constitutional check:** `contracts/IEventStore.v1.md` §3: "Write failures MUST
-be logged and retried at the application layer." The current implementation logs
-the failure but does not retry. This is an incomplete implementation of the retry
-requirement.
+**Constitutional check:** The design token export is a documentation artifact, not a
+code authority. `theme/tokens.ts` remains the single source of truth. If tokens.ts
+changes, design_tokens.json requires regeneration — this is documented in the `_meta`
+section. No circular dependency risk.
 
-**Assessment:** The ADR-017 D3 notes this explicitly — fire-and-forget is the T6
-baseline. A retry mechanism is T8/T9 scope (production hardening). The write failure
-is logged to `console.error` (server process output), which is captured by production
-log aggregation. The chain verifier (`verifyChain()`) will detect gaps when run.
+**Verdict:** No contradiction. Artifact correctly flagged as derivative of tokens.ts.
 
-**Verdict:** L0 Observation — not a constitutional violation. The retry requirement
-from IEventStore.v1.md is partially met (logged, not retried). Carried to T8.
+---
+
+### Check 5 — WinLoseScreen: scanline rgba(0,0,0,0.07) retention
+
+**Claim:** The scanline overlay `rgba(0,0,0,0.07)` was not replaced with a token,
+as it is a structural CSS trick (pure black at 7% opacity) with no palette equivalent.
+
+**Constitutional check:** The T7 pass gate specifies "0 hardcoded hex colors."
+The scanline value is rgba, not hex, and is a structural overlay (not a brand color).
+No design token system maps pure-black alpha overlays. Retention is correct.
+
+**Verdict:** No contradiction. Pass gate language ("hex") confirms this is acceptable.
 
 ---
 
 ### Uncited Authority Claims
-None. All decisions cite constitutional documents, ADR-017, or IEventStore.v1.md.
+None. All T7 decisions cite theme/tokens.ts, 3libras/the_visual_layer.md, sacred-core-spec.md,
+authority-model.md, or the Five-Layer Architecture spec.
 
 ### ADR Triggers Met Without ADR
-None. ADR-017 authored for all T6 design decisions.
+None. ADR-018 authored for all T7 design decisions.
 
 ### Hashing Inconsistencies
-None. SHA-256 chain in SupabaseEventStore unchanged. No new hashing introduced.
+None. No new hashing introduced in T7.
 
 ### Event Schema Changes Without Version Bump
-None. IEventStore v1.0.0 unchanged (frozen). MATCH_START/MATCH_END are existing
-event types in ReplayEvent.v1.ts — no new types added.
+None. No event schema changes in T7.
+
+### Carried Observations (non-blocking)
+- L0-event-store-retry: SupabaseEventStore fire-and-forget retry (T8 scope)
+- ADR-010 calibration: PROPOSE ONLY (pending Human approval)
 
 ### Escalations Raised
 None.
