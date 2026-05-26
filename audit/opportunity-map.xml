@@ -303,14 +303,14 @@
   <R p="37" id="O32" s="55" st="LIVE"/>     <!-- STONE navigation -->
   <R p="38" id="O47" s="54" st="LIVE"/>     <!-- PDX persistence -->
   <R p="39" id="O13" s="50" st="LIVE"/>     <!-- LOCK denial -->
-  <R p="40" id="O43" s="47" st="PARTIAL"/>  <!-- Leaderboard -->
-  <R p="41" id="O41" s="46" st="LIVE"/>     <!-- Commit-reveal -->
-  <R p="42" id="O02" s="48" st="LIVE"/>     <!-- Auto-bank -->
-  <R p="43" id="O42" s="28" st="LIVE"/>     <!-- PostHog -->
-  <R p="44" id="O48" s="29" st="FALSE"/>    <!-- Ghost (False) -->
-  <R p="45" id="O14" s="36" st="FALSE"/>    <!-- STONE bug (False) -->
+  <R p="40" id="O02" s="48" st="LIVE"/>     <!-- Auto-bank -->
+  <R p="41" id="O43" s="47" st="PARTIAL"/>  <!-- Leaderboard -->
+  <R p="42" id="O41" s="46" st="LIVE"/>     <!-- Commit-reveal -->
+  <R p="43" id="O14" s="36" st="FALSE_OPPORTUNITY"/>  <!-- STONE bug (False) -->
+  <R p="44" id="O48" s="29" st="FALSE_OPPORTUNITY"/>  <!-- Ghost (False) -->
+  <R p="45" id="O42" s="28" st="LIVE"/>               <!-- PostHog -->
   <R p="46" id="O28" s="24" st="LIVE"/>     <!-- FD daily floor -->
-  <R p="47" id="O12" s="0"  st="DEAD"/>     <!-- Dead-state (DEAD) -->
+  <R p="47" id="O12" s="0"  st="DEAD_OPPORTUNITY"/>  <!-- Dead-state (DEAD) -->
 </RANKED>
 
 </OPPORTUNITY_MAP>
