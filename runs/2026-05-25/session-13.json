@@ -1,0 +1,99 @@
+{
+  "session_id": "tier/T9-social-platform-liveops-20260525",
+  "tier": "T9",
+  "branch": "tier/T9-social-platform-liveops-20260525",
+  "timestamp": "2026-05-25T22:00:00.000Z",
+  "score_total": 96,
+  "dimensions": {
+    "mathematical_purity": {
+      "score": 20,
+      "max": 20,
+      "fixed_point_check": "PASS",
+      "float_violations": 0,
+      "notes": "postHogTrack: string properties only. classArchetype: string literal. MATCH_SCORE class_archetype: string. new Date().toISOString() in postHogTrack is display/timestamp only — not in scoring path. Full 20/20."
+    },
+    "sacred_core_integrity": {
+      "score": 20,
+      "max": 20,
+      "violations": [],
+      "notes": "gameRoom.ts is NOT on the Sacred Core list. analytics.ts is NOT on the Sacred Core list. Determinism test is test infrastructure. 0 Sacred Core writes across T0-T9."
+    },
+    "performance_delta": {
+      "score": 19,
+      "max": 20,
+      "heap_allocations_added": 1,
+      "notes": "postHogTrack adds one fetch() Promise per MATCH_START and MATCH_END. Fire-and-forget — does not block game loop. Determinism test is test-only. -1 for non-zero allocation delta."
+    },
+    "grade_elevation": {
+      "score": 13,
+      "max": 15,
+      "transitions": [
+        "gameRoom.ts: A (classArchetype added; postHogTrack wired; MATCH_SCORE payload corrected)",
+        "analytics.ts: A (postHogTrack added; no existing grade baseline)"
+      ],
+      "notes": "T9 resolves T8 MATCH_SCORE payload debt and adds PostHog wiring. 13/15 — deducted 1 for no lobby classArchetype selection (defaults to Paladin), deducted 1 for no GameRoom integration test."
+    },
+    "regression_count": {
+      "score": 10,
+      "max": 10,
+      "bugs_fixed": 1,
+      "bugs_introduced": 0,
+      "notes": "T8 MATCH_SCORE payload had bank_type (non-contract) — RESOLVED (class_archetype per ReplayEvent.v1.md). 44/44 tests pass (0 regressions). 0 new bugs introduced."
+    },
+    "tier_gate_progress": {
+      "score": 10,
+      "max": 10,
+      "gates_advanced": [
+        "T9: PostHog flush adapter present; session_start/level_complete wired",
+        "T9: 2-player determinism test — 3/3 PASS",
+        "T9: docs/playstore-checklist.md — 8 sections",
+        "T9: MATCH_SCORE class_archetype (no bank_type)",
+        "T9: pnpm type-check 0 new errors",
+        "T9: 44/44 tests pass",
+        "T9: ADR-020 authored",
+        "T9: COMPONENT_AUDIT.md + OWC design produced",
+        "T9: Full audit/design/roadmap/tests directories generated"
+      ],
+      "notes": "All T9 pass gates from mesh/prompt-10-social-platform-liveops.md satisfied. FF_V4_OPPORTUNITY_WEIGHT_REDESIGN directive fulfilled: COMPONENT_AUDIT.md generated; OWC design documented; no implementation before audit."
+    },
+    "evidence_coverage": {
+      "score": 2,
+      "max": 3,
+      "corpus_citations": 5,
+      "notes": "ADR-020 cites: ReplayEvent.v1.md (class_archetype contract), IEventStore.v1.md (fire-and-forget pattern), hashing-strategy.md (no floats in analytics), sacred-core-spec.md (gameRoom not sacred), event-versioning-spec.md (MINOR payload swap). -1: No external citation for PostHog batch API format (conventional, not spec-cited)."
+    },
+    "mcp_utilization": {
+      "score": 2,
+      "max": 2,
+      "tools_used": ["filesystem (read/write)", "bash (git, pnpm, node:test)"],
+      "notes": "MCP tools used appropriately throughout. No hallucinated tool calls."
+    }
+  },
+  "flags": [
+    {
+      "level": 0,
+      "tag": "L0-ADR010-calibration",
+      "cell": "Governance Auditor",
+      "description": "ADR-010 Monte Carlo calibration is PROPOSE ONLY — pending Human approval.",
+      "file_affected": "docs/adr/ADR-010-rtp-variance-tightening.md",
+      "resolved": false,
+      "resolution": "Pending Human decision"
+    }
+  ],
+  "escalation_level": 0,
+  "verdict": "PASS_PROPOSE_COMMIT",
+  "audit_signature": {
+    "pathway_deps": [
+      "core/apps/server/src/gameRoom.ts",
+      "core/apps/server/src/analytics.ts",
+      "core/apps/server/src/__tests__/twoPlayer.determinism.test.ts",
+      "docs/adr/ADR-020-t9-social-platform-liveops.md",
+      "mesh/prompt-10-social-platform-liveops.md",
+      "audit/COMPONENT_AUDIT.md",
+      "design/OpportunityWeightController.md"
+    ],
+    "current_grade": "Grade A",
+    "entropy_vector": "postHogTrack adds max 2 fetch() Promises per match (MATCH_START + MATCH_END); fire-and-forget; classArchetype string-only; determinism test 3 async HMAC-SHA256 calls (test infra only)",
+    "fixed_point_check": "PASS"
+  }
+}

@@ -1,42 +1,38 @@
 {
-  "session_id": "tier/T8-economy-farnzy-20260525",
+  "session_id": "tier/T9-social-platform-liveops-20260525",
   "cell": "02-replay-archivist",
-  "snapshot_timestamp": "2026-05-25T20:00:00.000Z",
-  "git_head": "tier/T8-economy-farnzy-20260525:uncommitted (core submodule at 0a64159 + T8 changes)",
-  "git_base_commit": "2b9f47b",
-  "files_modified_count": 7,
-  "memory_state_hash": "T0-T7_PASS_T8_IN_PROGRESS",
+  "snapshot_timestamp": "2026-05-25T22:00:00.000Z",
+  "git_head": "tier/T9-social-platform-liveops-20260525 (core submodule at 07c9963)",
+  "git_base_commit": "8de9d08",
+  "files_modified_count": 2,
+  "memory_state_hash": "T0-T8_PASS_T9_IN_PROGRESS",
   "chain_head_valid": true,
-  "chain_head_event_id": "levelSchema.test.ts 6/6 PASS (T6 chain — MATCH_SCORE now extends chain in production)",
   "rng_lineage_intact": true,
   "session_seed_committed_before_events": true,
-  "t8_tasks_complete": [
-    {"task": "Create mesh/prompt-09-economy-farnzy.md", "status": "COMPLETE"},
-    {"task": "Apply inline fixes (snapshot status, prompt path, session log continuity)", "status": "COMPLETE"},
-    {"task": "Add writeWithRetry to gameRoom.ts; update MATCH_START/MATCH_END", "status": "COMPLETE"},
-    {"task": "Wire MATCH_SCORE event at both banking paths", "status": "COMPLETE"},
-    {"task": "Fix ClassArchetypeBadge import path (3→4 levels up)", "status": "COMPLETE"},
-    {"task": "Create ADR-019", "status": "COMPLETE"},
+  "t9_tasks_complete": [
+    {"task": "Author mesh/prompt-10-social-platform-liveops.md", "status": "COMPLETE"},
+    {"task": "PostHog flush adapter (postHogTrack in analytics.ts)", "status": "COMPLETE"},
+    {"task": "Wire session_start / level_complete in gameRoom.ts", "status": "COMPLETE"},
+    {"task": "classArchetype on RoomPlayer; class_archetype in MATCH_SCORE", "status": "COMPLETE"},
+    {"task": "2-player determinism test (twoPlayer.determinism.test.ts)", "status": "COMPLETE"},
+    {"task": "docs/playstore-checklist.md (8 sections)", "status": "COMPLETE"},
+    {"task": "Full audit (audit/, design/, roadmap/, tests/)", "status": "COMPLETE"},
+    {"task": "COMPONENT_AUDIT.md + OWC design", "status": "COMPLETE"},
+    {"task": "ADR-020", "status": "COMPLETE"},
     {"task": "Audit cells + session artifacts", "status": "COMPLETE"}
   ],
   "tests_pass": {
     "farkleScorer.test.ts": "16/16",
     "rtp.harness.test.ts": "3/3",
     "game-core (all)": "22/22",
-    "TOTAL": "41/41"
+    "twoPlayer.determinism.test.ts": "3/3",
+    "TOTAL": "44/44"
   },
   "type_check": {
     "new_errors_introduced": 0,
-    "resolved_errors": 14,
-    "resolved_detail": "ClassArchetypeBadge.tsx 1 module-not-found + 13 style-possibly-undefined — all from bad import path",
-    "pre_existing_errors": "InMemoryEventStore node:crypto / node:test (tsconfig — unchanged)"
+    "pre_existing_errors": 3,
+    "pre_existing_error_location": "packages/ads → InMemoryEventStore.ts (node:crypto, process — pre-T9)"
   },
   "fixed_point_check": "PASS",
-  "sacred_core_touched": false,
-  "escalation_raised": null,
-  "l0_findings_resolved": ["L0-event-store-retry"],
-  "l0_observations_carried": [
-    "ADR-010 calibration: PROPOSE ONLY — pending Human approval (carried from T6)"
-  ],
-  "notes": "T8 resolves L0-event-store-retry via writeWithRetry. MATCH_SCORE event now wired. ClassArchetypeBadge 14 TS errors resolved. 41/41 tests green."
+  "sacred_core_writes": 0
 }

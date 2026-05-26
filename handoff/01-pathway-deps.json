@@ -1,34 +1,31 @@
 {
-  "session_id": "tier/T8-economy-farnzy-20260525",
-  "cell": "01-systems-architect",
+  "session_id": "tier/T9-social-platform-liveops-20260525",
+  "cell": "01-pathway-archivist",
+  "pathway_deps": [
+    "core/apps/server/src/gameRoom.ts",
+    "core/apps/server/src/analytics.ts",
+    "core/apps/server/src/__tests__/twoPlayer.determinism.test.ts",
+    "docs/adr/ADR-020-t9-social-platform-liveops.md",
+    "docs/playstore-checklist.md",
+    "mesh/prompt-10-social-platform-liveops.md"
+  ],
+  "sacred_core_files_modified": [],
+  "new_files": [
+    "core/apps/server/src/__tests__/twoPlayer.determinism.test.ts",
+    "docs/adr/ADR-020-t9-social-platform-liveops.md",
+    "docs/playstore-checklist.md",
+    "mesh/prompt-10-social-platform-liveops.md",
+    "audit/COMPONENT_AUDIT.md",
+    "design/OpportunityWeightController.md",
+    "design/01-t9-social-liveops.md",
+    "design/02-hollaex-integration.md",
+    "roadmap/01-current-sprint.md",
+    "roadmap/02-post-t9.md",
+    "tests/01-test-inventory.md",
+    "tests/owc-test-spec.md"
+  ],
   "modified_files": [
     "core/apps/server/src/gameRoom.ts",
-    "core/apps/web/src/components/ClassArchetypeBadge.tsx",
-    "docs/adr/ADR-019-t8-economy-farnzy.md",
-    "mesh/prompt-09-economy-farnzy.md",
-    "handoff/02-session-snapshot.json",
-    "mesh/prompt-07-visual-overhaul.md",
-    "sessions/session-log.md"
-  ],
-  "dependency_map": {
-    "core/apps/server/src/gameRoom.ts": [
-      "core/apps/server/src/SupabaseEventStore.ts",
-      "game_events (Supabase table — MATCH_SCORE now written)"
-    ],
-    "core/apps/web/src/components/ClassArchetypeBadge.tsx": [
-      "core/packages/game-core/src/replay/types.ts"
-    ],
-    "docs/adr/ADR-019-t8-economy-farnzy.md": [],
-    "mesh/prompt-09-economy-farnzy.md": [],
-    "handoff/02-session-snapshot.json": [],
-    "mesh/prompt-07-visual-overhaul.md": [],
-    "sessions/session-log.md": []
-  },
-  "sacred_core_boundary_approached": false,
-  "sacred_core_files_modified": [],
-  "wasm_layer_risk": false,
-  "bridge_overhead_risk": false,
-  "gc_spike_risk": false,
-  "escalation_raised": null,
-  "notes": "gameRoom.ts is NOT on the Sacred Core list (sacred-core-spec.md enumerates: farkleStore.ts, gameStore.ts, farkleScorer.ts, rtpConfig.ts, monteCarlo.ts, csprng.ts, ledger tables, replay_hash_chain). writeWithRetry is a module-level helper — no scoring arithmetic. MATCH_SCORE events write payload fields that are integers derived from existing integer arithmetic in profile.banked. ClassArchetypeBadge fix is import path only — no logic change. Inline fixes (snapshot status, prompt path, session log continuity) are documentation artifacts only."
+    "core/apps/server/src/analytics.ts"
+  ]
 }
