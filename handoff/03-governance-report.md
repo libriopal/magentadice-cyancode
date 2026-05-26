@@ -1,33 +1,30 @@
-AUDIT::PATHWAY_DEPS: core/apps/web/src/audio/erkConductor.ts,
-  core/apps/web/src/components/GameScreen.tsx,
-  core/apps/web/src/components/NFTItemCard.tsx,
-  core/apps/web/src/components/WinLoseScreen.tsx,
-  core/art/manifest/design_tokens.json,
-  docs/adr/ADR-018-t7-visual-overhaul.md,
-  mesh/prompt-07-visual-overhaul.md
+AUDIT::PATHWAY_DEPS: core/apps/server/src/gameRoom.ts,
+  core/apps/web/src/components/ClassArchetypeBadge.tsx,
+  docs/adr/ADR-019-t8-economy-farnzy.md,
+  mesh/prompt-09-economy-farnzy.md
 AUDIT::CURRENT_GRADE: Grade A
-AUDIT::ENTROPY_VECTOR: erkConductor reads Sacred Core via Zustand selectors (read-only); 3-second hold debounce; no scoring path mutation
+AUDIT::ENTROPY_VECTOR: writeWithRetry adds async retry overhead to MATCH_START/MATCH_END/MATCH_SCORE write paths; fire-and-forget at call site; does not block game loop; max additional latency 700ms on triple failure (100+200+400ms) before logging
 AUDIT::FIXED_POINT_CHECK: PASS
 
-## Governance Report — tier/T7-visual-overhaul-20260525
+## Governance Report — tier/T8-economy-farnzy-20260525
 
 ### DELTA-VERIFY Grade Assessment
 
 | File | Grade | Notes |
 |---|---|---|
-| mesh/prompt-07-visual-overhaul.md | A | Tier prompt with full audit signature block; 7 tasks; pass gates defined |
-| core/apps/web/src/audio/erkConductor.ts | A | No Math.random(); reads Sacred Core read-only; 3-second hold; deriveEmotionalState() fully deterministic |
-| core/apps/web/src/components/GameScreen.tsx | A | useERKConductor wired; initial setMusicState retained as seed; no scoring changes |
-| core/apps/web/src/components/NFTItemCard.tsx | A | ExtendedRarity 5-tier; RARITY_COLOR/BADGE_BG tables complete; voidshard visual tier per VOIDSHARD spec |
-| core/apps/web/src/components/WinLoseScreen.tsx | A | All hardcoded palette literals replaced with OV/PILLAR/CURRENCY/UI_THEME tokens; scanline rgba(0,0,0,0.07) retained (structural, not palette) |
-| core/art/manifest/design_tokens.json | A | 7 sections; all values verbatim from theme/tokens.ts; valid JSON; no new constants |
-| docs/adr/ADR-018-t7-visual-overhaul.md | A | 4 decisions documented; pass gates table; sacred core compliance section |
+| mesh/prompt-09-economy-farnzy.md | A | T8 tier prompt; 5 tasks with pass gates; sacred core contact documented |
+| core/apps/server/src/gameRoom.ts | A | writeWithRetry added; MATCH_SCORE wired; import path fix; no scoring arithmetic changed |
+| core/apps/web/src/components/ClassArchetypeBadge.tsx | A | Import path corrected (3→4 levels); 14 TS errors resolved; no logic change |
+| docs/adr/ADR-019-t8-economy-farnzy.md | A | 3 decisions; pass gates table; sacred core compliance section |
+| handoff/02-session-snapshot.json | A | Status corrected from IN_PROGRESS to COMPLETE |
+| mesh/prompt-07-visual-overhaul.md | A | Two inline fixes: path correction + Markdown language tag |
+| sessions/session-log.md | A | Session 10 (T6) entry inserted to restore chronological continuity |
 
 ### Sacred Core Status
 
 - Sacred Core files modified: NO
-- Sacred Core files approached: YES — `farkleStore.ts` and `gameStore.ts` read via Zustand selector hooks in erkConductor.ts (read-only)
-- Action: READ-ONLY. No write. Zustand selector pattern is the canonical access pattern for Sacred Core. Boundary respected.
+- Sacred Core files approached: NO — `gameRoom.ts` is NOT on the Sacred Core list
+- Action: None required
 - Level raised: None
 
 ### Authority Compliance
@@ -39,17 +36,20 @@ AUDIT::FIXED_POINT_CHECK: PASS
 
 ### Prohibited Patterns
 
-- Math.random() in gameplay path: NO — absent from all new/modified files
-- Float in scoring path: NO — T7 is L5 ADORNMENT; no scoring paths touched
-- SDX without blockchain: NO — not touched in T7
-- PDX without attestation: NO — existing PDX gate unchanged
+- Math.random() in gameplay path: NO — writeWithRetry contains no Math.random()
+- Float in scoring path: NO — score_delta and running_total are integers
+- SDX without blockchain: NO — not touched in T8
+- PDX without attestation: NO — not touched in T8
+
+### L0 Findings Resolved
+
+| Tag | Description | Resolution |
+|---|---|---|
+| L0-event-store-retry | SupabaseEventStore fire-and-forget retry | RESOLVED — writeWithRetry max 3 attempts, exponential backoff |
 
 ### L0 Observations (carried, non-blocking)
 
-- gameRoom.ts tsc: pre-existing InMemoryEventStore node:crypto / process type errors (tsconfig — not T7 scope)
 - ADR-010 calibration: PROPOSE ONLY — pending Human approval (carried from T6)
-- MATCH_SCORE events not wired (per-player class archetype tracking — deferred to T8)
-- L0-event-store-retry: SupabaseEventStore fire-and-forget retry — deferred to T8 (carried from T6)
 
 ### Escalation Raised
 
