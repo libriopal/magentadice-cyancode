@@ -8,15 +8,15 @@
 |---|---|---|---|
 | L0-ADR010-calibration | ADR-010 Monte Carlo RTP calibration — PROPOSE ONLY | T6 | Pending Human approval |
 
-## T9 Pending Artifacts
+## T9 Artifacts (resolved)
 
-| Artifact | Status | Blocking |
+| Artifact | Status | Evidence |
 |---|---|---|
-| `docs/adr/ADR-020-t9-social-platform-liveops.md` | NOT WRITTEN | YES — required for T9 PASS |
-| `runs/2026-05-25/session-13.json` | NOT WRITTEN | YES — required for T9 PASS |
-| Session 13 in `sessions/session-log.md` | NOT APPENDED | YES — required for T9 PASS |
-| pnpm type-check | NOT VERIFIED | YES — required for T9 PASS |
-| pnpm test (44/44) | NOT VERIFIED | YES — required for T9 PASS |
+| `docs/adr/ADR-020-t9-social-platform-liveops.md` | WRITTEN | Committed in 688e35f (integration repo) |
+| `runs/2026-05-25/session-13.json` | WRITTEN | Score 96/100, verdict PASS_PROPOSE_COMMIT; committed in 688e35f |
+| Session 13 in `sessions/session-log.md` | DONE | Appended in 688e35f; git log session-log.md confirms |
+| pnpm type-check | VERIFIED | 0 new errors; 3 pre-existing ads/InMemoryEventStore.ts errors unchanged |
+| pnpm test (44/44) | VERIFIED | 16+3+22+3 = 44; runs/2026-05-25/session-13.json `.tests_pass.TOTAL: "44/44"` |
 
 ## Requested but Not Started
 

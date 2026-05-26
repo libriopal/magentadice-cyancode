@@ -15,22 +15,22 @@
 | T6 | Content Pipeline | #16 | 94/100 | PASS (merged) |
 | T7 | Visual Overhaul | #17 | 96/100 | PASS (merged) |
 | T8 | Economy & FAR_NZY | #18 | 97/100 | PASS (merged) |
-| T9 | Social, Platform & LiveOps | #19 | IN_PROGRESS | PENDING |
+| T9 | Social, Platform & LiveOps | #19 | 96/100 | PASS_PROPOSE_COMMIT |
 
 ## T9 Pass Gate Status
 
 | Gate | Status |
 |---|---|
-| PostHog flush adapter in analytics.ts | DONE (working tree) |
-| postHogTrack wired at MATCH_START / MATCH_END | DONE (working tree) |
-| 2-player determinism test (twoPlayer.determinism.test.ts) | DONE (working tree) |
-| docs/playstore-checklist.md — 8 sections | DONE (working tree) |
-| MATCH_SCORE class_archetype (no bank_type) | DONE (working tree) |
-| pnpm type-check — 0 new errors | PENDING |
-| pnpm test — 41/41 + 3 new | PENDING |
-| ADR-020 authored | PENDING |
-| session-13.json written | PENDING |
-| Session 13 appended to session-log.md | PENDING |
+| PostHog flush adapter in analytics.ts | DONE |
+| postHogTrack wired at MATCH_START / MATCH_END | DONE |
+| 2-player determinism test (twoPlayer.determinism.test.ts) | DONE |
+| docs/playstore-checklist.md — 8 sections | DONE |
+| MATCH_SCORE class_archetype (no bank_type) | DONE |
+| pnpm type-check — 0 new errors | DONE (0 new; 3 pre-existing ads/InMemoryEventStore.ts unchanged) |
+| pnpm test — 44/44 (41 regression + 3 new) | DONE |
+| ADR-020 authored | DONE (docs/adr/ADR-020-t9-social-platform-liveops.md) |
+| session-13.json written | DONE (runs/2026-05-25/session-13.json, score 96/100) |
+| Session 13 appended to session-log.md | DONE |
 
 ## Open Flags (non-blocking)
 

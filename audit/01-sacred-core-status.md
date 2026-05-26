@@ -24,6 +24,22 @@ Per `mesh/sacred-core-spec.md`:
 **ADR:** ADR-001 (mathematical foundation, T1 scope)
 **Verdict:** AUTHORIZED — corrects a legal violation (float in scoring path); no scoring logic altered
 
+## T9 Core Submodule Change Evidence
+
+**Submodule pointer update:** `b7c790b` → `07c9963` (PR #19 diff)
+
+Files changed between those SHAs (`git diff b7c790b..07c9963 --name-only` in `core/`):
+
+```
+apps/server/src/__tests__/twoPlayer.determinism.test.ts  (new)
+apps/server/src/analytics.ts                              (modified)
+apps/server/src/gameRoom.ts                               (modified)
+```
+
+No Sacred Core file appears in this diff. All 6 Sacred Core files (`farkleStore.ts`, `gameStore.ts`, `farkleScorer.ts`, `rtpConfig.ts`, `monteCarlo.ts`, `csprng.ts`) are unchanged between the two SHAs.
+
+**Session artifact evidence:** `runs/2026-05-25/session-13.json` records `git_head: "tier/T9-social-platform-liveops-20260525 (core submodule at 07c9963)"` and `sacred_core_writes: 0`. `handoff/02-session-snapshot.json` confirms `git_head` and `rng_lineage_intact: true`.
+
 ## Verdict
 
 **Sacred Core integrity: PASS**

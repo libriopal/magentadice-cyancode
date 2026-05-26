@@ -32,7 +32,7 @@ AUDIT::FIXED_POINT_CHECK: PASS
 ### Authority Compliance
 
 - All actions within Execution Runtime authority: YES
-- PRs merged: NO (PR #19 will be opened)
+- PRs merged: NO (PR #19 is open)
 - Constitutional files modified: NO
 - Violations found: None
 

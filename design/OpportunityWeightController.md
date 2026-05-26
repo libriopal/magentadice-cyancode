@@ -109,7 +109,7 @@ const wildThreshold = owc ? 3 - Math.floor(owc.wildBoostPct / 3.3) : 3;
 if (w >= wildThreshold) { /* spawn wild */ }
 ```
 
-Bounds: max `wildBoostPct` = 10 → threshold drops from 3 to 0 (30% true-wild max vs. 10% baseline). OWC never reaches max in practice (≤10% boost → threshold = 3 - floor(10/3.3) = 3 - 3 = 0 theoretical max, but capped at 10% boost = 1 step = threshold → 2, which is ~25% wild).
+Bounds: `wildBoostPct` is capped at 10. In practice OWC applies at most 1 step of boost: `threshold = 3 - floor(10/3.3) = 3 - 3 = 0` is the theoretical floor (never reached), while the practical maximum is `wildBoostPct = 10 → 1 step → threshold 2`, which raises true-wild probability from ~10% to ~25% of the wild pool. The cap ensures OWC cannot exceed a 15-point swing in wild spawn rate.
 
 ### No Changes To
 

@@ -35,7 +35,7 @@ export async function initiateWithdrawal(userId: string, amountUSD: number): Pro
 export function verifyWebhookSignature(payload: string, sig: string): boolean { ... }
 ```
 
-**Webhook endpoint:** New Express route in `apps/server/src/index.ts`:
+**Webhook endpoint:** New Express route in `core/apps/server/src/index.ts`:
 ```
 POST /hollaex/webhook
 → verifyWebhookSignature()

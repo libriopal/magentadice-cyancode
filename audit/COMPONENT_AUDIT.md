@@ -255,7 +255,7 @@ Ranked by (ExpectedRetentionGain / ImplementationCost):
 | 7 | STONE | Weakness face mechanic | Medium | High |
 | 8 | Ghost → Echo | Redesign | High | High |
 | 9 | Mirror | Clarify or merge into wild | Medium | Medium |
-| 10 | OpportunityWeightController | New system (see design/OWC.md) | High | Very High |
+| 10 | OpportunityWeightController | New system (see design/OpportunityWeightController.md) | High | Very High |
 
 ---
 

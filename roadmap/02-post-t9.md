@@ -11,15 +11,15 @@ All tiers T0–T9 = PASS. EXECUTE.md reports: "All tiers complete." Human decide
 ### 1. OpportunityWeightController (OWC) — Highest Value
 - Design: `design/OpportunityWeightController.md`
 - Component audit: `audit/COMPONENT_AUDIT.md`
-- New file: `packages/farkle-engine/src/opportunityWeight.ts`
-- Modifies: `gridUtils.ts` spawnTiles (backward-compatible)
+- New file: `core/packages/farkle-engine/src/opportunityWeight.ts`
+- Modifies: `core/packages/farkle-engine/src/gridUtils.ts` (`spawnTiles` — backward-compatible)
 - Gate: RTP simulation via monteCarlo.ts must pass (88–96% bounds)
 - ADR-021 required
 
 ### 2. HollaEx Crypto Payment
 - Design: `design/02-hollaex-integration.md`
-- New file: `apps/server/src/hollaex.ts`
-- Webhook endpoint in `apps/server/src/index.ts`
+- New file: `core/apps/server/src/hollaex.ts`
+- Webhook endpoint in `core/apps/server/src/index.ts`
 - Legal review required before production
 - ADR-022 required
 

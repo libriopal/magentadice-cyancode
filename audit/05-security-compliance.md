@@ -36,7 +36,7 @@
 
 - API key: Server-side env var (`POSTHOG_API_KEY`) only — never exposed to client
 - No-op if key absent: `if (!apiKey) return;` in `postHogTrack`
-- Data sent: `userId` (anonymous), event name, app version, platform — no PII
+- Data sent: `userId` (anonymous), event name, app version, platform — no direct identifiers observed in this payload; formal privacy review recommended before production
 - Fire-and-forget: PostHog outage cannot affect game loop
 
 ## Sweepstakes Compliance
@@ -44,7 +44,7 @@
 - "No purchase necessary": confirmed in docs/playstore-checklist.md §7
 - Skill-differential report: `getSkillDifferentialReport()` in analytics.ts — available for regulator queries
 - Alternate method of entry: documented in checklist (TODO: Official Rules URL)
-- Legal posture: skill-based sweepstakes competition — every float in scoring path is a legal violation (none found T0–T9)
+- Legal posture: no obvious scoring-path float issues observed at T0–T9 (see FIXED_POINT_CHECK summary below). Formal legal conclusions — including sweepstakes classification and compliance posture — should be deferred to qualified legal/privacy review.
 
 ## FIXED_POINT_CHECK Summary (T0–T9)
 
