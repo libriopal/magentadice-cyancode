@@ -17,7 +17,7 @@
     {"task": "Wire MATCH_SCORE event at both banking paths", "status": "COMPLETE"},
     {"task": "Fix ClassArchetypeBadge import path (3→4 levels up)", "status": "COMPLETE"},
     {"task": "Create ADR-019", "status": "COMPLETE"},
-    {"task": "Audit cells + session artifacts", "status": "IN_PROGRESS"}
+    {"task": "Audit cells + session artifacts", "status": "COMPLETE"}
   ],
   "tests_pass": {
     "farkleScorer.test.ts": "16/16",
