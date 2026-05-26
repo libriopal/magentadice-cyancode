@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- PARADOX-PAY-GAP — Gap analysis between current implementation and Paradox Pay vision -->
+<!-- Format: AuditML-Lite | Authority: qna0.xml findings -->
+<!-- GAP severity: P0=launch-blocking, P1=high-impact, P2=medium-impact, P3=nice-to-have -->
+
+<PARADOX_PAY_GAP>
+
+<DICT>
+  <F1>core/packages/farkle-shared/src/types.ts</F1>
+  <F2>core/packages/farkle-engine/src/farkleScorer.ts</F2>
+  <F3>core/packages/farkle-engine/src/gridUtils.ts</F3>
+  <F4>core/packages/farkle-engine/src/rtpConfig.ts</F4>
+  <F5>core/packages/farkle-engine/src/monteCarlo.ts</F5>
+  <F6>core/packages/farkle-engine/src/csprng.ts</F6>
+  <F7>core/apps/server/src/gameRoom.ts</F7>
+  <F8>newmodespec.md</F8>
+  <F15>design/OpportunityWeightController.md</F15>
+  <F16>audit/COMPONENT_AUDIT.md</F16>
+  <F14>core/apps/server/src/analytics.ts</F14>
+  <F21>core/apps/server/src/playIntegrity.ts</F21>
+  <QNA>audit/qna0.xml</QNA>
+</DICT>
+
+<!-- ══════════════════════ VISION STATEMENT ══════════════════════ -->
+<VISION>
+  <E>F9:23-43,QNA:Q1,QNA:Q14</E>
+  <C>0.75</C>
+  <STATEMENT>Skill reads spatial board → informs Farkle risk decision → PDX sweepstakes payout → verifiable by player post-session. The "paradox": skill and luck coexist under provable fairness. Every mechanic must serve either skill expression or social story creation.</STATEMENT>
+  <PILLARS>
+    <P id="P1">SKILL_EXPRESSION: Player board reading genuinely differentiates outcomes.</P>
+    <P id="P2">SOCIAL_MOMENTS: Cooperative/betrayal dynamics create shareable stories.</P>
+    <P id="P3">FAIR_PAYOUT: Outcomes verifiable. RTP transparent. Geofence enforced.</P>
+    <P id="P4">VALUE_COMPETITION: Multiple value systems compete simultaneously to maximize tension.</P>
+    <P id="P5">PROGRESSIVE_IDENTITY: Player class, facets, and history create persistent identity.</P>
+  </PILLARS>
+</VISION>
+
+<!-- ══════════════════════ GAPS — PILLAR: SKILL_EXPRESSION ══════════════════════ -->
+<GAP id="G01" priority="P1">
+  <NAME>Static spawn weights — zero board-state awareness</NAME>
+  <PILLAR>P1:SKILL_EXPRESSION</PILLAR>
+  <E>F3:335-364,F1:47-49,F15,QNA:Q3,QNA:Q9,QNA:Q14:CONFLICT_01</E>
+  <C>0.99</C>
+  <CURRENT>spawnTiles(grid,pool) draws sequentially from pre-shuffled SixPoolManager. Zero inputs from grid state. Dead boards refill with same distribution regardless of cascade potential.</CURRENT>
+  <VISION>Spawns should respond to board state to create opportunities. Skilled players who reduce board to scoring arrangements should be rewarded with productive refills — not random chance.</VISION>
+  <IMPACT>Spawn randomness dominates refill phase. Skill reads board pre-chain but cannot influence what replaces cleared tiles. Reduces skill ceiling in refill-heavy late-game.</IMPACT>
+  <RESOLUTION>OWC: spawnTiles(grid,pool,owc?) backward-compatible. opportunityWeight.ts in core/packages/farkle-engine. RTP simulation gate required (monteCarlo). ADR-021 required. Human approval required.</RESOLUTION>
+  <ESTIMATED_GAIN>+15-25% cascade frequency per F15 design estimate. Measurable via PostHog match_resolved events.</ESTIMATED_GAIN>
+  <EFFORT>MEDIUM (new file + spawnTiles modification + RTP validation)</EFFORT>
+  <SAFE_FILES>core/packages/farkle-engine/src/opportunityWeight.ts (new); F3:spawnTiles signature extension only</SAFE_FILES>
+  <BLOCKS>ADR-021, Human approval of F16</BLOCKS>
+</GAP>
+
+<GAP id="G02" priority="P2">
+  <NAME>Wild face resolution is automatic — removes player agency</NAME>
+  <PILLAR>P1:SKILL_EXPRESSION</PILLAR>
+  <E>F3:492-513,QNA:Q8,QNA:Q11:NM3,QNA:Q14:CONFLICT_02</E>
+  <C>0.95</C>
+  <CURRENT>_resolveWilds() exhaustively picks optimal face assignment. Player cannot influence wild face selection at all.</CURRENT>
+  <VISION>Wild assignment should be a decision moment — skilled players who know scoring should be able to override auto to set up future chains.</VISION>
+  <IMPACT>Every wild chain is identical from decision standpoint. Auto-optimal eliminates a potential mastery surface.</IMPACT>
+  <RESOLUTION>Optional manual wild assignment UI. Client sends desired wild face; server validates score ≥ auto-optimal (prevents score manipulation). Accept auto if player does not respond within 2s.</RESOLUTION>
+  <EFFORT>MEDIUM (client UI + server validation path)</EFFORT>
+  <RTP_SAFE>YES — manual assignment cannot exceed auto-optimal score. Net RTP unchanged.</RTP_SAFE>
+</GAP>
+
+<GAP id="G03" priority="P2">
+  <NAME>Ghost tile (C-tier) creates confusion, not skill</NAME>
+  <PILLAR>P1:SKILL_EXPRESSION</PILLAR>
+  <E>F1:27,F16,QNA:Q4:T11,QNA:Q11:FK1,QNA:Q14:CONFLICT_03</E>
+  <C>0.92</C>
+  <CURRENT>Ghost: ignores column constraint, drifts, tap to anchor → die. ValueScore=0.42 (lowest of all components). Column constraint is rarely the limiting factor in chain building.</CURRENT>
+  <VISION>Every tile must create a legible decision. Ghost fails legibility test.</VISION>
+  <IMPACT>Player confusion. Low engagement with mechanic. Board space occupied by low-value entity.</IMPACT>
+  <RESOLUTION>Redesign to Echo tile: scores as 1-face die, doubles chain score if chained last. Preserves visual identity. Creates meaningful "chain last" positioning decision.</RESOLUTION>
+  <EFFORT>LOW (tile type redefinition + scoring wrapper — not Sacred Core)</EFFORT>
+  <SPAWN_WEIGHT>NORMAL=1%,PRIME=2%,FRENZY=3% — low frequency limits immediate urgency</SPAWN_WEIGHT>
+</GAP>
+
+<GAP id="G04" priority="P1">
+  <NAME>Catalyst wild boost wiring gap — dead mechanic</NAME>
+  <PILLAR>P1:SKILL_EXPRESSION</PILLAR>
+  <E>F1:76-77,F3:335-364,QNA:Q8:W03,QNA:Q14:CONFLICT_05</E>
+  <C>0.82</C>
+  <CURRENT>CATALYST_WILD_BOOST=2%, CATALYST_MAX_BOOST=10% defined in F1:76-77. spawnTiles drawWild() checks w===3 (fixed 10% probability) — no dynamic boost applied. Catalyst commits may have zero effect on wild spawn rate.</CURRENT>
+  <VISION>Catalyst is a long-game strategic investment: spend now, get wilder board later. Dead mechanic breaks this promise.</VISION>
+  <IMPACT>Players who commit catalysts expecting wild boost receive none. Trust breach. Also removes a future-opportunity mechanic.</IMPACT>
+  <RESOLUTION>Wire CATALYST_MAX_BOOST into wildBoostPct in spawnTiles (or via OWC). Track cumulative catalyst commits in gameRoom; pass accumulated boost to spawn decision. Max 10% boost = wildThreshold drops from 3 to 2 (pool.drawWild()≥2 → wild).</RESOLUTION>
+  <EFFORT>LOW-MEDIUM (gameRoom catalyst tracking + spawnTiles threshold parameter)</EFFORT>
+  <RTP_SAFE>YES if capped at CATALYST_MAX_BOOST=10%. Wild frequency increases but within SixPoolManager pool bounds.</RTP_SAFE>
+</GAP>
+
+<!-- ══════════════════════ GAPS — PILLAR: SOCIAL_MOMENTS ══════════════════════ -->
+<GAP id="G05" priority="P1">
+  <NAME>DRAFT phase unimplemented — genre system inaccessible</NAME>
+  <PILLAR>P2:SOCIAL_MOMENTS,P5:PROGRESSIVE_IDENTITY</PILLAR>
+  <E>F8:121-126,F7:73,QNA:Q1:G4,QNA:Q11:FK2,QNA:Q14:CONFLICT_04</E>
+  <C>0.85</C>
+  <CURRENT>newmodespec.md specifies DRAFT as phase 1 of every round (≤15s human decision). gameRoom.ts imports facet/shard/rhythm functions (F7:73) but no DRAFT message type confirmed in first 235 lines. 20-genre system largely unreachable.</CURRENT>
+  <VISION>DRAFT is the primary meta-decision layer. Facet selection between rounds creates identity, storylines, and strategic divergence between players.</VISION>
+  <IMPACT>Genre system (20 genres) inaccessible. Facets, Shards, Sandbox, Metroidvania, MOBA all effectively dead features. Retention ceiling lowered significantly.</IMPACT>
+  <RESOLUTION>Add DRAFT message type in gameRoom.ts. handleDraft(): emit DRAFT_OPTIONS(3 facets) to active player, await FACET_SELECTED within 15s (auto-skip if timeout). Call startFacetDraft, pickFacet (already imported F7:73).</RESOLUTION>
+  <EFFORT>MEDIUM (message routing + client UI for draft screen)</EFFORT>
+  <RTP_SAFE>YES — facet wrappers are already bounded by anti-stack rules (F8:281-291). No scoring path modification required.</RTP_SAFE>
+</GAP>
+
+<GAP id="G06" priority="P1">
+  <NAME>Disruption event trigger mechanism unconfirmed</NAME>
+  <PILLAR>P2:SOCIAL_MOMENTS</PILLAR>
+  <E>F1:83-91,QNA:Q15:INTERACTIONS,QNA:Q17:SOCIAL_SACRIFICE</E>
+  <C>0.60</C>
+  <CURRENT>DisruptionEvent type defined (ice_send,lock_send,scramble,targetColumns[]). No trigger mechanism (cost, message type, game condition) confirmed in read code.</CURRENT>
+  <VISION>Sending blockers to opponents is the primary PvP social story moment. "I ice-locked your best column" creates memorable antagonism.</VISION>
+  <IMPACT>If disruptions are effectively disabled, VS/RALLY/HEIST social dynamics collapse to score racing only. Loss of betrayal moments.</IMPACT>
+  <RESOLUTION>Confirm disruption trigger in gameRoom.ts (lines 250+). If absent: implement SEND_DISRUPTION message type with cost (e.g., 50 unbanked or FD ante). Apply via damageAdjacentBlockers or direct grid insertion.</RESOLUTION>
+  <EFFORT>UNKNOWN until gameRoom lines 250+ read</EFFORT>
+  <DEPENDS>Read gameRoom.ts lines 250-600+ to confirm or deny</DEPENDS>
+</GAP>
+
+<GAP id="G07" priority="P2">
+  <NAME>RALLY payout formula contradiction</NAME>
+  <PILLAR>P2:SOCIAL_MOMENTS,P3:FAIR_PAYOUT</PILLAR>
+  <E>F7:34-39,F5:189-195,F8:190-195,QNA:Q18:RISK_AREAS:R2</E>
+  <C>0.95</C>
+  <CURRENT>F7:37 comment says "highestBanked wins totalPot×targetRTP" for RALLY. F5:189-195 (monteCarlo) implements equal split: (totalPot-houseMargin)/playerCount. F8 specifies cooperative equal split.</CURRENT>
+  <VISION>RALLY is cooperative — equal split reinforces team motivation. Winner-takes-all destroys cooperation incentive.</VISION>
+  <IMPACT>If production uses winner-takes-all, RALLY is a competition not cooperation. RTP audited as equal-split but paid as winner-takes-all = compliance failure.</IMPACT>
+  <RESOLUTION>Read gameRoom.ts endSession() (lines 250+) for actual payout implementation. Align comment, monteCarlo, and implementation to canonical spec (equal split per F8). Update F7 comment.</RESOLUTION>
+  <EFFORT>LOW (comment fix if implementation is correct; code fix if not)</EFFORT>
+  <URGENCY>HIGH — compliance risk if disagreement is in live code</URGENCY>
+</GAP>
+
+<!-- ══════════════════════ GAPS — PILLAR: FAIR_PAYOUT ══════════════════════ -->
+<GAP id="G08" priority="P1">
+  <NAME>createGrid uses Date.now() seed — board layout not covered by fairness proof</NAME>
+  <PILLAR>P3:FAIR_PAYOUT</PILLAR>
+  <E>F3:230-235,F6:102-110,QNA:Q3,QNA:Q18:RISK_AREAS:R3</E>
+  <C>0.99</C>
+  <CURRENT>createGrid(size,settings,pool,seedNum=Date.now()). Grid blocker layout seeded from wall-clock time, not CSPRNG. Different from CSPRNG seed committed in fairness proof.</CURRENT>
+  <VISION>Full provable fairness requires all randomness covered by commit-reveal. Board layout randomness is non-deterministic from player's verification perspective.</VISION>
+  <IMPACT>Regulator or player could argue board was manipulated post-commitment (blockers placed after seed commitment). Fairness proof is incomplete.</IMPACT>
+  <RESOLUTION>Derive grid seed from CSPRNG: seedNum = derivedInt from csprng.getSeed() hash. seededRng(hashSeedString(csprng.getSeed())) already exists in SixPoolManager constructor (F3:88-89) — same pattern applicable to createGrid call in GameRoom constructor.</RESOLUTION>
+  <EFFORT>LOW (one-line change in GameRoom constructor createGrid call)</EFFORT>
+  <SACRED_CHECK>createGrid is in F3 (sacred header). Modification requires: all 16 tests + type-check + developer approval.</SACRED_CHECK>
+</GAP>
+
+<GAP id="G09" priority="P1">
+  <NAME>ADR-010 calibration pending — RTP not Monte Carlo validated in production</NAME>
+  <PILLAR>P3:FAIR_PAYOUT</PILLAR>
+  <E>F4,F5,QNA:Q18:RISK_AREAS:R1</E>
+  <C>0.99</C>
+  <CURRENT>rtpConfig.ts hardcodes netRTP=0.92 for all casino modes. ADR-010 calibration is PROPOSE ONLY (pending Human approval since T6). monteCarlo harness exists and passes in test (3/3 PASS) but production RTP validation not completed.</CURRENT>
+  <VISION>Every production deployment must have verified RTP within ±2% of declared netRTP.</VISION>
+  <IMPACT>If actual session RTP deviates gt 2% from 0.92 in production, regulatory violation. monteCarlo's avgScore=3500 baseline (F5:215) is hardcoded, not derived from real session data.</IMPACT>
+  <RESOLUTION>Human must approve ADR-010. Run monteCarlo against actual session data baseline (replace hardcoded avgScore=3500 with empirical value from session_analytics). Re-validate all 8 modes.</RESOLUTION>
+  <EFFORT>LOW-MEDIUM (data analysis + Human decision)</EFFORT>
+  <BLOCKS>Human approval required</BLOCKS>
+</GAP>
+
+<GAP id="G10" priority="P2">
+  <NAME>Dead-state recovery mechanism unconfirmed</NAME>
+  <PILLAR>P3:FAIR_PAYOUT</PILLAR>
+  <E>F3:515-543,QNA:Q10,QNA:Q1:G3</E>
+  <C>0.70</C>
+  <CURRENT>hasValidChain(grid) exported from F3. No confirmed recovery trigger in gameRoom.ts (lines 250+ unread). If dead state occurs and gameRoom does nothing, game stalls.</CURRENT>
+  <VISION>Dead board is a fairness issue — player cannot score, game may become unwinnable, session abandonment penalizes player.</VISION>
+  <IMPACT>Game freeze → session abandonment → PDX wager lost without completing game → potential dispute.</IMPACT>
+  <RESOLUTION>If reshuffle not implemented: add POST_DEADSTATE_RESHUFFLE message. On hasValidChain=false: pool.reshuffle(), refill all empty cells, broadcast BOARD_RESHUFFLED. Log reshuffle event in analytics.</RESOLUTION>
+  <EFFORT>LOW-MEDIUM (condition check + reshuffle + broadcast)</EFFORT>
+  <DEPENDS>Read gameRoom.ts lines 250+ to confirm or deny existing handler</DEPENDS>
+</GAP>
+
+<!-- ══════════════════════ GAPS — PILLAR: VALUE_COMPETITION ══════════════════════ -->
+<GAP id="G11" priority="P2">
+  <NAME>FD and PDX cannot compete simultaneously — exclusive currencyMode</NAME>
+  <PILLAR>P4:VALUE_COMPETITION</PILLAR>
+  <E>F1:111,F1:162-173,QNA:Q15,QNA:Q16</E>
+  <C>0.97</C>
+  <CURRENT>LobbySettings.currencyMode='FD'|'PDX' — single-valued. Cannot wager both currencies in one session.</CURRENT>
+  <VISION>Currency competition (FD stakes vs PDX stakes) would create mixed-incentive sessions and broader player base mixing.</VISION>
+  <IMPACT>Players who prefer FD and PDX cannot play together in casino mode. Segment isolation.</IMPACT>
+  <RESOLUTION>Mixed currency sessions require stakeAmount to be split-typed {fd:number,pdx:number}. Complex RTP accounting. Low-priority unless market specifically demands it.</RESOLUTION>
+  <EFFORT>HIGH (type changes propagate through RTP, analytics, wallet)</EFFORT>
+  <PRIORITY>P3 (nice-to-have; exclusive mode is rational design choice)</PRIORITY>
+</GAP>
+
+<GAP id="G12" priority="P2">
+  <NAME>No cross-session reputation or progression system</NAME>
+  <PILLAR>P4:VALUE_COMPETITION,P5:PROGRESSIVE_IDENTITY</PILLAR>
+  <E>F1:371-381,QNA:Q15:REPUTATION,QNA:Q17</E>
+  <C>0.97</C>
+  <CURRENT>UserProfile has username,color,asciiArt only. No ELO, rank, win rate, achievement, unlock. getSkillDifferentialReport() is regulatory-only, not player-facing.</CURRENT>
+  <VISION>Cross-session identity creates return motivation. Class mastery displayed in lobby. Rival system creates social stories across sessions.</VISION>
+  <IMPACT>No retention hook beyond current session. Players have no reason to return beyond fresh PDX top-up.</IMPACT>
+  <RESOLUTION>Add to PlayerProfile: matchesPlayed, wins, pdxEarned, favoriteClass. Display in lobby. Optional: ELO per mode. Requires Supabase schema migration.</RESOLUTION>
+  <EFFORT>MEDIUM-HIGH (schema, API, UI)</EFFORT>
+</GAP>
+
+<!-- ══════════════════════ GAPS — PILLAR: PROGRESSIVE_IDENTITY ══════════════════════ -->
+<GAP id="G13" priority="P1">
+  <NAME>classArchetype not selectable at lobby — all players are Paladin</NAME>
+  <PILLAR>P5:PROGRESSIVE_IDENTITY</PILLAR>
+  <E>F7:110-111,QNA:Q1:G1,QNA:Q14:CONFLICT_06,QNA:Q15</E>
+  <C>0.99</C>
+  <CURRENT>addPlayer(ws,playerId,playerName,classArchetype:ClassArchetype='Paladin') default. JOIN_ROOM message has no classArchetype field. All players de facto Paladins. class_archetype='Paladin' in all MATCH_SCORE events.</CURRENT>
+  <VISION>4 classes (PALADIN,ROGUE,BARD,ARTIFICER) are the primary identity choice. Each has asymmetric skill profile at identical 92% RTP (F8:299-305). Class choice should be visible in lobby and drive session strategy.</VISION>
+  <IMPACT>Class system entirely inaccessible. RPG genre (L4 wrapper) effectively disabled for all non-Paladin abilities. Rogue double-burst, Bard beat window, Artificer shard build all unavailable.</IMPACT>
+  <RESOLUTION>Add classArchetype field to JOIN_ROOM message. Validate against ClassArchetype union type. Pass to addPlayer(). Broadcast to all players (social identity signal). Display in ROOM_STATE as player class label.</RESOLUTION>
+  <EFFORT>LOW (message field addition + addPlayer param already accepts it)</EFFORT>
+  <RTP_SAFE>YES — all 4 classes already tuned to 92% RTP per F8:299-305</RTP_SAFE>
+</GAP>
+
+<GAP id="G14" priority="P2">
+  <NAME>HollaEx PDX on-ramp not implemented</NAME>
+  <PILLAR>P5:PROGRESSIVE_IDENTITY,P3:FAIR_PAYOUT</PILLAR>
+  <E>design/02-hollaex-integration.md,QNA:Q15:ECONOMY,QNA:Q1:G6</E>
+  <C>0.99</C>
+  <CURRENT>HollaEx design documented (design/02-hollaex-integration.md). hollaex.ts does not exist. POST /hollaex/webhook not wired in core/apps/server/src/index.ts. PDX_USD_RATE=1 defined but PDX cannot be purchased via crypto.</CURRENT>
+  <VISION>Players fund PDX wallets via crypto (HollaEx API). Broadens payment options. Enables global participation beyond credit-card gatekeeping.</VISION>
+  <IMPACT>PDX acquisition limited to PDX_GIFT and PDX_DAILY_BONUS (10/day). No real-money on-ramp without HollaEx. Casino mode PDX play requires alternative funding path.</IMPACT>
+  <RESOLUTION>Implement core/apps/server/src/hollaex.ts. Webhook POST /hollaex/webhook in core/apps/server/src/index.ts. verifyWebhookSignature → insertWalletTransaction(PDX_PURCHASE). ADR-022 required. Legal review required (crypto + sweepstakes).</RESOLUTION>
+  <EFFORT>MEDIUM (server-side only; legal review is the long-pole)</EFFORT>
+  <BLOCKS>ADR-022, legal review</BLOCKS>
+</GAP>
+
+<GAP id="G15" priority="P2">
+  <NAME>Wild Scatter mechanic specified but unconfirmed in implementation</NAME>
+  <PILLAR>P2:SOCIAL_MOMENTS,P1:SKILL_EXPRESSION</PILLAR>
+  <E>F8:L2,QNA:Q8:W02</E>
+  <C>0.65</C>
+  <CURRENT>newmodespec.md L2 energy gate specifies: 3+ wilds simultaneously on board → force all players into FRENZY + destroy all tiles matching wilds' underlying face colors. scanForWilds() exists in F3:558-566 but no trigger in first 235 lines of gameRoom.ts.</CURRENT>
+  <VISION>Wild Scatter is a dramatic shared event — sudden board clear affecting all players simultaneously. Creates social story moment.</VISION>
+  <IMPACT>If absent: wild tiles are only individual-player scoring tools. No shared event mechanic. Lower FRENZY mode drama.</IMPACT>
+  <RESOLUTION>Read gameRoom.ts lines 250+. If absent: add wild scatter check after spawnTiles — if scanForWilds(grid)≥3, apply rainbow-bomb-style clear on wild face colors, broadcast WILD_SCATTER event.</RESOLUTION>
+  <EFFORT>LOW (condition check + board clear + broadcast)</EFFORT>
+  <DEPENDS>Read gameRoom.ts lines 250+ to confirm</DEPENDS>
+</GAP>
+
+<!-- ══════════════════════ IMPLEMENTATION STATUS MATRIX ══════════════════════ -->
+<IMPLEMENTATION_MATRIX>
+  <E>QNA:Q1,QNA:Q2,QNA:Q3,architecture.xml</E>
+  <C>0.88</C>
+
+  <ITEM id="M01">
+    <FEATURE>Core Farkle+Match-3 loop (chain→score→bank→win)</FEATURE>
+    <STATUS>COMPLETE</STATUS>
+    <FILES>F2,F3,F7</FILES>
+  </ITEM>
+
+  <ITEM id="M02">
+    <FEATURE>8 game modes typed</FEATURE>
+    <STATUS>TYPED — PARTIAL (RALLY payout formula disputed; HEIST resolution unconfirmed)</STATUS>
+    <FILES>F1,F4,F7</FILES>
+  </ITEM>
+
+  <ITEM id="M03">
+    <FEATURE>CSPRNG commit-reveal fairness</FEATURE>
+    <STATUS>COMPLETE (minus createGrid grid seed gap)</STATUS>
+    <FILES>F6,F7</FILES>
+  </ITEM>
+
+  <ITEM id="M04">
+    <FEATURE>RTP configuration and audit harness</FEATURE>
+    <STATUS>COMPLETE (ADR-010 calibration PROPOSE ONLY)</STATUS>
+    <FILES>F4,F5</FILES>
+  </ITEM>
+
+  <ITEM id="M05">
+    <FEATURE>Geofence (5 states blocked)</FEATURE>
+    <STATUS>COMPLETE</STATUS>
+    <FILES>F21</FILES>
+  </ITEM>
+
+  <ITEM id="M06">
+    <FEATURE>Ante system</FEATURE>
+    <STATUS>COMPLETE</STATUS>
+    <FILES>F1:225-266,F7</FILES>
+  </ITEM>
+
+  <ITEM id="M07">
+    <FEATURE>Multiplier ladder + Gravity Flip</FEATURE>
+    <STATUS>COMPLETE</STATUS>
+    <FILES>F1:199-203,F3:578-590,F7</FILES>
+  </ITEM>
+
+  <ITEM id="M08">
+    <FEATURE>PostHog analytics (session_start, level_complete)</FEATURE>
+    <STATUS>COMPLETE (T9)</STATUS>
+    <FILES>F14,F7</FILES>
+  </ITEM>
+
+  <ITEM id="M09">
+    <FEATURE>Event store (MATCH_START/END/SCORE)</FEATURE>
+    <STATUS>COMPLETE (writeWithRetry T8)</STATUS>
+    <FILES>F7,core/apps/server/src/SupabaseEventStore.ts</FILES>
+  </ITEM>
+
+  <ITEM id="M10">
+    <FEATURE>2-player determinism</FEATURE>
+    <STATUS>COMPLETE (T9: 3/3 PASS)</STATUS>
+    <FILES>core/apps/server/src/__tests__/twoPlayer.determinism.test.ts</FILES>
+  </ITEM>
+
+  <ITEM id="M11">
+    <FEATURE>DRAFT phase + facet selection</FEATURE>
+    <STATUS>IMPORTED_NOT_WIRED (P1 gap G05)</STATUS>
+    <FILES>F7:73</FILES>
+  </ITEM>
+
+  <ITEM id="M12">
+    <FEATURE>classArchetype lobby selection</FEATURE>
+    <STATUS>PARTIAL — field exists, default only (P1 gap G13)</STATUS>
+    <FILES>F7:111</FILES>
+  </ITEM>
+
+  <ITEM id="M13">
+    <FEATURE>OWC (board-state-aware spawning)</FEATURE>
+    <STATUS>DESIGN_ONLY — awaiting Human approval (P1 gap G01)</STATUS>
+    <FILES>F15,F16</FILES>
+  </ITEM>
+
+  <ITEM id="M14">
+    <FEATURE>HollaEx PDX on-ramp</FEATURE>
+    <STATUS>DESIGN_ONLY — ADR-022 + legal required (P2 gap G14)</STATUS>
+    <FILES>design/02-hollaex-integration.md</FILES>
+  </ITEM>
+
+  <ITEM id="M15">
+    <FEATURE>Catalyst wild boost wiring</FEATURE>
+    <STATUS>TYPED_NOT_WIRED (P1 gap G04)</STATUS>
+    <FILES>F1:76-77,F3:335-364</FILES>
+  </ITEM>
+
+  <ITEM id="M16">
+    <FEATURE>Disruption sends (ice_send,lock_send,scramble)</FEATURE>
+    <STATUS>TYPED — trigger mechanism UNCONFIRMED (P1 gap G06)</STATUS>
+    <FILES>F1:83-91,F7</FILES>
+  </ITEM>
+
+  <ITEM id="M17">
+    <FEATURE>Wild Scatter (3+ wilds → FRENZY force + face clear)</FEATURE>
+    <STATUS>SPECIFIED_UNCONFIRMED (P2 gap G15)</STATUS>
+    <FILES>F8:L2,F3:558-566</FILES>
+  </ITEM>
+
+  <ITEM id="M18">
+    <FEATURE>Dead-state recovery</FEATURE>
+    <STATUS>DETECTION_ONLY_UNCONFIRMED (P1 gap G10)</STATUS>
+    <FILES>F3:515-543,F7</FILES>
+  </ITEM>
+
+  <ITEM id="M19">
+    <FEATURE>Cross-session reputation/progression</FEATURE>
+    <STATUS>NOT_STARTED (P2 gap G12)</STATUS>
+    <FILES>F1:371-381</FILES>
+  </ITEM>
+
+  <ITEM id="M20">
+    <FEATURE>createGrid CSPRNG-derived seed (fairness completeness)</FEATURE>
+    <STATUS>NOT_DONE (P1 gap G08)</STATUS>
+    <FILES>F3:230-235</FILES>
+  </ITEM>
+
+</IMPLEMENTATION_MATRIX>
+
+<!-- ══════════════════════ PRIORITY EXECUTION ORDER ══════════════════════ -->
+<EXECUTION_ORDER>
+  <NOTE>Ordered by: (Paradox Pay vision alignment × urgency) / implementation effort. All P0/P1 items before P2. Items requiring Human approval noted.</NOTE>
+
+  <PHASE id="0" name="READ_CONFIRM">
+    <DESC>Read gameRoom.ts lines 250-600+ to confirm/deny: RALLY payout formula, dead-state recovery, disruption triggers, wild scatter, HEIST resolution, DRAFT wiring. Updates gaps G06,G07,G10,G15,G17 before any code changes.</DESC>
+    <EFFORT>LOW (read-only)</EFFORT>
+    <BLOCKS>G06,G07,G10,G15 resolution certainty</BLOCKS>
+  </PHASE>
+
+  <PHASE id="1" name="LOW_EFFORT_HIGH_IMPACT">
+    <ITEM ref="G13">classArchetype lobby selection — JOIN_ROOM field addition. No RTP impact. Unlocks class system.</ITEM>
+    <ITEM ref="G04">Catalyst wild boost wiring — drawWild threshold parameter. No Sacred Core change.</ITEM>
+    <ITEM ref="G08">createGrid CSPRNG seed — one-line change in GameRoom constructor. Closes fairness gap.</ITEM>
+    <ITEM ref="G03">Ghost→Echo redesign — tile behavior redefinition. Removes C-tier confusion.</ITEM>
+  </PHASE>
+
+  <PHASE id="2" name="MEDIUM_EFFORT_HIGH_IMPACT" requires_approval="HUMAN">
+    <ITEM ref="G05">DRAFT phase wiring — message type + client UI. Unlocks 20-genre system. P1.</ITEM>
+    <ITEM ref="G01">OWC implementation — opportunityWeight.ts + spawnTiles param. ADR-021 required. RTP gate required. Human approval of F16 required.</ITEM>
+    <ITEM ref="G10">Dead-state recovery — if not found in phase 0: add reshuffle path. P1 if absent.</ITEM>
+    <ITEM ref="G07">RALLY payout formula — align implementation with spec. Fix if deviation found in phase 0.</ITEM>
+  </PHASE>
+
+  <PHASE id="3" name="MEDIUM_EFFORT_MEDIUM_IMPACT" requires_approval="HUMAN_LEGAL">
+    <ITEM ref="G09">ADR-010 calibration — Human decision on RTP bounds. monteCarlo re-run with real data baseline.</ITEM>
+    <ITEM ref="G14">HollaEx PDX on-ramp — ADR-022 + legal review + server implementation.</ITEM>
+    <ITEM ref="G02">Wild assignment UI — optional manual wild face selection with server validation.</ITEM>
+    <ITEM ref="G15">Wild Scatter — if not found in phase 0: implement scanForWilds trigger in gameRoom.</ITEM>
+  </PHASE>
+
+  <PHASE id="4" name="HIGH_EFFORT_STRATEGIC">
+    <ITEM ref="G12">Cross-session reputation — Supabase schema, API, lobby display. Requires product decision on ELO vs simpler rank.</ITEM>
+    <ITEM ref="G06">Disruption sends — if not found in phase 0: implement SEND_DISRUPTION with cost model.</ITEM>
+    <ITEM ref="G11">Mixed currency sessions — complex RTP accounting. Low priority.</ITEM>
+  </PHASE>
+
+</EXECUTION_ORDER>
+
+</PARADOX_PAY_GAP>

@@ -1,37 +1,27 @@
 {
-  "session_id": "tier/T8-economy-farnzy-20260525",
+  "session_id": "tier/T9-social-platform-liveops-20260525",
   "fixed_point_check": "PASS",
-  "fixed_point_rationale": "writeWithRetry contains only async/await, setTimeout, and string operations. MATCH_SCORE payload fields (score_delta, running_total) are derived from integer arithmetic only — profile.banked is always integer (accumulated via += gain where gain is always integer from Farkle scoring). ClassArchetypeBadge fix is import path only — no numeric operations. No floats enter any scoring, payout, or event-chain path.",
+  "fixed_point_rationale": "postHogTrack carries only string properties (room_id, platform, app_version, class_archetype) — no arithmetic. classArchetype is a string literal 'Paladin'|'Rogue'|'Bard'. The MATCH_SCORE payload change (bank_type removed, class_archetype added) does not introduce any numeric field. Determinism test calls CSPRNG.nextFloat() and scoreFarkle() but is test infrastructure — no production scoring path touched.",
   "float_violations": [],
   "math_random_violations": [],
   "date_now_violations": [],
   "new_float32array_violations": [],
   "checks_performed": [
-    "Math.random() in writeWithRetry: NOT FOUND",
-    "Math.random() in MATCH_SCORE event write paths: NOT FOUND",
-    "Float arithmetic in score_delta: NOT FOUND — gain is integer from banking arithmetic",
-    "Float arithmetic in running_total: NOT FOUND — profile.banked is integer accumulation",
-    "Date.now() in writeWithRetry: NOT FOUND (uses setTimeout with integer ms)",
-    "Date.now() in MATCH_SCORE payload: NOT FOUND",
-    "Float in ClassArchetypeBadge.tsx (T8 change): NOT APPLICABLE (import path fix only)",
+    "Math.random() in postHogTrack: NOT FOUND",
+    "Float arithmetic in analytics.ts postHogTrack: NOT FOUND",
+    "Float in classArchetype field: NOT APPLICABLE (string literal type)",
+    "Float in MATCH_SCORE class_archetype: NOT FOUND",
+    "Date.now() in postHogTrack: NOT FOUND (uses new Date().toISOString())",
+    "Float in determinism test: NOT APPLICABLE (test infrastructure only)",
     "Sacred Core files modified: NOT FOUND",
-    "Rapier dt=1/60: NOT APPLICABLE — physics layer not touched in T8",
-    "new Float32Array in T8 files: NOT FOUND"
-  ],
-  "not_applicable_paths": [
-    {
-      "path": "setTimeout(r, delays[attempt]!) in writeWithRetry",
-      "reason": "delays array [100, 200, 400] contains integer millisecond values. Not floating-point. Not in scoring path. setTimeout is async infrastructure only."
-    }
+    "Rapier dt=1/60: NOT APPLICABLE — physics layer not touched in T9"
   ],
   "rng_lineage_compliant": true,
   "hashing_strategy_compliant": true,
   "rapier_dt_enforced": true,
   "sha256_chain_compliant": true,
-  "blake3_not_used_in_audit_paths": true,
   "sacred_core_untouched": true,
   "match_score_integer_payload": true,
-  "write_retry_no_float": true,
   "escalation_raised": null,
-  "notes": "All T8 production code paths pass FIXED_POINT_CHECK. The retry wrapper is purely async infrastructure. MATCH_SCORE payload carries integer game scores (not currency amounts). ClassArchetypeBadge fix is structural."
+  "notes": "All T9 production code paths pass FIXED_POINT_CHECK. postHogTrack is string-only. classArchetype is string-only. Determinism test is test infrastructure."
 }

@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- COMPONENTS — Full mechanical inventory with properties -->
+<!-- Format: AuditML-Lite | Source: qna0.xml DICT + direct code reads -->
+
+<COMPONENTS>
+
+<DICT>
+  <F1>core/packages/farkle-shared/src/types.ts</F1>
+  <F2>core/packages/farkle-engine/src/farkleScorer.ts</F2>
+  <F3>core/packages/farkle-engine/src/gridUtils.ts</F3>
+  <F4>core/packages/farkle-engine/src/rtpConfig.ts</F4>
+  <F5>core/packages/farkle-engine/src/monteCarlo.ts</F5>
+  <F6>core/packages/farkle-engine/src/csprng.ts</F6>
+  <F7>core/apps/server/src/gameRoom.ts</F7>
+  <F8>newmodespec.md</F8>
+  <F14>core/apps/server/src/analytics.ts</F14>
+  <F16>audit/COMPONENT_AUDIT.md</F16>
+  <F21>core/apps/server/src/playIntegrity.ts</F21>
+</DICT>
+
+<!-- ══════════════════════ TILES ══════════════════════ -->
+<SECTION id="TILES">
+
+  <COMPONENT id="TILE_DIE">
+    <NAME>Die (standard)</NAME>
+    <TYPE>EntityType='die'</TYPE>
+    <E>F1:17,F1:46-50,F1:190-197</E>
+    <C>0.99</C>
+    <FACE>1-6 (DieFace)</FACE>
+    <COLOR>RED=1,ORANGE=2,YELLOW=3,GREEN=4,BLUE=5,PURPLE=6</COLOR>
+    <SPAWN_WEIGHT>NORMAL=62%,PRIME=52%,FRENZY=39%</SPAWN_WEIGHT>
+    <SCORE_CONTRIBUTION>Face1=100pts single,Face5=50pts single;other faces score only in combos</SCORE_CONTRIBUTION>
+    <CHAIN_ELIGIBLE>YES</CHAIN_ELIGIBLE>
+    <GRAVITY_AFFECTED>YES (canFall=NORMAL+isDieTile)</GRAVITY_AFFECTED>
+    <VALUE_SCORE>0.85 (S-tier)</VALUE_SCORE>
+    <SACRED_DEPENDENCY>scoreFarkle F2 (scoring);SixPoolManager F3 (distribution)</SACRED_DEPENDENCY>
+    <STATUS>FULLY_IMPLEMENTED</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="TILE_SPHERE">
+    <NAME>Sphere (NRG orb)</NAME>
+    <TYPE>EntityType='sphere'</TYPE>
+    <E>F1:18,F1:46-50</E>
+    <C>0.97</C>
+    <FACE>null (no die face)</FACE>
+    <COLOR>green (visual)</COLOR>
+    <SPAWN_WEIGHT>NORMAL=25%,PRIME=18%,FRENZY=12%</SPAWN_WEIGHT>
+    <SCORE_CONTRIBUTION>0 direct. +8 energy on tap (GAME_CONSTANTS; BOMB_CONSTANTS.SPHERE_ENERGY=20 for bomb blast)</SCORE_CONTRIBUTION>
+    <CHAIN_ELIGIBLE>YES (counted as chainable tile? needs confirmation)</CHAIN_ELIGIBLE>
+    <GRAVITY_AFFECTED>YES (state=NORMAL, isDieTile check — sphere has face=null so isDieTile likely false)</GRAVITY_AFFECTED>
+    <VALUE_SCORE>0.61 (A-tier)</VALUE_SCORE>
+    <NOTE>BOMB_CONSTANTS.SPHERE_ENERGY=20 vs GAME_CONSTANTS tap +8 — two different energy values. Potential inconsistency.</NOTE>
+    <STATUS>PARTIALLY_CONFIRMED (tap handler not seen in read code)</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="TILE_WILD">
+    <NAME>Wild</NAME>
+    <TYPE>EntityType='wild',state='WILD',type='NONE'</TYPE>
+    <E>F1:22,F3:62-64,F3:492-513,F1:46-50</E>
+    <C>0.98</C>
+    <FACE>underlying die face (set at creation, displayed under wild overlay)</FACE>
+    <SPAWN_WEIGHT>NORMAL=0%,PRIME=2%,FRENZY=9% (SPAWN_WEIGHTS); SixPoolManager: 10% type3 regardless of mode</SPAWN_WEIGHT>
+    <SPAWN_NOTE>SPAWN_WEIGHTS.wild and SixPoolManager drawWild may be independent. SixPoolManager always 10% type3 true-wild.</SPAWN_NOTE>
+    <SCORE_CONTRIBUTION>Adopts optimal face via _resolveWilds() exhaustive 6^n search. Maximizes chain score automatically.</SCORE_CONTRIBUTION>
+    <CHAIN_ELIGIBLE>YES (_isChainableTile: state=WILD)</CHAIN_ELIGIBLE>
+    <GRAVITY_AFFECTED>YES (canFall=state=WILD)</GRAVITY_AFFECTED>
+    <VALUE_SCORE>0.82 (S-tier)</VALUE_SCORE>
+    <DESIGN_GAP>Wild face resolution is automatic — player cannot choose assignment. Removes decision moment.</DESIGN_GAP>
+    <STATUS>FULLY_IMPLEMENTED</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="TILE_MIRROR">
+    <NAME>Mirror</NAME>
+    <TYPE>EntityType='mirror'</TYPE>
+    <E>F1:24,F1:66,F1:46-50</E>
+    <C>0.90</C>
+    <FACE>MIRROR_OPPOSITES: {1:6,2:5,3:4,4:3,5:2,6:1} — face = opposite of chain neighbor</FACE>
+    <SPAWN_WEIGHT>NORMAL=4%,PRIME=6%,FRENZY=7%</SPAWN_WEIGHT>
+    <SCORE_CONTRIBUTION>Situational. Contributes opposite face to chain — useful if neighbor is face1 or face5 (mirror becomes face6 or face2, lower value).</SCORE_CONTRIBUTION>
+    <CHAIN_ELIGIBLE>YES</CHAIN_ELIGIBLE>
+    <VALUE_SCORE>0.49 (B-tier)</VALUE_SCORE>
+    <RECOMMENDATION>Clarify or merge into wild variant. Low strategic surface.</RECOMMENDATION>
+    <STATUS>TYPED (implementation of face-assignment logic in gameRoom chain processing not confirmed)</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="TILE_MULTIPLIER_ORB">
+    <NAME>Multiplier Orb</NAME>
+    <TYPE>EntityType='multiplier_orb'</TYPE>
+    <E>F1:26,F1:46-50</E>
+    <C>0.90</C>
+    <FACE>null</FACE>
+    <SPAWN_WEIGHT>NORMAL=3%,PRIME=4%,FRENZY=5%</SPAWN_WEIGHT>
+    <SCORE_CONTRIBUTION>Tap: next chain commit gets ×1.5 bonus. Single use per orb.</SCORE_CONTRIBUTION>
+    <CHAIN_ELIGIBLE>NO (tap item, not chainable)</CHAIN_ELIGIBLE>
+    <BOMB_ENERGY>BOMB_CONSTANTS.MULTIPLIER_ORB_ENERGY=15</BOMB_ENERGY>
+    <VALUE_SCORE>0.64 (A-tier)</VALUE_SCORE>
+    <RECOMMENDATION>Add 3-turn commitment window (must use within 3 turns or expires). Creates anticipation.</RECOMMENDATION>
+    <STATUS>TYPED (tap handler not confirmed in read code)</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="TILE_GHOST">
+    <NAME>Ghost</NAME>
+    <TYPE>EntityType='ghost'</TYPE>
+    <E>F1:27,F1:46-50,F16</E>
+    <C>0.88</C>
+    <FACE>die face (drifting)</FACE>
+    <SPAWN_WEIGHT>NORMAL=1%,PRIME=2%,FRENZY=3%</SPAWN_WEIGHT>
+    <SCORE_CONTRIBUTION>Ignores column constraint for chaining. Tap to anchor → converts to normal die.</SCORE_CONTRIBUTION>
+    <CHAIN_ELIGIBLE>YES (ignores column adjacency)</CHAIN_ELIGIBLE>
+    <VALUE_SCORE>0.42 (C-tier — LOWEST)</VALUE_SCORE>
+    <RECOMMENDATION>Redesign to Echo tile: scores as 1-face die, doubles chain score if chained last. Preserves visual identity.</RECOMMENDATION>
+    <STATUS>TYPED (drift/anchor mechanics not confirmed in read gridUtils/gameRoom)</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="TILE_CATALYST">
+    <NAME>Catalyst</NAME>
+    <TYPE>EntityType='catalyst'</TYPE>
+    <E>F1:28,F1:76-77,F1:46-50</E>
+    <C>0.85</C>
+    <FACE>null (block type)</FACE>
+    <SPAWN_WEIGHT>NORMAL=0%,PRIME=1%,FRENZY=2%</SPAWN_WEIGHT>
+    <SCORE_CONTRIBUTION>Committed in chain: +CATALYST_WILD_BOOST=2% wild spawn probability. Max accumulated=CATALYST_MAX_BOOST=10%.</SCORE_CONTRIBUTION>
+    <BOMB_PTS>40 (BOMB_CONSTANTS.CATALYST_PTS)</BOMB_PTS>
+    <CHAIN_ELIGIBLE>UNCONFIRMED (type='catalyst', state unclear)</CHAIN_ELIGIBLE>
+    <VALUE_SCORE>0.64 (A-tier)</VALUE_SCORE>
+    <DESIGN_GAP>CATALYST_WILD_BOOST not applied in spawnTiles (F3:335-364). Mechanic may be dead.</DESIGN_GAP>
+    <STATUS>TYPED_ONLY (boost wiring unconfirmed)</STATUS>
+  </COMPONENT>
+
+</SECTION>
+
+<!-- ══════════════════════ BLOCKERS ══════════════════════ -->
+<SECTION id="BLOCKERS">
+
+  <COMPONENT id="BLOCKER_STONE">
+    <NAME>Stone</NAME>
+    <TYPE>BlockerType='STONE',EntityType='stone'</TYPE>
+    <E>F1:25,F3:48-52,F3:452-481,F1:175-181</E>
+    <C>0.99</C>
+    <HEALTH>1-2 HP (makeStoneCell: Math.floor(rng()*STONE_HP)+1, STONE_HP=2)</HEALTH>
+    <SPAWN_WEIGHT>NORMAL=4%,PRIME=5%,FRENZY=5% (initial board only, no respawn)</SPAWN_WEIGHT>
+    <PLACEMENT>Clustered: 70% biased adjacency (_clusterPlace F3:189-220)</PLACEMENT>
+    <CHAIN_ELIGIBLE>NO</CHAIN_ELIGIBLE>
+    <DAMAGE_SOURCES>applyStandardBomb (1HP, 2HP if HEADHUNTER); damageAdjacentBlockers (1HP per commit in adjacent cell, 2HP if HEADHUNTER)</DAMAGE_SOURCES>
+    <DESTROY_REWARD>50pts (BOMB_STONE_PTS/GAME_CONSTANTS.BOMB_STONE_PTS)</DESTROY_REWARD>
+    <DROPS>bioSteel mentioned in types.ts comment — NO IMPLEMENTATION FOUND</DROPS>
+    <VALUE_SCORE>0.51 (B-tier)</VALUE_SCORE>
+    <FRUSTRATION_SCORE>HIGH (4/5)</FRUSTRATION_SCORE>
+    <STATUS>FULLY_IMPLEMENTED</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="BLOCKER_ICE">
+    <NAME>Ice</NAME>
+    <TYPE>BlockerType='ICE',EntityType='ice',state='FROZEN'</TYPE>
+    <E>F1:19,F3:54-56,F3:400-407</E>
+    <C>0.97</C>
+    <FACE>underlying die face (visible through frost)</FACE>
+    <SPAWN_WEIGHT>NORMAL=1%,PRIME=6%,FRENZY=6% (initial board only)</SPAWN_WEIGHT>
+    <PLACEMENT>Random from shuffled candidate pool (F3:257)</PLACEMENT>
+    <CHAIN_ELIGIBLE>NO (state=FROZEN, not in _isChainableTile)</CHAIN_ELIGIBLE>
+    <THAW_CONDITION>Adjacent chain commit → converts to normal die</THAW_CONDITION>
+    <BOMB_INTERACTION>applyStandardBomb: ICE → EMPTY immediately. BOMB_RADIUS=1 area.</BOMB_INTERACTION>
+    <GRAVITY_AFFECTED>YES (canFall includes type=ICE in stepGravity F3:304)</GRAVITY_AFFECTED>
+    <VALUE_SCORE>0.66 (A-tier)</VALUE_SCORE>
+    <FRUSTRATION_SCORE>LOW (2/5)</FRUSTRATION_SCORE>
+    <STATUS>FULLY_IMPLEMENTED</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="BLOCKER_LOCK">
+    <NAME>Lock</NAME>
+    <TYPE>BlockerType='LOCK',EntityType='lock',state='LOCKED'</TYPE>
+    <E>F1:20,F3:58-60,F3:398</E>
+    <C>0.92</C>
+    <FACE>die face (shown through cage overlay)</FACE>
+    <HEALTH>1-3 HP (types.ts comment; makeLockCell does NOT apply rng HP — defaults unclear)</HEALTH>
+    <SPAWN_WEIGHT>NORMAL=0%,PRIME=3%,FRENZY=4% (initial board only)</SPAWN_WEIGHT>
+    <PLACEMENT>Random from remaining candidate pool after stone+ice (F3:258)</PLACEMENT>
+    <CHAIN_ELIGIBLE>YES when state=LOCKED — must be INCLUDED in scoring chain to damage</CHAIN_ELIGIBLE>
+    <DAMAGE_CONDITION>Commit chain including lock position → -1HP. 0HP → becomes normal die.</DAMAGE_CONDITION>
+    <BOMB_INTERACTION>applyStandardBomb: LOCKED cells SKIPPED (F3:398). Bombs cannot damage locks.</BOMB_INTERACTION>
+    <VALUE_SCORE>0.49 (B-tier)</VALUE_SCORE>
+    <FRUSTRATION_SCORE>MEDIUM-HIGH (3/5)</FRUSTRATION_SCORE>
+    <RECOMMENDATION>Hidden-face variant: face revealed only when chain includes lock position.</RECOMMENDATION>
+    <STATUS>TYPED (HP randomization unclear in makeLockCell)</STATUS>
+  </COMPONENT>
+
+</SECTION>
+
+<!-- ══════════════════════ BOMBS ══════════════════════ -->
+<SECTION id="BOMBS">
+
+  <COMPONENT id="BOMB_STANDARD">
+    <NAME>Standard Bomb</NAME>
+    <TYPE>BOMB_STANDARD</TYPE>
+    <E>F2:43,F3:380-419,F1:52-64</E>
+    <C>0.98</C>
+    <TRIGGER>scoreFarkle combo='Six of a Kind' AND faces.length===6</TRIGGER>
+    <AREA>3×3 grid centered on bomb (radius BOMB_RADIUS=1)</AREA>
+    <FUSE>bombFuseMs=3000ms</FUSE>
+    <PTS_SELF>25 (BOMB_CONSTANTS.SELF_PTS)</PTS_SELF>
+    <PTS_DIE_FACE1>100 (face=1 die in blast)</PTS_DIE_FACE1>
+    <PTS_DIE_FACE5>50 (face=5 die in blast)</PTS_DIE_FACE5>
+    <PTS_DIE_OTHER>0 (non-1,non-5 die faces in blast)</PTS_DIE_OTHER>
+    <PTS_LOCK>50 (BOMB_CONSTANTS.LOCK_PTS)</PTS_LOCK>
+    <PTS_WILD>75 (BOMB_CONSTANTS.WILD_PTS)</PTS_WILD>
+    <PTS_MIRROR>30 (BOMB_CONSTANTS.MIRROR_PTS)</PTS_MIRROR>
+    <PTS_STONE>50 (BOMB_CONSTANTS.STONE_PTS — 1HP damage)</PTS_STONE>
+    <PTS_CATALYST>40 (BOMB_CONSTANTS.CATALYST_PTS)</PTS_CATALYST>
+    <LOCKED_CELLS>SKIPPED (state=LOCKED not blasted)</LOCKED_CELLS>
+    <HEADHUNTER_BONUS>Stone takes 2HP damage instead of 1HP</HEADHUNTER_BONUS>
+    <VALUE_SCORE>0.73 (A-tier)</VALUE_SCORE>
+    <STATUS>FULLY_IMPLEMENTED</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="BOMB_RAINBOW">
+    <NAME>Rainbow Bomb</NAME>
+    <TYPE>BOMB_RAINBOW</TYPE>
+    <E>F2:44,F3:421-448</E>
+    <C>0.98</C>
+    <TRIGGER>scoreFarkle combo='Straight' AND faces.length===6 (all 6 faces 1-6 present)</TRIGGER>
+    <AREA>Board-wide (entire grid scan)</AREA>
+    <TARGET>Most common die face color currently on board</TARGET>
+    <PTS_RED>rainbowRedReward × multiplier (configurable LobbySettings)</PTS_RED>
+    <PTS_BLUE>rainbowBlueReward × multiplier (configurable LobbySettings)</PTS_BLUE>
+    <PTS_OTHER>0 (non-RED,non-BLUE targets)</PTS_OTHER>
+    <IMMUNE>STONE, ICE cells skipped. LOCKED cells skipped.</IMMUNE>
+    <VALUE_SCORE>0.78 (A-tier — highest bomb score)</VALUE_SCORE>
+    <STATUS>FULLY_IMPLEMENTED</STATUS>
+  </COMPONENT>
+
+</SECTION>
+
+<!-- ══════════════════════ GAME MODES ══════════════════════ -->
+<SECTION id="MODES">
+
+  <COMPONENT id="MODE_SOLO">
+    <NAME>SOLO (FREE + CASINO)</NAME>
+    <TYPE>GameMode='SOLO_FREE'|'SOLO_CASINO'</TYPE>
+    <E>F1:105-109,F4:28-29,F7:34-35,F8:309-400,F1:246-250</E>
+    <C>0.97</C>
+    <PLAYERS>1</PLAYERS>
+    <GRID>7×7</GRID>
+    <WIN_CONDITION>chapter=THE_RETURN AND (turns≥10 OR banked≥50000)</WIN_CONDITION>
+    <RTP>targetRTP=0.92,grossRTP=0.92,netRTP=0.92,margin=0.00</RTP>
+    <PAYOUT>CASINO: (playerBanked/levelWinScore)×stakeAmount×targetRTP</PAYOUT>
+    <ANTES>CASINO: PRE_GAME=10% of stake (required only)</ANTES>
+    <GENRE_COUNT>18 of 20 enabled (Metroidvania,Platformer OPT)</GENRE_COUNT>
+    <CURRENCY>FD (FREE) or PDX (CASINO)</CURRENCY>
+    <SPECIAL>Narrative chapters: THE_CALL→THE_ORDEAL→THE_RETURN. Metroidvania seals Solo-only.</SPECIAL>
+    <STATUS>FUNCTIONAL (chapter system implementation unconfirmed in read code)</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="MODE_VS">
+    <NAME>VS (FREE + CASINO)</NAME>
+    <TYPE>GameMode='VS_FREE'|'VS_CASINO'</TYPE>
+    <E>F1:105-109,F4:30-31,F7:36,F8,F1:252-254</E>
+    <C>0.95</C>
+    <PLAYERS>2</PLAYERS>
+    <GRID>8×8</GRID>
+    <WIN_CONDITION>any player reaches target_score OR turn cap=40</WIN_CONDITION>
+    <RTP_FREE>targetRTP=1.00,grossRTP=1.00,netRTP=1.00,margin=0.00</RTP_FREE>
+    <RTP_CASINO>targetRTP=0.92,grossRTP=1.00,netRTP=0.92,margin=0.08</RTP_CASINO>
+    <PAYOUT>CASINO: winner takes totalPot×targetRTP</PAYOUT>
+    <ANTES>CASINO: PRE_GAME=10% of stake (required only)</ANTES>
+    <GENRE_COUNT>15 forced + 3 OPT (Rhythm,Platformer,Sandbox)</GENRE_COUNT>
+    <SPECIAL>Slipstream RTP balancer. Battle Royale closing circle. Disruption sends.</SPECIAL>
+    <DETERMINISM>twoPlayer.determinism.test.ts: 3/3 PASS (T9)</DETERMINISM>
+    <STATUS>FUNCTIONAL</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="MODE_RALLY">
+    <NAME>RALLY (FREE + CASINO)</NAME>
+    <TYPE>GameMode='RALLY_FREE'|'RALLY_CASINO'</TYPE>
+    <E>F1:113,F4:32-33,F1:183-188,F7:192-194,F1:256-260</E>
+    <C>0.88</C>
+    <PLAYERS>3-4</PLAYERS>
+    <GRID>9×9 (3p) or 10×10 (4p)</GRID>
+    <WIN_CONDITION>team banked≥MILESTONE_4(100k) OR all farkled at energy=0</WIN_CONDITION>
+    <RTP_FREE>targetRTP=0.92,grossRTP=0.92,netRTP=0.92,margin=0.00</RTP_FREE>
+    <RTP_CASINO>targetRTP=0.92,grossRTP=1.00,netRTP=0.92,margin=0.08</RTP_CASINO>
+    <PAYOUT>DESIGN: equal split (totalPot×netRTP)/playerCount. COMMENT_IN_F7: highestBanked wins totalPot×targetRTP. CONTRADICTION — needs resolution.</PAYOUT>
+    <ANTES>CASINO: PRE_GAME=10% + MILESTONE_2=5% at 25k (optional)</ANTES>
+    <MILESTONES>10k×0.5, 25k×1.0, 50k×2.0, 100k×5.0 (RALLY_MILESTONES)</MILESTONES>
+    <ROLES>RAINMAKER,HEADHUNTER,ARCHIVIST(15%tax),CONDUCTOR</ROLES>
+    <GENRE_COUNT>12 forced + 3 OPT</GENRE_COUNT>
+    <SPECIAL>MOBA Ultimate (Rally-only). ARCHIVIST 15% tax for team. Shared rallyPot.</SPECIAL>
+    <STATUS>PARTIAL (payout formula contradiction; role mechanics partially wired)</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="MODE_HEIST">
+    <NAME>HEIST (FREE + CASINO)</NAME>
+    <TYPE>GameMode='HEIST_FREE'|'HEIST_CASINO'</TYPE>
+    <E>F1:212-217,F4:34-35,F7:190-194,F1:261-266</E>
+    <C>0.85</C>
+    <PLAYERS>3-4</PLAYERS>
+    <GRID>9×9 (3p) or 10×10 (4p)</GRID>
+    <WIN_CONDITION>final vault reset cycle complete OR turn cap=50</WIN_CONDITION>
+    <RTP_CASINO>targetRTP=0.92,grossRTP=1.00,netRTP=0.92,margin=0.08</RTP_CASINO>
+    <PAYOUT>winner takes totalPot×targetRTP (F7 comment). HEIST vault 70/30 split affects distribution.</PAYOUT>
+    <VAULT_SPLIT>VAULT_SPLIT=0.70 (70% banked→vault, 30% personal)</VAULT_SPLIT>
+    <VAULT_THRESHOLD>5000 pts to trigger heist</VAULT_THRESHOLD>
+    <HEIST_COST>50 energy (HEIST_ENERGY_COST)</HEIST_COST>
+    <HEIST_WINDOW>5000ms block window (HEIST_WINDOW_MS)</HEIST_WINDOW>
+    <ANTES>CASINO: PRE_GAME=10% + MILESTONE_1=5% at 10k + MILESTONE_3=5% at 50k (optional)</ANTES>
+    <GENRE_COUNT>12 forced + 1 OPT (Sandbox)</GENRE_COUNT>
+    <SPECIAL>Rhythm tempo sync (Heist-only). Betrayal moment at vault threshold.</SPECIAL>
+    <STATUS>PARTIAL (heist resolution logic unconfirmed in gameRoom lines 250+)</STATUS>
+  </COMPONENT>
+
+</SECTION>
+
+<!-- ══════════════════════ SCORING SYSTEM ══════════════════════ -->
+<SECTION id="SCORING">
+
+  <COMPONENT id="SCORING_FARKLE">
+    <NAME>Farkle Scorer</NAME>
+    <TYPE>Sacred Core — F2</TYPE>
+    <E>F2:32-54,F2:56-81</E>
+    <C>0.99</C>
+    <ALGORITHM>Exhaustive lookup table (buildScoreTable via chainIndex.ts). Not greedy — evaluates all subsets.</ALGORITHM>
+    <INPUT>faces: DieFace[], multiplierQ: number (default 1000 = 1.0×)</INPUT>
+    <OUTPUT>score,scaledScore,isFarkle,combo,triggersBomb</OUTPUT>
+    <FIXED_POINT>scaledScore=Math.round(score×multiplierQ/1000). Q×1000: 1000=1.0×,1250=1.25×,2000=2.0×,4000=4.0×</FIXED_POINT>
+    <COMBOS>
+      face1_solo=100,face5_solo=50;
+      Three-1s=1000 (or 300 if threeOnesScore override);
+      Three-N=N×100 (N=2-6);
+      Four-of-kind=N×200;
+      Five-of-kind=N×300;
+      Six-of-kind=BOMB_STANDARD;
+      Straight=1500+BOMB_RAINBOW;
+      Two-Triplets=2500;
+      Three-Pairs=1500;
+      4+Pair=N×200+N×200;
+    </COMBOS>
+    <BOMB_TRIGGERS>Six-of-a-Kind → BOMB_STANDARD; Straight → BOMB_RAINBOW (both require faces.length===6)</BOMB_TRIGGERS>
+    <FARKLE_CONDITION>faces.length gt 0 AND score===0</FARKLE_CONDITION>
+    <STATUS>FULLY_IMPLEMENTED_SACRED</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="SCORING_MULTIPLIER">
+    <NAME>Multiplier Ladder</NAME>
+    <TYPE>Per-session progression</TYPE>
+    <E>F1:199-203,F1:144-152</E>
+    <C>0.99</C>
+    <LADDER>[1.0, 1.25, 1.5, 2.0, 3.0, 4.0]</LADDER>
+    <STEP_ADVANCE>chain.length===6 AND score gt 0 → multiplierStep++</STEP_ADVANCE>
+    <STEP_RESET>Farkle OR chain.length lt 6 bank → multiplierStep=0</STEP_RESET>
+    <APPLIED_AS>multiplierQ=MULTIPLIER_LADDER[multiplierStep]×1000; passed to scoreFarkle</APPLIED_AS>
+    <MAX_STEP>5 (index 5 = 4.0×)</MAX_STEP>
+    <STATUS>FULLY_IMPLEMENTED</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="SCORING_GRAVITY_FLIP">
+    <NAME>Gravity Flip</NAME>
+    <TYPE>Board restructure event</TYPE>
+    <E>F3:578-590,F7:195</E>
+    <C>0.97</C>
+    <TRIGGER>Every 5 bankCycleCount increments in gameRoom</TRIGGER>
+    <EFFECT>Row order reverses (top→bottom,bottom→top) + each die face = 7-face (1↔6,2↔5,3↔4)</EFFECT>
+    <RTP_IMPACT>NONE — face distribution symmetric, 7-complement preserves equal distribution</RTP_IMPACT>
+    <STATUS>FULLY_IMPLEMENTED</STATUS>
+  </COMPONENT>
+
+</SECTION>
+
+<!-- ══════════════════════ RNG SYSTEM ══════════════════════ -->
+<SECTION id="RNG">
+
+  <COMPONENT id="RNG_CSPRNG">
+    <NAME>CSPRNG (cryptographic)</NAME>
+    <TYPE>Sacred Core — F6</TYPE>
+    <E>F6:36-71,F6:73-110</E>
+    <C>0.99</C>
+    <ALGORITHM>HMAC-SHA256 counter-based. counter increments per draw. hmac(seed, counter.toString()) → 8-hex → uint32 → /0xffffffff → float</ALGORITHM>
+    <SEED>combinedSeed = SHA-256(serverSeed+clientSeeds[])</SEED>
+    <SERVER_SEED>32-byte crypto.getRandomValues (generateServerSeed)</SERVER_SEED>
+    <COMMITMENT>SHA-256(serverSeed) broadcast pre-game (hashServerSeed)</COMMITMENT>
+    <REVEAL>serverSeed disclosed at SESSION_END for player audit</REVEAL>
+    <VERIFY>verifyServerSeed(revealed,commitment): constant-time comparison</VERIFY>
+    <CLIENT_SEED>crypto.randomUUID() stripped of hyphens (generateClientSeed)</CLIENT_SEED>
+    <ASYNC>nextFloat() is async (HMAC uses crypto.subtle). seededRng() is sync (xorshift).</ASYNC>
+    <STATUS>FULLY_IMPLEMENTED_SACRED</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="RNG_SEEDED">
+    <NAME>seededRng (synchronous xorshift)</NAME>
+    <TYPE>Non-cryptographic fast RNG</TYPE>
+    <E>F6:102-110</E>
+    <C>0.99</C>
+    <ALGORITHM>xorshift32: s^=s lt lt 13; s^=s gt gt 17; s^=s lt lt 5; return (s gt gt gt 0)/4294967296</ALGORITHM>
+    <SEED_INIT>((seed^0xdeadbeef)gt gt gt 0)||1</SEED_INIT>
+    <USES>F3:createGrid(seedNum=Date.now()),F3:SixPoolManager(hashSeedString(csprng.getSeed())),F5:monteCarlo(seededRng(i))</USES>
+    <NOTE>createGrid uses Date.now() as seed — NOT CSPRNG-derived. Grid layout not covered by commit-reveal fairness proof.</NOTE>
+    <STATUS>FULLY_IMPLEMENTED</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="RNG_SIX_POOL">
+    <NAME>SixPoolManager</NAME>
+    <TYPE>Die pool manager — Sacred Core (F3)</TYPE>
+    <E>F3:74-174</E>
+    <C>0.99</C>
+    <DIE_POOL>perFace=ceil(dim×dim/6)×6/6 tiles per face. Equal distribution. Pre-shuffled dieLive. Recycle dead→live on exhaustion.</DIE_POOL>
+    <WILD_POOL>Size=ceil(dim×dim/4). Distribution: r lt 0.60→type0, lt 0.75→type1, lt 0.90→type2, else type3(true-wild=10%)</WILD_POOL>
+    <BOARD_AWARENESS>NONE. No board state inputs. Sequential pre-shuffled draws.</BOARD_AWARENESS>
+    <SEED>seededRng(hashSeedString(csprng.getSeed())) — hash of CSPRNG seed, not CSPRNG itself</SEED>
+    <STATUS>FULLY_IMPLEMENTED_SACRED</STATUS>
+  </COMPONENT>
+
+</SECTION>
+
+<!-- ══════════════════════ GENRE SYSTEM ══════════════════════ -->
+<SECTION id="GENRES">
+
+  <COMPONENT id="GENRE_SYSTEM">
+    <NAME>20 Genre Composition Layer</NAME>
+    <E>F8:62-86,F7:73</E>
+    <C>0.82</C>
+    <TOTAL_GENRES>20</TOTAL_GENRES>
+    <WIRED_IN_GAMROOM>eventHorizon,comboBreaker,slipstream,facet(import),shard(import),rhythm(import),gravityFlip,flowMultiplier (F7:73)</WIRED_IN_GAMROOM>
+    <SPECIFIED_NOT_CONFIRMED>Horror(heartbeat),Metroidvania(seals),BattleRoyale(circle),Sandbox(Build-a-Die),MOBA(ultimate)</SPECIFIED_NOT_CONFIRMED>
+    <DRAFT_PHASE>SPECIFIED (F8:121-126) but NOT confirmed implemented in gameRoom message handling</DRAFT_PHASE>
+    <ANTI_STACK_RULES>Max 3 simultaneous active modifiers. Frenzy cap 6.0×. Ultimate cosmetic-only. Shards 30s max. Facet mutates after 3 rounds+survival.</ANTI_STACK_RULES>
+    <STATUS>PARTIAL (8 of 20 genres with confirmed imports; DRAFT wiring unconfirmed)</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="GENRE_SLIPSTREAM">
+    <NAME>Slipstream (Racing — RTP balancer)</NAME>
+    <E>F8:245-252,F7:73</E>
+    <C>0.85</C>
+    <EFFECT>Trailing player: wider beat window (1.5×), higher flow cap (2.0). Leading player: tighter (0.75×), lower cap (1.6).</EFFECT>
+    <SCOPE>VS and HEIST modes only</SCOPE>
+    <RTP_ROLE>Primary per-player RTP balancer. Empirical RTP gap between 1st/last place narrows to lt 3%.</RTP_ROLE>
+    <STATUS>IMPORTED (computeSlipstream in F7:73; application confirmed)</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="GENRE_RPG_CLASS">
+    <NAME>RPG Dice Classes</NAME>
+    <E>F8:299-305,F7:73,F7:110-111</E>
+    <C>0.82</C>
+    <CLASSES>PALADIN(low-variance,shield,1.6× cap),ROGUE(high-variance,2.0×+double-burst,no-defense),BARD(mid,2.0×+window),ARTIFICER(mid+build,1.8×,shards)</CLASSES>
+    <EV_TARGET>All 4 classes: 92% RTP (F8:299-305 — Monte Carlo validated in Update 17)</EV_TARGET>
+    <CURRENT_DEFAULT>classArchetype='Paladin' in addPlayer() (F7:111). No lobby selection.</CURRENT_DEFAULT>
+    <STATUS>IMPORTED (applyFacetToScore etc in F7:73; classArchetype field added T9 but not selectable)</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="GENRE_FACET">
+    <NAME>Facet (Roguelike meta-progression)</NAME>
+    <E>F8:122-126,F7:73</E>
+    <C>0.78</C>
+    <DESCRIPTION>Draft 3 options per round. Chosen facet modifies score post-Sacred Core. Mutates after 3 active rounds + non-Farkle survival.</DESCRIPTION>
+    <FUNCTIONS>applyFacetToScore,startFacetDraft,skipFacetDraft,tickFacetRound (all imported F7:73)</FUNCTIONS>
+    <DRAFT_WIRING>NOT CONFIRMED — no DRAFT message type seen in gameRoom first 235 lines</DRAFT_WIRING>
+    <STATUS>IMPORTED_NOT_WIRED</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="GENRE_COMBO_BREAKER">
+    <NAME>Combo Breaker (Fighting — Farkle reversal)</NAME>
+    <E>F7:73,F8:154-158</E>
+    <C>0.87</C>
+    <DESCRIPTION>Token spent in 250ms post-Farkle window reverses Farkle, restores unbanked, plays audio sting.</DESCRIPTION>
+    <TOKEN_ECONOMY>playerTokens Map in gameRoom (F7:188). MAX_TOKENS constant. Earned by courageous play (evaluateCourage, unbanked≥500).</TOKEN_ECONOMY>
+    <STATUS>IMPORTED (resolveComboBreaker in F7:73; token map initialized F7:188)</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="GENRE_RHYTHM">
+    <NAME>Rhythm (flow multiplier)</NAME>
+    <E>F7:73,F8:68,F8:141-142</E>
+    <C>0.82</C>
+    <DESCRIPTION>Chain commit flags PERFECT/GOOD/MISS beat window. Flow multiplier applied via applyFlowMultiplier.</DESCRIPTION>
+    <SCOPE>SOLO forced. VS/RALLY/HEIST optional.</SCOPE>
+    <FUNCTIONS>tickRhythmAccuracy,INITIAL_RHYTHM_STATE,applyFlowMultiplier (imported F7:73)</FUNCTIONS>
+    <STATUS>IMPORTED (application in processChain unconfirmed)</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="GENRE_EVENT_HORIZON">
+    <NAME>Event Horizon (Casino — streak amplifier)</NAME>
+    <E>F7:73,F7:189</E>
+    <C>0.82</C>
+    <DESCRIPTION>Tracks consecutive banks (playerEventHorizonStreaks). applyEventHorizon amplifies score on streak. EVENT_HORIZON_EARN_THRESHOLD constant.</DESCRIPTION>
+    <STATUS>IMPORTED (playerEventHorizonStreaks Map initialized F7:189)</STATUS>
+  </COMPONENT>
+
+</SECTION>
+
+<!-- ══════════════════════ ECONOMY ══════════════════════ -->
+<SECTION id="ECONOMY">
+
+  <COMPONENT id="ECONOMY_FD">
+    <NAME>FD (Fun Dollars)</NAME>
+    <E>F1:111,F1:268-273,F1:282,F1:340-346</E>
+    <C>0.99</C>
+    <MONETARY_VALUE>false (FD_HAS_MONETARY_VALUE=false)</MONETARY_VALUE>
+    <STARTING_BALANCE>1000 (DEFAULT_WALLET.fd)</STARTING_BALANCE>
+    <TRANSACTIONS>FD_PURCHASE,FD_WAGER,FD_AWARD</TRANSACTIONS>
+    <GIFT_RATE>FD_TO_PDX_GIFT_RATE=0.01 (100FD→1PDX via gift, not purchase)</GIFT_RATE>
+    <STATUS>TYPED_FULLY</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="ECONOMY_PDX">
+    <NAME>PDX (real-value currency)</NAME>
+    <E>F1:111,F1:275-280,F1:285-286,F1:288-289,F1:340-354</E>
+    <C>0.99</C>
+    <USD_RATE>PDX_USD_RATE=1 (1:1 USD)</USD_RATE>
+    <STARTING_BALANCE>0 (DEFAULT_WALLET.pdx)</STARTING_BALANCE>
+    <DAILY_BONUS>10 PDX (DAILY_PDX_BONUS)</DAILY_BONUS>
+    <PLAYTHROUGH>pdxPlaythroughRequired=100; PDX_PLAYTHROUGH_RATE=10 (must wager 10× before redeem)</PLAYTHROUGH>
+    <TRANSACTIONS>PDX_GIFT,PDX_WAGER,PDX_AWARD,PDX_DAILY_BONUS,PDX_REDEEM,PDX_PROMO</TRANSACTIONS>
+    <ONRAMP>HollaEx integration PLANNED (design/02-hollaex-integration.md, ADR-022 pending)</ONRAMP>
+    <STATUS>TYPED_FULLY; HollaEx not implemented</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="ECONOMY_WALLET">
+    <NAME>PlayerWallet</NAME>
+    <E>F1:332-354</E>
+    <C>0.99</C>
+    <FIELDS>fd,pdx,pdxPlaythroughTotal,pdxPlaythroughRequired,lastDailyBonus</FIELDS>
+    <DEFAULT>fd=1000,pdx=0,pdxPlaythroughTotal=0,pdxPlaythroughRequired=100,lastDailyBonus=''</DEFAULT>
+    <EXCLUSIVE_MODE>LobbySettings.currencyMode='FD'|'PDX' — single mode per session</EXCLUSIVE_MODE>
+    <STATUS>TYPED_FULLY</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="ECONOMY_ANTE">
+    <NAME>Ante System</NAME>
+    <E>F1:225-266,F7:196-198</E>
+    <C>0.98</C>
+    <STAGES>PRE_GAME(required,10%stake);MILESTONE_1-4(optional,5%stake at score threshold)</STAGES>
+    <SCHEDULE_SOLO_CASINO>PRE_GAME only</SCHEDULE_SOLO_CASINO>
+    <SCHEDULE_VS_CASINO>PRE_GAME only</SCHEDULE_VS_CASINO>
+    <SCHEDULE_RALLY_CASINO>PRE_GAME + MILESTONE_2(25k)</SCHEDULE_RALLY_CASINO>
+    <SCHEDULE_HEIST_CASINO>PRE_GAME + MILESTONE_1(10k) + MILESTONE_3(50k)</SCHEDULE_HEIST_CASINO>
+    <TRACKING>antesPaidByPlayer Map; anteTotalCollected running sum (F7:196-198)</TRACKING>
+    <STATUS>FULLY_IMPLEMENTED</STATUS>
+  </COMPONENT>
+
+</SECTION>
+
+<!-- ══════════════════════ COMPLIANCE ══════════════════════ -->
+<SECTION id="COMPLIANCE">
+
+  <COMPONENT id="COMPLIANCE_GEOFENCE">
+    <NAME>Geofence</NAME>
+    <E>F21</E>
+    <C>0.97</C>
+    <BLOCKED_STATES>WA,ID,MI,AK,AL</BLOCKED_STATES>
+    <FUNCTION>checkGeofence(state) → false if blocked</FUNCTION>
+    <TEST>playIntegrity.test.ts: 3/3 PASS</TEST>
+    <STATUS>FULLY_IMPLEMENTED</STATUS>
+  </COMPONENT>
+
+  <COMPONENT id="COMPLIANCE_ANALYTICS">
+    <NAME>Session Analytics (compliance record)</NAME>
+    <E>F14,F7:181-185</E>
+    <C>0.92</C>
+    <TABLES>session_analytics(seed_hash,skill_score,final_score,farkle_count,banks_taken,ante_total,final_pot,rtp_actual);chain_decisions(faces_played,was_optimal,score_result,multiplier_at,unbanked_before)</TABLES>
+    <SCOPE>Casino modes only (chain_decisions). Free modes: no audit trail.</SCOPE>
+    <WAB>Write-ahead buffer: fire-and-forget, 10k row cap, oldest-first discard, 30s retry (F14)</WAB>
+    <SKILL_PROOF>getSkillDifferentialReport(): top-10% vs bottom-50% avg final_score ratio. Target gt 1.5.</SKILL_PROOF>
+    <STATUS>IMPLEMENTED (WAB fire-and-forget confirmed T9 analytics.ts)</STATUS>
+  </COMPONENT>
+
+</SECTION>
+
+</COMPONENTS>

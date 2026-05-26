@@ -679,3 +679,56 @@ T9 or per Human direction.
 `memory.tier_gate_status.T8 = 'PASS'`
 
 ---
+
+## Session 13 — T9 Social, Platform & LiveOps
+
+| Field | Value |
+|---|---|
+| session_id | tier/T9-social-platform-liveops-20260525 |
+| date | 2026-05-25 |
+| score | 96/100 |
+| verdict | PASS_PROPOSE_COMMIT |
+| branch | tier/T9-social-platform-liveops-20260525 |
+
+### Deliverables
+
+- `mesh/prompt-10-social-platform-liveops.md` — T9 tier prompt (5 tasks; L1-FINDING resolved by inline authoring)
+- `core/apps/server/src/analytics.ts` — `postHogTrack` fire-and-forget adapter (no-op if key absent)
+- `core/apps/server/src/gameRoom.ts` — `classArchetype` on `RoomPlayer`; `postHogTrack` wired for `session_start`/`level_complete`; `class_archetype` in MATCH_SCORE payload (T8 `bank_type` debt resolved)
+- `core/apps/server/src/__tests__/twoPlayer.determinism.test.ts` — 3/3 PASS (CI gate for 2-player determinism)
+- `docs/playstore-checklist.md` — 8 sections (sweepstakes compliance §7; data safety §8)
+- `docs/adr/ADR-020-t9-social-platform-liveops.md` — 3 decisions (PostHog adapter, determinism test, classArchetype default)
+- `audit/COMPONENT_AUDIT.md` — 12 components with ValueScore; priority table (FF_V4_OPPORTUNITY_WEIGHT_REDESIGN gate)
+- `design/OpportunityWeightController.md` — OWC design (OWCContext/OWCAdjustment interfaces; adaptive logic; RTP gate requirement)
+- Full audit/design/roadmap/tests directories generated
+
+### Tests
+
+- farkleScorer.test.ts: 16/16 PASS (regression)
+- rtp.harness.test.ts: 3/3 PASS (regression)
+- game-core (all): 22/22 PASS (regression)
+- twoPlayer.determinism.test.ts: 3/3 PASS (new)
+- **TOTAL: 44/44**
+
+**FIXED_POINT_CHECK:** PASS — `postHogTrack` string-only; `classArchetype` string literal; MATCH_SCORE integers unchanged.
+**Sacred Core:** Not modified — `gameRoom.ts` and `analytics.ts` not on Sacred Core list.
+**T8 MATCH_SCORE debt:** RESOLVED — `bank_type` removed; `class_archetype` per `ReplayEvent.v1.md` contract.
+
+### Flags
+
+- [L0] ADR-010 calibration PROPOSE ONLY — pending Human approval (carried T6→T9)
+- [L0] Lobby classArchetype selection not wired — defaults to `'Paladin'`; no scoring impact
+
+### Deferred to Later Tier
+
+- OWC implementation — `opportunityWeight.ts`; requires Human approval of COMPONENT_AUDIT + RTP simulation gate
+- HollaEx crypto payment adapter — `apps/server/src/hollaex.ts`; ADR-022 + legal review required
+- ADR-010 Monte Carlo calibration — Human decision pending
+- Lobby classArchetype selection — JOIN_ROOM message field addition
+
+### Next Session
+
+T10 or per Human direction. All T0–T9 tiers PASS.
+`memory.tier_gate_status.T9 = 'PASS'`
+
+---

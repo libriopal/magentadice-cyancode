@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ARCHITECTURE — System architecture map -->
+<!-- Format: AuditML-Lite | Source: direct code reads -->
+
+<ARCHITECTURE>
+
+<DICT>
+  <F1>core/packages/farkle-shared/src/types.ts</F1>
+  <F2>core/packages/farkle-engine/src/farkleScorer.ts</F2>
+  <F3>core/packages/farkle-engine/src/gridUtils.ts</F3>
+  <F4>core/packages/farkle-engine/src/rtpConfig.ts</F4>
+  <F5>core/packages/farkle-engine/src/monteCarlo.ts</F5>
+  <F6>core/packages/farkle-engine/src/csprng.ts</F6>
+  <F7>core/apps/server/src/gameRoom.ts</F7>
+  <F8>newmodespec.md</F8>
+  <F9>core/FARKLEFRENZY.md</F9>
+  <F14>core/apps/server/src/analytics.ts</F14>
+  <F21>core/apps/server/src/playIntegrity.ts</F21>
+  <F22>core/packages/compliance/src/index.ts</F22>
+</DICT>
+
+<!-- ══════════════════════ FIVE-LAYER STACK ══════════════════════ -->
+<LAYER_STACK>
+
+  <LAYER id="L1" name="SACRED_CORE">
+    <E>F8:38-59,F2,F3:74-174,F6</E>
+    <C>0.99</C>
+    <INVARIANT>Immutable mid-match. Same code path for all modes. No genre dependency.</INVARIANT>
+    <FILES>
+      <FILE ref="F2">scoreFarkle() — exhaustive lookup, Q×1000 fixed-point, bomb triggers</FILE>
+      <FILE ref="F6">CSPRNG — HMAC-SHA256 counter-based, commit-reveal fairness</FILE>
+      <FILE ref="F3" lines="74-174">SixPoolManager — equal face distribution pool, pre-shuffled</FILE>
+    </FILES>
+    <RULE>No genre module may modify scoring inputs, reroll dice stream, or alter face distributions in live pool.</RULE>
+    <MODIFICATION_PROTOCOL>Run 16 farkleScorer tests + pnpm type-check + explicit developer approval + DECISIONS_LOCKED_v4.txt update</MODIFICATION_PROTOCOL>
+  </LAYER>
+
+  <LAYER id="L2" name="ENERGY_GATE">
+    <E>F8:38-59,F1:356-367,F7:109</E>
+    <C>0.95</C>
+    <DESCRIPTION>Reads L1 outputs, gates round flow. No score mutation.</DESCRIPTION>
+    <ENERGY_RANGE>0–300 (ENERGY_CONSTANTS.MAX=300)</ENERGY_RANGE>
+    <MODES>
+      <MODE name="NORMAL">0–149: turn-based. Each chain costs -10 energy.</MODE>
+      <MODE name="PRIME">150+ threshold: simultaneous play. Chains +10 energy.</MODE>
+      <MODE name="FRENZY">PRIME variant at high energy. +10/chain +2 catchup if lt 75.</MODE>
+    </MODES>
+    <TRANSITION>150 threshold bidirectional. FRENZY_THRESHOLD=150 (ENERGY_CONSTANTS).</TRANSITION>
+    <AFFECTS>Spawn weight mode selection (NORMAL/PRIME/FRENZY SPAWN_WEIGHTS in F1:47-49)</AFFECTS>
+    <GENRES>Rhythm (beat windows), Battle Royale (closing circle)</GENRES>
+    <WILD_SCATTER>Specified: 3+ wilds on board → force FRENZY + face clear. Implementation unconfirmed.</WILD_SCATTER>
+  </LAYER>
+
+  <LAYER id="L3" name="MODE_OVERLAY">
+    <E>F8:38-59,F1:105-109,F7:163-197</E>
+    <C>0.93</C>
+    <DESCRIPTION>Wraps L1+L2 results with mode-specific bookkeeping. Does not modify Sacred Core.</DESCRIPTION>
+    <RESPONSIBILITIES>Vault accumulation (HEIST), milestone tracking (RALLY), ante deduction, win condition evaluation, turn ordering</RESPONSIBILITIES>
+    <MODES>SOLO(narrative chapters), VS(zero-sum payout), RALLY(shared pot+roles), HEIST(vault cycle)</MODES>
+    <GENRES>Metroidvania(seals), Battle Royale(circle scorch), Racing(territory), Adventure(chapters), Strategy(territory bonus)</GENRES>
+  </LAYER>
+
+  <LAYER id="L4" name="GENRE_META">
+    <E>F8:38-59,F7:73</E>
+    <C>0.85</C>
+    <DESCRIPTION>Post-score multipliers, token economies, meta-progression. Applied in fixed order after L1 scoring.</DESCRIPTION>
+    <APPLY_ORDER>applyFacetToScore → applyClassWrapper → applyActiveRuleShard → applyTrickMeter → applyFlowMultiplier → applySlipstreamCap → applyTerritoryBonus → applyMOBAUltimateWrapper</APPLY_ORDER>
+    <ANTI_STACK>Max 3 simultaneous modifiers. Frenzy cap 6.0×. All wrappers clamp at max(0,x).</ANTI_STACK>
+    <GENRES>Roguelike(facets), RPG(classes+shard), Casino(event horizon), FPS(tokens), Stealth(pocket), Sports(trick meter), Adventure(chapters), Sandbox(Build-a-Die), Abstract(rule shards)</GENRES>
+    <WIRING_STATUS>8 genre imports confirmed in F7:73. DRAFT phase (entry point for facet/class) unconfirmed.</WIRING_STATUS>
+  </LAYER>
+
+  <LAYER id="L5" name="ADORNMENT">
+    <E>F8:38-59</E>
+    <C>0.92</C>
+    <DESCRIPTION>Purely audio-visual. Observes state, never mutates it.</DESCRIPTION>
+    <COMPONENTS>Horror vignette, Casino oscilloscope, Rhythm audio stems, MOBA cinematic wrapper, Simulation acoustic decorations, Sports trick animations</COMPONENTS>
+    <INVARIANT>L5 has zero effect on any scoring, RTP, or game state variable.</INVARIANT>
+  </LAYER>
+
+</LAYER_STACK>
+
+<!-- ══════════════════════ SERVER ARCHITECTURE ══════════════════════ -->
+<SERVER>
+  <E>F7:1-100,F7:163-235</E>
+  <C>0.97</C>
+
+  <COMPONENT id="GAMEROOM">
+    <FILE ref="F7"/>
+    <AUTHORITY>Single authoritative source for scoring, banking, win conditions, payouts. Client is display-only.</AUTHORITY>
+    <INSTANCE_LIFECYCLE>Created by index.ts on CREATE_ROOM. Destroyed when isEmpty() returns true after cleanup interval.</INSTANCE_LIFECYCLE>
+    <KEY_STATE>
+      <S>players: Map&lt;playerId,RoomPlayer&gt;</S>
+      <S>activePlayerId: string|null</S>
+      <S>state: GameRoomState (grid,phase,unbanked,banked,multiplierStep,farklePool)</S>
+      <S>pool: SixPoolManager</S>
+      <S>csprng: CSPRNG</S>
+      <S>settings: LobbySettings</S>
+      <S>roleMap: Map&lt;playerId,role&gt;</S>
+      <S>committedHash: Promise&lt;string&gt;</S>
+      <S>vaultTotal: number (HEIST)</S>
+      <S>rallyPot: number (RALLY)</S>
+      <S>bankCycleCount: number (gravity flip trigger)</S>
+      <S>anteTotalCollected: number</S>
+      <S>playerTokens: Map&lt;playerId,tokens&gt; (Combo Breaker)</S>
+      <S>playerEventHorizonStreaks: Map&lt;playerId,banks&gt;</S>
+    </KEY_STATE>
+    <MESSAGE_PROTOCOL>
+      <MSG>CREATE_ROOM → constructor</MSG>
+      <MSG>JOIN_ROOM → addPlayer(ws,playerId,playerName,classArchetype='Paladin')</MSG>
+      <MSG>START_GAME → handleStartGame() → energy tick 200ms interval + turn timer</MSG>
+      <MSG>SUBMIT_CHAIN(positions[]) → processChain() → CHAIN_RESULT broadcast</MSG>
+      <MSG>BANK → handleBank() → win-check → (SESSION_END if won)</MSG>
+      <MSG>PASS → nextTurn() → TURN_CHANGE broadcast</MSG>
+    </MESSAGE_PROTOCOL>
+    <TIMERS>
+      <T>turnTimer: auto-bank on expiry (handleBank forced)</T>
+      <T>energyInterval: 200ms tick for energy decay/gain</T>
+      <T>heistTimer: fires _resolveHeist at heistExpiresAt</T>
+      <T>rallyDecisionTimeout: RALLY vote timeout</T>
+    </TIMERS>
+    <RETRY>writeWithRetry: 3 attempts, 100/200/400ms exponential backoff (T8, F7:84-97)</RETRY>
+    <SACRED>Self-declares sacred (F7:57-67). Conflicts with T9 governance report (not on CLAUDE.md list). UNRESOLVED.</SACRED>
+  </COMPONENT>
+
+  <COMPONENT id="EVENT_STORE">
+    <FILE>core/apps/server/src/SupabaseEventStore.ts</FILE>
+    <C>0.85</C>
+    <PURPOSE>Persistent event chain for provable replay. Writes: MATCH_START, MATCH_END, MATCH_SCORE events.</PURPOSE>
+    <EVENTS>MATCH_START(seed_hash,classArchetype),MATCH_END,MATCH_SCORE(player_id,score_delta,running_total,class_archetype)</EVENTS>
+    <RETRY>writeWithRetry from F7 (T8 IEventStore.v1.md §3 compliance)</RETRY>
+    <NULL_GUARD>_eventStore=null if Supabase env vars absent (dev/test)</NULL_GUARD>
+  </COMPONENT>
+
+  <COMPONENT id="ANALYTICS">
+    <FILE ref="F14"/>
+    <C>0.95</C>
+    <FUNCTIONS>postHogTrack,insertChainDecision,insertSession,insertWalletTransaction</FUNCTIONS>
+    <POSTHOG>postHogTrack: fire-and-forget fetch to us.i.posthog.com/batch/. No-op if POSTHOG_API_KEY absent.</POSTHOG>
+    <CHAIN_DECISIONS>One row per chain (casino mode): faces_played,was_optimal,score_result,multiplier_at,unbanked_before</CHAIN_DECISIONS>
+    <SESSIONS>One row per casino session: seed_hash,skill_score,final_score,farkle_count,banks_taken,ante_total,final_pot,rtp_actual</SESSIONS>
+    <WAB>Write-ahead buffer: 10k row cap, oldest-first discard, 30s retry</WAB>
+  </COMPONENT>
+
+  <COMPONENT id="PLAY_INTEGRITY">
+    <FILE ref="F21"/>
+    <C>0.95</C>
+    <FUNCTIONS>verifyPlayIntegrity,checkGeofence</FUNCTIONS>
+    <GEOFENCE_BLOCK>WA,ID,MI,AK,AL (5 states)</GEOFENCE_BLOCK>
+  </COMPONENT>
+
+  <COMPONENT id="COMPLIANCE_SVC">
+    <FILE ref="F22"/>
+    <C>0.85</C>
+    <PURPOSE>ComplianceProfile management. PDX eligibility gate. Attestation tokens.</PURPOSE>
+    <INSTANCE>_complianceService singleton in F7:99</INSTANCE>
+    <STATE>playerComplianceProfile Map, playerAttestationToken Map (F7:199-201)</STATE>
+  </COMPONENT>
+
+</SERVER>
+
+<!-- ══════════════════════ DATA FLOW ══════════════════════ -->
+<DATA_FLOW>
+  <E>F7:1-59,F6,F3,F2,F14</E>
+  <C>0.95</C>
+
+  <FLOW id="MATCH_START">
+    <STEP>1. GameRoom constructor: CSPRNG(nanoid(32)) → SixPoolManager(playerCount,csprng) → createGrid(dim,settings,pool,Date.now()) → committedHash=SHA256(seed)</STEP>
+    <STEP>2. handleStartGame: broadcast committedHash to all players → energy tick starts → turn timer starts</STEP>
+    <STEP>3. EventStore: MATCH_START event written (seed_hash, classArchetype per player)</STEP>
+    <STEP>4. PostHog: session_start event per player (room_id,platform,app_version,class_archetype)</STEP>
+  </FLOW>
+
+  <FLOW id="CHAIN_SUBMISSION">
+    <STEP>1. CLIENT→SUBMIT_CHAIN(positions[])</STEP>
+    <STEP>2. Rate-limit check: INPUT_LOCK_MS=100ms between submissions</STEP>
+    <STEP>3. Extract faces from grid positions</STEP>
+    <STEP>4. scoreFarkle(faces, multiplierQ=MULTIPLIER_LADDER[step]×1000) → {score,scaledScore,isFarkle,combo,triggersBomb}</STEP>
+    <STEP>5. L4 wrappers applied in fixed order</STEP>
+    <STEP>6a. FARKLE: unbanked=0, farklePool+=unbanked_before, multiplierStep=0, comboBreaker window 250ms, phase=FARKLE_ANIM, nextTurn()</STEP>
+    <STEP>6b. SCORE(chain lt 6): scaledScore→unbanked, auto-bank, multiplierStep=0, gravity+spawn</STEP>
+    <STEP>6c. SCORE(chain=6): scaledScore→unbanked, multiplierStep++, timer restart, NO auto-bank</STEP>
+    <STEP>7. damageAdjacentBlockers if applicable</STEP>
+    <STEP>8. triggersBomb → applyStandardBomb or applyRainbowBomb</STEP>
+    <STEP>9. bankCycleCount++. If bankCycleCount%5===0 → applyGravityFlip</STEP>
+    <STEP>10. broadcast CHAIN_RESULT+ROOM_STATE</STEP>
+    <STEP>11. insertChainDecision (casino mode only)</STEP>
+    <STEP>12. Win check: profile.banked≥levelWinScore → endSession()</STEP>
+  </FLOW>
+
+  <FLOW id="SESSION_END">
+    <STEP>1. sessionEnded guard check (prevents double-fire)</STEP>
+    <STEP>2. Payout computation per mode (SOLO/VS/RALLY/HEIST formula)</STEP>
+    <STEP>3. insertSession (analytics — casino mode)</STEP>
+    <STEP>4. EventStore: MATCH_END event written</STEP>
+    <STEP>5. insertWalletTransaction (payout)</STEP>
+    <STEP>6. Seed reveal: broadcast raw serverSeed for player audit</STEP>
+    <STEP>7. PostHog: level_complete per player</STEP>
+    <STEP>8. SESSION_END broadcast with payout details</STEP>
+  </FLOW>
+
+</DATA_FLOW>
+
+<!-- ══════════════════════ PACKAGE STRUCTURE ══════════════════════ -->
+<PACKAGES>
+  <E>CLAUDE.md</E>
+  <C>0.97</C>
+
+  <PKG id="farkle-shared">
+    <PATH>core/packages/@match3d/farkle-shared</PATH>
+    <EXPORTS>types.ts (all shared types,constants,SPAWN_WEIGHTS,RTPConfig,etc)</EXPORTS>
+    <SACRED>Partial (sacred header present; SPAWN_WEIGHTS confirmed modifiable for OWC)</SACRED>
+  </PKG>
+
+  <PKG id="farkle-engine">
+    <PATH>core/packages/@match3d/farkle-engine</PATH>
+    <EXPORTS>farkleScorer,gridUtils,csprng,rtpConfig,monteCarlo,farkleStore,gameStore,chainIndex,pipeline systems</EXPORTS>
+    <SACRED>farkleScorer,csprng,rtpConfig,monteCarlo,farkleStore,gameStore (CLAUDE.md). gridUtils has sacred header.</SACRED>
+  </PKG>
+
+  <PKG id="game-core">
+    <PATH>core/packages/@match3d/game-core</PATH>
+    <EXPORTS>Three.js rendering, Rapier3D physics wrappers, replay/types (ClassArchetype)</EXPORTS>
+    <TESTS>22/22 PASS (session-13.json)</TESTS>
+  </PKG>
+
+  <PKG id="compliance">
+    <PATH>core/packages/@match3d/compliance</PATH>
+    <EXPORTS>ComplianceService, ComplianceProfile, attestation</EXPORTS>
+  </PKG>
+
+  <PKG id="ads">
+    <PATH>core/packages/@match3d/ads</PATH>
+    <NOTE>InMemoryEventStore.ts has 3 pre-existing type errors (node:crypto, process) — NOT T9 scope</NOTE>
+  </PKG>
+
+  <PKG id="apps-server">
+    <PATH>core/apps/server</PATH>
+    <KEY_FILES>gameRoom.ts(game loop),analytics.ts(compliance),playIntegrity.ts(geofence),SupabaseEventStore.ts(event chain),index.ts(WebSocket handler)</KEY_FILES>
+  </PKG>
+
+  <PKG id="apps-web">
+    <PATH>core/apps/web</PATH>
+    <STACK>React 18 + Vite + @react-three/fiber + Rapier3D. Primary PWA client.</STACK>
+    <AUTHORITY>Display-only. Cannot manipulate game state. Reads server ROOM_STATE broadcasts.</AUTHORITY>
+  </PKG>
+
+</PACKAGES>
+
+<!-- ══════════════════════ FAIRNESS CHAIN ══════════════════════ -->
+<FAIRNESS_CHAIN>
+  <E>F6,F7:27-33,F7:208-235</E>
+  <C>0.98</C>
+
+  <STEP id="1">serverSeed: 32-byte crypto.getRandomValues (generateServerSeed). 192-bit entropy. Set in GameRoom constructor.</STEP>
+  <STEP id="2">committedHash = SHA-256(serverSeed). Stored as Promise before first roll.</STEP>
+  <STEP id="3">handleStartGame: broadcast committedHash to all players. Pre-play commitment locked.</STEP>
+  <STEP id="4">Play proceeds. All RNG from CSPRNG(combinedSeed) where combinedSeed=SHA256(serverSeed+clientSeeds).</STEP>
+  <STEP id="5">SESSION_END: broadcast raw serverSeed. Players compute SHA-256(serverSeed) → compare to committedHash → verify match.</STEP>
+  <STEP id="6">Player can re-derive entire CSPRNG sequence from combined seed → audit all dice rolls deterministically.</STEP>
+
+  <GAP id="G1">createGrid(seedNum=Date.now()): grid layout NOT covered by commit-reveal. Board arrangement not auditable.</GAP>
+  <GAP id="G2">clientSeeds[] collection mechanism not confirmed in read code — deriveCombinedSeed(serverSeed,clientSeeds[]) takes array but JOIN_ROOM handling not seen.</GAP>
+
+</FAIRNESS_CHAIN>
+
+<!-- ══════════════════════ TESTING INFRASTRUCTURE ══════════════════════ -->
+<TESTING>
+  <E>runs/2026-05-25/session-13.json,handoff/02-session-snapshot.json</E>
+  <C>0.99</C>
+
+  <SUITE id="farkleScorer">
+    <FILE>core/packages/farkle-engine/src/farkleScorer.test.ts</FILE>
+    <RESULT>16/16 PASS</RESULT>
+    <COVERS>All Farkle combo types including Two-Triplets=2500 (PRESERVATION_SPEC W6)</COVERS>
+  </SUITE>
+
+  <SUITE id="rtp_harness">
+    <FILE>core/packages/farkle-engine/src/rtp.harness.test.ts</FILE>
+    <RESULT>3/3 PASS</RESULT>
+    <COVERS>Monte Carlo audit harness, ±2% deviance threshold per mode</COVERS>
+  </SUITE>
+
+  <SUITE id="game_core">
+    <FILE>core/packages/game-core/**</FILE>
+    <RESULT>22/22 PASS</RESULT>
+  </SUITE>
+
+  <SUITE id="determinism">
+    <FILE>core/apps/server/src/__tests__/twoPlayer.determinism.test.ts</FILE>
+    <RESULT>3/3 PASS (T9)</RESULT>
+    <COVERS>Same CSPRNG seed → identical sequences; different seeds → divergent; scoreFarkle pure function</COVERS>
+    <RUN_FROM>core/apps/server/ (tsx not in core root node_modules)</RUN_FROM>
+  </SUITE>
+
+  <TOTAL>44/44 PASS (session-13.json)</TOTAL>
+  <TYPE_CHECK>0 new errors T0-T9. 3 pre-existing ads/InMemoryEventStore.ts errors.</TYPE_CHECK>
+
+</TESTING>
+
+</ARCHITECTURE>
