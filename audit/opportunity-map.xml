@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- OPPORTUNITY-MAP | PHASE_0_OPPORTUNITY_MODEL | Sources: qna0.xml, components.xml, architecture.xml, paradox-pay-gap.xml -->
+<!-- No implementation. No code changes. No balancing. -->
+
+<OPPORTUNITY_MAP>
+
+<DESIGN_LAWS>
+  <LAW id="L1">Opportunity Creates Value</LAW>
+  <LAW id="L2">Paradox Pay</LAW>
+  <LAW id="L3">Never Spawn Wins. Only Spawn Opportunities.</LAW>
+</DESIGN_LAWS>
+
+<DICT>
+  <!-- Extends qna0.xml DICT. All F-references resolve to qna0.xml#DICT -->
+  <QNA>audit/qna0.xml</QNA><COMP>audit/components.xml</COMP>
+  <ARCH>audit/architecture.xml</ARCH><GAP>audit/paradox-pay-gap.xml</GAP>
+</DICT>
+
+<!-- OS = round((Skill×0.30 + DecisionDensity×0.25 + RetentionImpact×0.20 + ReplayabilityImpact×0.15 + ParadoxPotential×0.10) × 100) -->
+<FORMULA id="OS" inputs="Skill|DecisionDensity|RetentionImpact|ReplayabilityImpact|ParadoxPotential" weights="0.30|0.25|0.20|0.15|0.10" range="0-100"/>
+
+<!-- STATUS: LIVE|PARTIAL|UNWIRED|PROPOSED|DEAD_OPPORTUNITY|FALSE_OPPORTUNITY -->
+<!-- LAW_V: Law violation flag -->
+
+<!-- ════════ IMMEDIATE_VALUE ════════ -->
+<O id="O01" type="IMMEDIATE_VALUE" score="85" status="LIVE">
+  <NAME>Bank Action — unbanked→banked</NAME><REF src="QNA#Q1:SCORE_PATH_b"/>
+  <NOTE>Core paradox: bank safe vs hold for chain-6 risky. Highest decision density in game.</NOTE>
+</O>
+<O id="O02" type="IMMEDIATE_VALUE" score="48" status="LIVE">
+  <NAME>Chain auto-bank — chain less than 6</NAME><REF src="QNA#Q1:SCORE_PATH_d"/>
+  <NOTE>Automatic, no player decision. Reduces paradox potential.</NOTE>
+</O>
+<O id="O03" type="IMMEDIATE_VALUE" score="74" status="LIVE">
+  <NAME>scoreFarkle() base payout</NAME><REF src="QNA#Q2:S3"/><REF src="COMP#T01"/>
+</O>
+<O id="O04" type="IMMEDIATE_VALUE" score="61" status="LIVE">
+  <NAME>Multiplier Orb — immediate multiplierStep boost</NAME><REF src="COMP#MUL_ORB"/>
+</O>
+
+<!-- ════════ FUTURE_VALUE ════════ -->
+<O id="O05" type="FUTURE_VALUE" score="87" status="LIVE">
+  <NAME>Multiplier ladder advance — chain=6 toward 4.0×</NAME><REF src="QNA#Q1:SCORE_PATH_e"/>
+  <NOTE>Ladder=[1.0,1.25,1.5,2.0,3.0,4.0]. Farkle resets. Highest future-value opportunity.</NOTE>
+</O>
+<O id="O06" type="FUTURE_VALUE" score="75" status="LIVE">
+  <NAME>Energy accumulation — progress toward PRIME then FRENZY</NAME><REF src="ARCH#L2"/>
+</O>
+<O id="O07" type="FUTURE_VALUE" score="76" status="LIVE">
+  <NAME>ICE blocker clearing — cascade potential for future chains</NAME>
+  <REF src="COMP#B02"/><REF src="GAP#G05"/>
+  <NOTE>ValueScore=0.66 (A-tier). Best cascade-planning blocker.</NOTE>
+</O>
+<O id="O08" type="FUTURE_VALUE" score="74" status="PARTIAL" law_v="L3">
+  <NAME>Catalyst tile — accumulated wild boost</NAME><REF src="COMP#CAT"/>
+  <NOTE>CATALYST_WILD_BOOST=2 defined but not wired to spawnTiles. Catalyst spawns create no opportunity chain.</NOTE>
+</O>
+<O id="O09" type="FUTURE_VALUE" score="69" status="PARTIAL" law_v="L3">
+  <NAME>Board position after chain — empty cells for OWC-shaped refill</NAME><REF src="GAP#G01"/>
+  <NOTE>spawnTiles has zero board-state awareness. Current spawns may complete wins not create opportunities.</NOTE>
+</O>
+
+<!-- ════════ RISK ════════ -->
+<O id="O10" type="RISK" score="89" status="LIVE">
+  <NAME>Farkle — loss of unbanked score, feeds farklePool</NAME><REF src="QNA#Q10"/>
+  <NOTE>Highest-scoring risk. Core Paradox Pay. Skill reads board to estimate Farkle probability.</NOTE>
+</O>
+<O id="O11" type="RISK" score="84" status="LIVE">
+  <NAME>Multiplier reset — Farkle or bank-less-than-6 zeroes multiplierStep</NAME><REF src="QNA#Q1:FARKLE_PATH"/>
+  <NOTE>Amplifies Farkle risk. Bank decision carries multiplier loss cost. Paradox tension with O05.</NOTE>
+</O>
+<O id="O12" type="RISK" score="0" status="DEAD_OPPORTUNITY" law_v="L1">
+  <NAME>Dead-state board — hasValidChain=false, no recovery implemented</NAME>
+  <REF src="QNA#Q1:G3"/><REF src="F3:hasValidChain:515-543"/>
+  <NOTE>CRITICAL: no player action possible. Detection exists, no reshuffle in gameRoom.ts. Production freeze risk.</NOTE>
+</O>
+<O id="O13" type="RISK" score="50" status="LIVE">
+  <NAME>LOCK blocker — territory denied</NAME><REF src="COMP#B03"/>
+  <NOTE>ValueScore=0.49 (B-tier). Low cascade value. Evaluate for removal.</NOTE>
+</O>
+<O id="O14" type="RISK" score="36" status="FALSE_OPPORTUNITY" law_v="L1">
+  <NAME>STONE density — hardcoded BLOCKER_DENSITY_COUNTS=6 ignores LobbySettings</NAME>
+  <REF src="QNA#Q4:STONE_BUG"/><REF src="F3:SixPoolManager:72"/>
+  <NOTE>Bug creates undesigned risk. False Opportunity.</NOTE>
+</O>
+
+<!-- ════════ COMBO_OPPORTUNITY ════════ -->
+<O id="O15" type="COMBO_OPPORTUNITY" score="88" status="LIVE">
+  <NAME>Chain-of-6 — sustained chain builds toward 4.0× vault</NAME><REF src="QNA#Q14"/>
+  <NOTE>Peak skill expression. Board read + Farkle assessment + multiplier tracking simultaneously.</NOTE>
+</O>
+<O id="O16" type="COMBO_OPPORTUNITY" score="86" status="LIVE">
+  <NAME>Two Triplets — knowledge premium (2500 vs greedy 1200)</NAME>
+  <REF src="QNA#Q3:PRESERVATION_SPEC_W6"/>
+  <NOTE>Highest skill-expression combo. Expert knowledge separates players.</NOTE>
+</O>
+<O id="O17" type="COMBO_OPPORTUNITY" score="84" status="LIVE">
+  <NAME>Straight → BOMB_RAINBOW — board reading to set up 6 sequential faces</NAME>
+  <REF src="QNA#Q3"/><REF src="F2:42-44"/>
+</O>
+<O id="O18" type="COMBO_OPPORTUNITY" score="66" status="LIVE">
+  <NAME>Six of a Kind → BOMB_STANDARD — luck/skill hybrid</NAME><REF src="F2:43"/>
+</O>
+<O id="O19" type="COMBO_OPPORTUNITY" score="56" status="LIVE" law_v="L1">
+  <NAME>Wild die — auto-resolves optimally, zero player decision</NAME><REF src="QNA#Q8"/>
+  <NOTE>False Opportunity in current form. Auto-optimal eliminates decision density. See O20 for fix.</NOTE>
+</O>
+<O id="O20" type="COMBO_OPPORTUNITY" score="85" status="PROPOSED">
+  <NAME>Wild manual assignment — proposed override of auto for chain setup</NAME><REF src="GAP#G02"/>
+  <NOTE>RTP-safe: manual cannot exceed auto-optimal. 2s timeout fallback.</NOTE>
+</O>
+
+<!-- ════════ ENERGY_OPPORTUNITY ════════ -->
+<O id="O21" type="ENERGY_OPPORTUNITY" score="71" status="LIVE">
+  <NAME>PRIME energy threshold crossing</NAME><REF src="QNA#Q7"/>
+</O>
+<O id="O22" type="ENERGY_OPPORTUNITY" score="76" status="LIVE">
+  <NAME>FRENZY escalation — spawn weight shift (wild=9 vs NORMAL=0)</NAME>
+  <REF src="F1:SPAWN_WEIGHTS.FRENZY"/>
+</O>
+<O id="O23" type="ENERGY_OPPORTUNITY" score="66" status="LIVE">
+  <NAME>GravityFlip — board reset every 5 bank cycles</NAME><REF src="F3:applyGravityFlip:578-590"/>
+  <NOTE>7-complement + row reversal. RTP-neutral per monteCarlo.</NOTE>
+</O>
+<O id="O24" type="ENERGY_OPPORTUNITY" score="68" status="PARTIAL">
+  <NAME>Wild Scatter — energy mode bonus spawn (wiring unconfirmed)</NAME>
+  <REF src="QNA#Q14:CONFLICT_05"/>
+  <NOTE>Specified in newmodespec.md. Not confirmed wired in gameRoom.ts.</NOTE>
+</O>
+
+<!-- ════════ VAULT_OPPORTUNITY ════════ -->
+<O id="O25" type="VAULT_OPPORTUNITY" score="82" status="LIVE">
+  <NAME>Farkle pool accumulation — next success clears growing pool</NAME><REF src="QNA#Q10"/>
+  <NOTE>Core Paradox mechanism. Pool size visible to opponent as board-state context.</NOTE>
+</O>
+<O id="O26" type="VAULT_OPPORTUNITY" score="88" status="LIVE">
+  <NAME>Multiplier ladder 4.0× maximum — peak vault moment</NAME><REF src="F1:MULTIPLIER_LADDER"/>
+  <NOTE>Bank or chase chain-6. Maximum tension point of session.</NOTE>
+</O>
+<O id="O27" type="VAULT_OPPORTUNITY" score="75" status="LIVE">
+  <NAME>PDX sweepstakes payout — session win converts score to real value</NAME>
+  <REF src="QNA#Q6"/><REF src="F4:RTP_CONFIGS"/>
+  <NOTE>PDX_USD_RATE=1. Casino netRTP=0.92. Geofence enforced.</NOTE>
+</O>
+<O id="O28" type="VAULT_OPPORTUNITY" score="24" status="LIVE">
+  <NAME>FD daily bonus — low-skill retention floor</NAME><REF src="F1:DAILY_PDX_BONUS"/>
+  <NOTE>No decision. Floor maintenance only.</NOTE>
+</O>
+
+<!-- ════════ TERRITORY_OPPORTUNITY ════════ -->
+<O id="O29" type="TERRITORY_OPPORTUNITY" score="80" status="LIVE">
+  <NAME>BOMB_RAINBOW area clear — face-count reading required</NAME>
+  <REF src="QNA#Q3"/><REF src="F2:43-44"/>
+</O>
+<O id="O30" type="TERRITORY_OPPORTUNITY" score="65" status="LIVE">
+  <NAME>BOMB_STANDARD 3×3 clear — Six of a Kind trigger</NAME><REF src="F2:43"/>
+</O>
+<O id="O31" type="TERRITORY_OPPORTUNITY" score="73" status="LIVE">
+  <NAME>Board state after GravityFlip — new adjacency map, new chain routes</NAME>
+  <REF src="F3:applyGravityFlip:578-590"/>
+</O>
+<O id="O32" type="TERRITORY_OPPORTUNITY" score="55" status="LIVE">
+  <NAME>STONE cluster navigation — route planning around dense blockers</NAME>
+  <REF src="COMP#B01"/>
+  <NOTE>ValueScore=0.51 (B-tier). Time consumption without decision creation.</NOTE>
+</O>
+
+<!-- ════════ TEAM_OPPORTUNITY ════════ -->
+<O id="O33" type="TEAM_OPPORTUNITY" score="78" status="LIVE">
+  <NAME>RALLY equal-split payout — cooperative win</NAME><REF src="QNA#Q12"/>
+  <NOTE>Canonical: equal split per monteCarlo:189-195 and newmodespec.md. gameRoom.ts:37 comment is stale.</NOTE>
+</O>
+<O id="O34" type="TEAM_OPPORTUNITY" score="77" status="LIVE">
+  <NAME>RALLY chain contribution — shared farkle pool advance</NAME><REF src="QNA#Q12"/>
+</O>
+<O id="O35" type="TEAM_OPPORTUNITY" score="70" status="LIVE">
+  <NAME>RALLY MILESTONE_2 ante at 25k</NAME><REF src="F1:ANTE_SCHEDULES.RALLY_CASINO"/>
+</O>
+
+<!-- ════════ BETRAYAL_OPPORTUNITY ════════ -->
+<O id="O36" type="BETRAYAL_OPPORTUNITY" score="90" status="PARTIAL">
+  <NAME>HEIST early bank — exit before milestone takes from shared pool</NAME>
+  <REF src="QNA#Q11"/><REF src="F1:ANTE_SCHEDULES.HEIST_CASINO"/>
+  <NOTE>Highest betrayal score. Wiring verification needed for milestone timing in gameRoom.ts.</NOTE>
+</O>
+<O id="O37" type="BETRAYAL_OPPORTUNITY" score="88" status="PARTIAL">
+  <NAME>HEIST MILESTONE_3 (50k) — late-game trust/betrayal peak</NAME>
+  <REF src="F1:ANTE_SCHEDULES.HEIST_CASINO"/>
+</O>
+<O id="O38" type="BETRAYAL_OPPORTUNITY" score="78" status="PARTIAL">
+  <NAME>HEIST MILESTONE_1 (10k) — early trust-building vs early betrayal</NAME>
+  <REF src="F1:ANTE_SCHEDULES.HEIST_CASINO"/>
+</O>
+<O id="O39" type="BETRAYAL_OPPORTUNITY" score="85" status="LIVE">
+  <NAME>VS mode — opponent Farkle feeds your farklePool</NAME><REF src="QNA#Q10"/>
+  <NOTE>PvP: opponent failure is your opportunity. Shared risk pool creates betrayal-adjacent dynamic.</NOTE>
+</O>
+
+<!-- ════════ SOCIAL_OPPORTUNITY ════════ -->
+<O id="O40" type="SOCIAL_OPPORTUNITY" score="83" status="LIVE">
+  <NAME>VS mode head-to-head — competitive farkle pool dynamics</NAME><REF src="QNA#Q10"/>
+</O>
+<O id="O41" type="SOCIAL_OPPORTUNITY" score="46" status="LIVE">
+  <NAME>Commit-reveal transparency — post-session shareable fairness proof</NAME>
+  <REF src="QNA#Q5"/><REF src="F6:verifyServerSeed"/>
+</O>
+<O id="O42" type="SOCIAL_OPPORTUNITY" score="28" status="LIVE">
+  <NAME>PostHog MATCH_SCORE — class_archetype cohort analytics</NAME><REF src="QNA#Q19"/>
+</O>
+<O id="O43" type="SOCIAL_OPPORTUNITY" score="47" status="PARTIAL">
+  <NAME>Leaderboard score visibility</NAME><REF src="ARCH#L4:GENRE_META"/>
+</O>
+
+<!-- ════════ PROGRESSION_OPPORTUNITY ════════ -->
+<O id="O44" type="PROGRESSION_OPPORTUNITY" score="91" status="UNWIRED" law_v="L1">
+  <NAME>DRAFT phase facet selection — per-session modifier + multiplierBonus</NAME>
+  <REF src="QNA#Q1:G4"/><REF src="F8:121-126"/>
+  <NOTE>HIGHEST SCORE: 91. Fully specified, not wired. 3 facet choices, 15s window. Gateway to genre system.</NOTE>
+</O>
+<O id="O45" type="PROGRESSION_OPPORTUNITY" score="88" status="PARTIAL">
+  <NAME>Genre composition — 8/20 wired</NAME><REF src="QNA#Q1:G5"/>
+  <NOTE>8 wired: eventHorizon, comboBreaker, slipstream, facet, shard, rhythm, gravityFlip, flowMultiplier.</NOTE>
+</O>
+<O id="O46" type="PROGRESSION_OPPORTUNITY" score="82" status="UNWIRED" law_v="L1">
+  <NAME>Class archetype selection — Paladin/Rogue/Bard/Artificer</NAME>
+  <REF src="QNA#Q1:G7"/><REF src="QNA#Q20"/>
+  <NOTE>Defaults to Paladin. JOIN_ROOM lacks classArchetype field. All 4 archetypes at 92% RTP but distinct risk profiles.</NOTE>
+</O>
+<O id="O47" type="PROGRESSION_OPPORTUNITY" score="54" status="LIVE">
+  <NAME>PDX balance as persistent identity marker</NAME><REF src="QNA#Q6"/>
+</O>
+<O id="O48" type="PROGRESSION_OPPORTUNITY" score="29" status="FALSE_OPPORTUNITY" law_v="L1,L3">
+  <NAME>Ghost tile — lowest-value entity (ValueScore=0.42)</NAME>
+  <REF src="GAP#G03"/><REF src="COMP#T11"/>
+  <NOTE>Column-drift: confusion not decisions. Occupies board space without value. REPLACE with Echo tile.</NOTE>
+</O>
+
+<!-- ════════ TYPE INDEX ════════ -->
+<OPPORTUNITY_TYPES>
+  <TYPE id="IMMEDIATE_VALUE"     ids="O01,O02,O03,O04"/>
+  <TYPE id="FUTURE_VALUE"        ids="O05,O06,O07,O08,O09"/>
+  <TYPE id="RISK"                ids="O10,O11,O12,O13,O14"/>
+  <TYPE id="COMBO_OPPORTUNITY"   ids="O15,O16,O17,O18,O19,O20"/>
+  <TYPE id="ENERGY_OPPORTUNITY"  ids="O21,O22,O23,O24"/>
+  <TYPE id="VAULT_OPPORTUNITY"   ids="O25,O26,O27,O28"/>
+  <TYPE id="TERRITORY_OPPORTUNITY" ids="O29,O30,O31,O32"/>
+  <TYPE id="TEAM_OPPORTUNITY"    ids="O33,O34,O35"/>
+  <TYPE id="BETRAYAL_OPPORTUNITY" ids="O36,O37,O38,O39"/>
+  <TYPE id="SOCIAL_OPPORTUNITY"  ids="O40,O41,O42,O43"/>
+  <TYPE id="PROGRESSION_OPPORTUNITY" ids="O44,O45,O46,O47,O48"/>
+</OPPORTUNITY_TYPES>
+
+<!-- ════════ LAW VIOLATIONS ════════ -->
+<LAW_VIOLATIONS>
+  <V law="L3" id="O09" sev="HIGH">spawnTiles zero board-state awareness. May spawn wins.</V>
+  <V law="L1" id="O12" sev="CRITICAL">Dead-state no recovery. Production freeze. All opportunity destroyed.</V>
+  <V law="L1" id="O08" sev="MEDIUM">Catalyst unwired. Spawns exist, opportunity chain broken.</V>
+  <V law="L1" id="O14" sev="MEDIUM">STONE density bug. Undesigned risk destroys value.</V>
+  <V law="L1" id="O19" sev="LOW">Wild auto eliminates decision density.</V>
+  <V law="L1" id="O44" sev="HIGH">DRAFT unwired. Highest-value progression opportunity not delivered.</V>
+  <V law="L1" id="O46" sev="HIGH">Class archetype unwired. Progression identity blocked.</V>
+  <V law="L1,L3" id="O48" sev="MEDIUM">Ghost tile. Board space without value. False spawn.</V>
+</LAW_VIOLATIONS>
+
+<!-- ════════ RANKED (by SCORE descending) ════════ -->
+<RANKED>
+  <R p="1"  id="O44" s="91" st="UNWIRED"/>  <!-- DRAFT phase -->
+  <R p="2"  id="O36" s="90" st="PARTIAL"/>  <!-- HEIST early bank -->
+  <R p="3"  id="O10" s="89" st="LIVE"/>     <!-- Farkle risk -->
+  <R p="4"  id="O15" s="88" st="LIVE"/>     <!-- Chain-of-6 -->
+  <R p="5"  id="O26" s="88" st="LIVE"/>     <!-- Multiplier 4.0× -->
+  <R p="6"  id="O37" s="88" st="PARTIAL"/>  <!-- HEIST M3 -->
+  <R p="7"  id="O45" s="88" st="PARTIAL"/>  <!-- Genre 8/20 -->
+  <R p="8"  id="O05" s="87" st="LIVE"/>     <!-- Multiplier advance -->
+  <R p="9"  id="O16" s="86" st="LIVE"/>     <!-- Two Triplets -->
+  <R p="10" id="O01" s="85" st="LIVE"/>     <!-- Bank action -->
+  <R p="11" id="O20" s="85" st="PROPOSED"/> <!-- Wild manual -->
+  <R p="12" id="O39" s="85" st="LIVE"/>     <!-- VS farkle pool -->
+  <R p="13" id="O17" s="84" st="LIVE"/>     <!-- Straight→BOMB_RAINBOW -->
+  <R p="14" id="O11" s="84" st="LIVE"/>     <!-- Multiplier reset risk -->
+  <R p="15" id="O40" s="83" st="LIVE"/>     <!-- VS head-to-head -->
+  <R p="16" id="O46" s="82" st="UNWIRED"/>  <!-- Class archetype -->
+  <R p="17" id="O25" s="82" st="LIVE"/>     <!-- Farkle pool vault -->
+  <R p="18" id="O29" s="80" st="LIVE"/>     <!-- BOMB_RAINBOW clear -->
+  <R p="19" id="O33" s="78" st="LIVE"/>     <!-- RALLY split -->
+  <R p="20" id="O38" s="78" st="PARTIAL"/>  <!-- HEIST M1 -->
+  <R p="21" id="O34" s="77" st="LIVE"/>     <!-- RALLY chain -->
+  <R p="22" id="O22" s="76" st="LIVE"/>     <!-- FRENZY -->
+  <R p="23" id="O07" s="76" st="LIVE"/>     <!-- ICE cascade -->
+  <R p="24" id="O27" s="75" st="LIVE"/>     <!-- PDX payout -->
+  <R p="25" id="O06" s="75" st="LIVE"/>     <!-- Energy accumulation -->
+  <R p="26" id="O08" s="74" st="PARTIAL"/>  <!-- Catalyst (unwired) -->
+  <R p="27" id="O03" s="74" st="LIVE"/>     <!-- scoreFarkle base -->
+  <R p="28" id="O31" s="73" st="LIVE"/>     <!-- Post-GravityFlip board -->
+  <R p="29" id="O35" s="70" st="LIVE"/>     <!-- RALLY milestone -->
+  <R p="30" id="O09" s="69" st="PARTIAL"/>  <!-- Board position OWC gap -->
+  <R p="31" id="O24" s="68" st="PARTIAL"/>  <!-- Wild Scatter -->
+  <R p="32" id="O23" s="66" st="LIVE"/>     <!-- GravityFlip -->
+  <R p="33" id="O18" s="66" st="LIVE"/>     <!-- Six of a Kind -->
+  <R p="34" id="O30" s="65" st="LIVE"/>     <!-- BOMB_STANDARD -->
+  <R p="35" id="O04" s="61" st="LIVE"/>     <!-- Multiplier Orb -->
+  <R p="36" id="O19" s="56" st="LIVE"/>     <!-- Wild auto (False) -->
+  <R p="37" id="O32" s="55" st="LIVE"/>     <!-- STONE navigation -->
+  <R p="38" id="O47" s="54" st="LIVE"/>     <!-- PDX persistence -->
+  <R p="39" id="O13" s="50" st="LIVE"/>     <!-- LOCK denial -->
+  <R p="40" id="O43" s="47" st="PARTIAL"/>  <!-- Leaderboard -->
+  <R p="41" id="O41" s="46" st="LIVE"/>     <!-- Commit-reveal -->
+  <R p="42" id="O02" s="48" st="LIVE"/>     <!-- Auto-bank -->
+  <R p="43" id="O42" s="28" st="LIVE"/>     <!-- PostHog -->
+  <R p="44" id="O48" s="29" st="FALSE"/>    <!-- Ghost (False) -->
+  <R p="45" id="O14" s="36" st="FALSE"/>    <!-- STONE bug (False) -->
+  <R p="46" id="O28" s="24" st="LIVE"/>     <!-- FD daily floor -->
+  <R p="47" id="O12" s="0"  st="DEAD"/>     <!-- Dead-state (DEAD) -->
+</RANKED>
+
+</OPPORTUNITY_MAP>

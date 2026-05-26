@@ -13,7 +13,9 @@
   <F6>core/packages/farkle-engine/src/csprng.ts</F6>
   <F7>core/apps/server/src/gameRoom.ts</F7>
   <F8>newmodespec.md</F8>
+  <F14>core/apps/server/src/analytics.ts</F14>
   <F16>audit/COMPONENT_AUDIT.md</F16>
+  <F21>core/apps/server/src/playIntegrity.ts</F21>
 </DICT>
 
 <!-- ══════════════════════ TILES ══════════════════════ -->

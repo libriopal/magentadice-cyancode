@@ -89,7 +89,7 @@
      ═══════════════════════════════════════════════════════════════════════ -->
 <Q id="Q2">
   <QUESTION>Which files are truly sacred? Exact paths. Why sacred. What depends on them.</QUESTION>
-  <E>F13,F2:1-10,F3:1-10,F4:1-10,F5:1-10,F6:1-10,F7:59-67,F1:1-10,CLAUDE.md</E>
+  <E>F13,F2:1-10,F3:1-10,F4:1-10,F5:1-10,F6:1-10,F7:59-67,F1:1-10</E><E>CLAUDE.md</E>
   <C>0.92</C>
   <R>
     CLAUDE_MD_LIST (authoritative per mesh/sacred-core-spec.md):

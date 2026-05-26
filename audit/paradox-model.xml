@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- PARADOX-MODEL | PHASE_0_OPPORTUNITY_MODEL | Sources: opportunity-map.xml, qna0.xml, components.xml, paradox-pay-gap.xml -->
+<!-- No implementation. No code changes. No balancing. -->
+
+<PARADOX_MODEL>
+
+<DESIGN_LAWS>
+  <LAW id="L1">Opportunity Creates Value</LAW>
+  <LAW id="L2">Paradox Pay</LAW>
+  <LAW id="L3">Never Spawn Wins. Only Spawn Opportunities.</LAW>
+</DESIGN_LAWS>
+
+<!-- ════════ DEFINITIONS ════════ -->
+<DEFINITIONS>
+
+<DEF id="D1" name="OPPORTUNITY">
+  <STATEMENT>Game state enabling a player decision with a positive EV path if correctly identified and executed.</STATEMENT>
+  <REQUIRED>valid_action + player_decision + positive_EV_path</REQUIRED>
+  <REF src="opportunity-map.xml#FORMULA"/>
+</DEF>
+
+<DEF id="D2" name="FUTURE_OPPORTUNITY">
+  <STATEMENT>Opportunity whose value is realized in a later turn or phase. Requires board reading to identify. Temporal separation between decision and payout.</STATEMENT>
+  <EXAMPLES>O07 ICE clearing, O08 Catalyst accumulation, O09 board position for OWC refill</EXAMPLES>
+</DEF>
+
+<DEF id="D3" name="PARADOX_OPPORTUNITY">
+  <STATEMENT>Opportunity where the action required to claim it simultaneously increases risk. Correct decisions non-obvious. Embodies L2.</STATEMENT>
+  <CANONICAL>O01 Bank vs O15 Chain-6. O26 Hold at 4.0× vs O10 Farkle risk grows.</CANONICAL>
+  <REF src="opportunity-map.xml#O10,O15,O26"/>
+</DEF>
+
+<DEF id="D4" name="DEAD_OPPORTUNITY">
+  <STATEMENT>Game state with no valid action path. No player agency. Destroys all opportunity. Must be eliminated or recovered. SCORE=0 by definition.</STATEMENT>
+  <CANONICAL>O12: hasValidChain=false, no reshuffle recovery in gameRoom.ts.</CANONICAL>
+  <LAW_VIOLATION>L1</LAW_VIOLATION>
+</DEF>
+
+<DEF id="D5" name="FALSE_OPPORTUNITY">
+  <STATEMENT>Mechanic appearing to offer value but providing no genuine decision density or skill expression. Occupies player attention and board space without creating value.</STATEMENT>
+  <CANONICAL>O48 Ghost tile (score=29), O19 Wild auto-resolve (zero decision), O14 STONE density bug (undesigned risk).</CANONICAL>
+  <LAW_VIOLATION>L1; L3 if spawn-based</LAW_VIOLATION>
+</DEF>
+
+<DEF id="D6" name="OPPORTUNITY_CHAIN">
+  <STATEMENT>Sequence where claiming one opportunity creates or amplifies the next. Compounding value visible only to skilled board readers.</STATEMENT>
+  <CANONICAL>O10 survive Farkle → O15 chain-6 → O05 multiplier advance → O26 hold 4.0× → O01 bank → O27 PDX payout</CANONICAL>
+</DEF>
+
+<DEF id="D7" name="OPPORTUNITY_COLLAPSE">
+  <STATEMENT>Single event that destroys multiple simultaneous opportunity types. Farkle is canonical collapse: resets multiplierStep (O11) + zeroes unbanked (O10) + feeds farklePool to opponent (O25). Three types collapse simultaneously.</STATEMENT>
+  <REF src="QNA#Q1:FARKLE_PATH"/>
+</DEF>
+
+<DEF id="D8" name="OPPORTUNITY_DENSITY">
+  <STATEMENT>Count of simultaneous visible opportunities per turn. Higher density = richer decision space = higher skill ceiling.</STATEMENT>
+  <METRIC>Count of O-ids with score &gt; 70 simultaneously visible to player per turn.</METRIC>
+  <PEAK>DRAFT(O44) + chain choice(O15) + bank timing(O01) + energy reading(O06) = maximum density state.</PEAK>
+</DEF>
+
+<DEF id="D9" name="OPPORTUNITY_VISIBILITY">
+  <STATEMENT>Degree to which a player can recognize an opportunity from available board information. High=legible trigger + predictable outcome. Low=hidden algorithm or undesigned state.</STATEMENT>
+  <HIGH>BOMB_RAINBOW (face count), Two Triplets (scoring table knowledge), Farkle risk (adjacency read)</HIGH>
+  <LOW>Ghost drift (non-deterministic), STONE density bug (ignores settings), Wild auto (hidden algorithm)</LOW>
+</DEF>
+
+</DEFINITIONS>
+
+<!-- ════════ SYSTEM CLASSIFICATIONS ════════ -->
+<!-- disposition: KEEP|MODIFY|REPLACE|ADD | evidence: REF to existing audit sources only -->
+
+<SYSTEM_CLASSIFICATIONS>
+
+<!-- ── KEEP: Sacred ── -->
+<SYS id="S01" name="farkleScorer.ts"  disposition="KEEP" authority="Human+ADR+MonteCarlo10k"><REF src="QNA#Q2:S3"/><REF src="QNA#Q3"/></SYS>
+<SYS id="S02" name="csprng.ts"        disposition="KEEP" authority="Human+ADR+RNGLineage"><REF src="QNA#Q5"/><REF src="QNA#Q2:S5"/></SYS>
+<SYS id="S03" name="farkleStore.ts"   disposition="KEEP" authority="Human+ADR"><REF src="QNA#Q2:S1"/></SYS>
+<SYS id="S04" name="gameStore.ts"     disposition="KEEP" authority="Human+ADR"><REF src="QNA#Q2:S2"/></SYS>
+<SYS id="S05" name="rtpConfig.ts"     disposition="KEEP" authority="Human+ADR+MonteCarlo"><REF src="QNA#Q6"/></SYS>
+<SYS id="S06" name="monteCarlo.ts"    disposition="KEEP" authority="Human+ADR"><REF src="QNA#Q13"/></SYS>
+
+<!-- ── KEEP: Core non-sacred ── -->
+<SYS id="S07" name="Multiplier Ladder [1.0,1.25,1.5,2.0,3.0,4.0]" disposition="KEEP">
+  <REF src="opportunity-map.xml#O05,O26"/><NOTE>Drives highest future-value and vault opportunities. Core Paradox mechanism.</NOTE>
+</SYS>
+<SYS id="S08" name="BOMB_RAINBOW" disposition="KEEP">
+  <REF src="opportunity-map.xml#O17,O29"/><NOTE>O17=84. Requires board reading (Straight). Highest-skill bomb.</NOTE>
+</SYS>
+<SYS id="S09" name="BOMB_STANDARD" disposition="KEEP">
+  <REF src="opportunity-map.xml#O18,O30"/><NOTE>O18=66. Six of a Kind. Luck/skill hybrid. Retains aspirational value.</NOTE>
+</SYS>
+<SYS id="S10" name="ICE Blocker" disposition="KEEP">
+  <REF src="COMP#B02"/><NOTE>ValueScore=0.66 (A-tier). O07=76. Best cascade-planning blocker.</NOTE>
+</SYS>
+<SYS id="S11" name="VS Mode" disposition="KEEP">
+  <REF src="opportunity-map.xml#O39,O40"/><NOTE>O39=85, O40=83. Core competitive. Highest social opportunity density.</NOTE>
+</SYS>
+<SYS id="S12" name="SOLO Mode"          disposition="KEEP"><REF src="QNA#Q6"/></SYS>
+<SYS id="S13" name="Energy System PRIME/FRENZY" disposition="KEEP">
+  <REF src="opportunity-map.xml#O21,O22"/><NOTE>FRENZY wild=9 vs NORMAL=0. Clear opportunity density shift.</NOTE>
+</SYS>
+<SYS id="S14" name="GravityFlip"         disposition="KEEP"><REF src="opportunity-map.xml#O23,O31"/><NOTE>RTP-neutral per monteCarlo. Replayability boost.</NOTE></SYS>
+<SYS id="S15" name="Multiplier Orb"      disposition="KEEP"><REF src="opportunity-map.xml#O04"/><NOTE>O04=61. Retention hook.</NOTE></SYS>
+<SYS id="S16" name="PostHog Analytics"   disposition="KEEP"><REF src="QNA#Q19"/></SYS>
+<SYS id="S17" name="playIntegrity Geofence" disposition="KEEP"><REF src="QNA#Q16"/><NOTE>Legal. 5 states blocked. Sacred boundary: do not soften.</NOTE></SYS>
+
+<!-- ── MODIFY ── -->
+<SYS id="S18" name="spawnTiles (gridUtils.ts)" disposition="MODIFY">
+  <REF src="GAP#G01"/><REF src="opportunity-map.xml#O09"/>
+  <NOTE>O09=69 PARTIAL. Zero board-state inputs. L3 violation. OWC integration: blocked by ADR-021 + Human approval + monteCarlo gate.</NOTE>
+</SYS>
+<SYS id="S19" name="createGrid seed" disposition="MODIFY">
+  <REF src="QNA#Q5:FAIRNESS_GAP"/>
+  <NOTE>seedNum=Date.now() not CSPRNG-derived. Grid layout not in fairness proof. Pass CSPRNG seed from GameRoom constructor.</NOTE>
+</SYS>
+<SYS id="S20" name="Catalyst Tile" disposition="MODIFY">
+  <REF src="COMP#CAT"/><REF src="opportunity-map.xml#O08"/>
+  <NOTE>O08=74 PARTIAL. CATALYST_WILD_BOOST=2 defined, not wired to spawnTiles. L1 violation.</NOTE>
+</SYS>
+<SYS id="S21" name="Class Archetype Lobby Selection" disposition="MODIFY">
+  <REF src="QNA#Q1:G7"/><REF src="opportunity-map.xml#O46"/>
+  <NOTE>O46=82 UNWIRED. JOIN_ROOM lacks classArchetype field. Defaults to Paladin. L1 violation.</NOTE>
+</SYS>
+<SYS id="S22" name="DRAFT Phase" disposition="MODIFY">
+  <REF src="QNA#Q1:G4"/><REF src="opportunity-map.xml#O44"/>
+  <NOTE>O44=91 UNWIRED. Fully specified in newmodespec.md:121-126. Not in gameRoom.ts message types. L1 violation.</NOTE>
+</SYS>
+<SYS id="S23" name="STONE Blocker Density" disposition="MODIFY">
+  <REF src="QNA#Q4:STONE_BUG"/>
+  <NOTE>BLOCKER_DENSITY_COUNTS=6 hardcoded F3:72. Ignores LobbySettings. O14=36 FALSE_OPPORTUNITY.</NOTE>
+</SYS>
+<SYS id="S24" name="Dead-State Recovery" disposition="MODIFY">
+  <REF src="QNA#Q1:G3"/><REF src="opportunity-map.xml#O12"/>
+  <NOTE>O12=0 DEAD. hasValidChain() exists, no reshuffle in gameRoom.ts. Production freeze risk. Highest priority.</NOTE>
+</SYS>
+<SYS id="S25" name="RALLY Payout Documentation" disposition="MODIFY">
+  <REF src="QNA#Q12"/>
+  <NOTE>gameRoom.ts:37 says winner-takes-all. monteCarlo:189-195 and newmodespec.md both confirm equal split. Comment is stale.</NOTE>
+</SYS>
+<SYS id="S26" name="Wild Resolution _resolveWilds" disposition="MODIFY">
+  <REF src="GAP#G02"/><REF src="opportunity-map.xml#O19,O20"/>
+  <NOTE>O19=56 auto no decision. O20=85 proposed manual. RTP-safe: manual cannot exceed auto-optimal.</NOTE>
+</SYS>
+<SYS id="S27" name="Genre System (8/20 wired)" disposition="MODIFY">
+  <REF src="QNA#Q1:G5"/><REF src="opportunity-map.xml#O45"/>
+  <NOTE>O45=88 PARTIAL. Depends on S22 DRAFT phase shipping first.</NOTE>
+</SYS>
+<SYS id="S28" name="LOCK Blocker" disposition="MODIFY">
+  <REF src="COMP#B03"/><NOTE>ValueScore=0.49. Low cascade. Re-evaluate post-DRAFT; remove if no genre elevates it.</NOTE>
+</SYS>
+<SYS id="S29" name="HEIST Betrayal Timing" disposition="MODIFY">
+  <REF src="QNA#Q11"/><REF src="opportunity-map.xml#O36"/>
+  <NOTE>O36=90 PARTIAL. Verify early-bank deducts from shared pool in gameRoom.ts.</NOTE>
+</SYS>
+<SYS id="S30" name="Wild Scatter" disposition="MODIFY">
+  <REF src="QNA#Q14:CONFLICT_05"/><REF src="opportunity-map.xml#O24"/>
+  <NOTE>O24=68 PARTIAL. Specified in newmodespec.md. Wiring unconfirmed. Verify or wire.</NOTE>
+</SYS>
+<SYS id="S34" name="Mirror Tile" disposition="MODIFY">
+  <REF src="COMP#MIR"/><NOTE>ValueScore=0.49. Low visibility. Clarify or merge with ICE post-DRAFT review.</NOTE>
+</SYS>
+
+<!-- ── REPLACE ── -->
+<SYS id="S31" name="Ghost Tile" disposition="REPLACE">
+  <REF src="GAP#G03"/><REF src="opportunity-map.xml#O48"/>
+  <NOTE>O48=29 FALSE_OPPORTUNITY. ValueScore=0.42 (lowest). REPLACE: Echo tile — scores as 1-face die, doubles chain score if chained last. Positional decision created. Opportunity gain: 29→est.75+.</NOTE>
+</SYS>
+
+<!-- ── ADD ── -->
+<SYS id="S32" name="OpportunityWeightController (OWC)" disposition="ADD">
+  <REF src="GAP#G01"/><REF src="design/OpportunityWeightController.md"/>
+  <NOTE>Resolves L3 violation in S18. Bounded adjustments max ±10%. BLOCKED: ADR-021 + Human approval + monteCarlo RTP gate.</NOTE>
+</SYS>
+<SYS id="S33" name="HollaEx PDX On-Ramp" disposition="ADD">
+  <REF src="QNA#Q1:G6"/>
+  <NOTE>Server-side only. BLOCKED: ADR-022 + legal review (crypto+sweepstakes) + Human approval.</NOTE>
+</SYS>
+
+</SYSTEM_CLASSIFICATIONS>
+
+<!-- ════════ RANKED CHANGES ════════ -->
+<!-- ev=Expected Value Gain (1-10) | cost=Implementation Cost (1-10) | ratio=ev/cost | Higher ratio = do first -->
+
+<RANKED_CHANGES>
+<C rank="1"  ratio="4.50" ev="9" cost="2" sys="S24">
+  <NAME>Dead-state recovery — reshuffle trigger in gameRoom.ts</NAME>
+  <EV>Eliminates O12 DEAD (score=0). Restores all opportunity. Production freeze prevention.</EV>
+  <RISK>LOW. No Sacred Core touch. CSPRNG-seeded reshuffle. Emit BOARD_RESHUFFLE event.</RISK>
+</C>
+<C rank="2"  ratio="4.00" ev="8" cost="2" sys="S31">
+  <NAME>Ghost→Echo tile replacement</NAME>
+  <EV>O48 False(29) → Combo Opportunity(est.75+). Positional decision added. Low spawn rate (NORMAL=1%).</EV>
+  <RISK>LOW. Tile type redefinition. Not Sacred Core.</RISK>
+</C>
+<C rank="3"  ratio="3.50" ev="7" cost="2" sys="S19">
+  <NAME>createGrid CSPRNG seed — close fairness gap</NAME>
+  <EV>Grid layout covered by commit-reveal proof. PDX sweepstakes legal posture strengthened.</EV>
+  <RISK>VERY_LOW. seedNum parameter already exists (default=Date.now()). Pass CSPRNG-derived value.</RISK>
+</C>
+<C rank="4"  ratio="3.00" ev="3" cost="1" sys="S25">
+  <NAME>RALLY payout comment fix — gameRoom.ts:37</NAME>
+  <EV>Eliminates documentation conflict. Prevents future implementation divergence.</EV>
+  <RISK>NONE. Comment only.</RISK>
+</C>
+<C rank="5"  ratio="2.67" ev="8" cost="3" sys="S21">
+  <NAME>Class archetype JOIN_ROOM wiring</NAME>
+  <EV>O46 UNWIRED(82) → LIVE. 4 distinct risk profiles delivered to players. Progression identity unlocked.</EV>
+  <RISK>LOW. JOIN_ROOM field addition. classArchetype already used post-join.</RISK>
+</C>
+<C rank="6"  ratio="2.50" ev="5" cost="2" sys="S23">
+  <NAME>STONE density settings-driven fix</NAME>
+  <EV>O14 False(36) → designed risk. LobbySettings control restored.</EV>
+  <RISK>LOW. Read from settings. Existing values become defaults.</RISK>
+</C>
+<C rank="7"  ratio="2.33" ev="7" cost="3" sys="S20">
+  <NAME>Catalyst tile wiring to spawnTiles</NAME>
+  <EV>O08 PARTIAL(74) → LIVE. Opportunity Chain created: Catalyst → wild boost → combo.</EV>
+  <RISK>LOW-MEDIUM. spawnTiles context parameter. RTP bounded by CATALYST_MAX_BOOST=10.</RISK>
+</C>
+<C rank="8"  ratio="2.25" ev="9" cost="4" sys="S22">
+  <NAME>DRAFT phase wiring in gameRoom.ts</NAME>
+  <EV>O44 UNWIRED(91) → LIVE. Highest progression opportunity. Gateway to S27 genre expansion.</EV>
+  <RISK>MEDIUM. New message type. 15s window must not block game start on timeout.</RISK>
+</C>
+<C rank="9"  ratio="1.75" ev="7" cost="4" sys="S26">
+  <NAME>Wild manual assignment option</NAME>
+  <EV>O19 False(56) converts. O20 Proposed(85) created. New mastery surface. RTP unchanged.</EV>
+  <RISK>MEDIUM. Client UI required. Server enforces: manual score ≥ auto-optimal.</RISK>
+</C>
+<C rank="10" ratio="1.50" ev="9" cost="6" sys="S18,S32" blocked="ADR-021,Human,monteCarlo">
+  <NAME>OWC — spawnTiles board-state awareness (L3 core fix)</NAME>
+  <EV>Resolves L3 violation. +15-25% cascade frequency (F15 estimate). O09 → LIVE.</EV>
+  <RISK>HIGH. RTP impact possible. Requires ADR-021 + Human approval + monteCarlo 10k ±0.005.</RISK>
+</C>
+<C rank="11" ratio="1.33" ev="8" cost="6" sys="S27" dep="S22">
+  <NAME>Genre system expansion (8→20 wired)</NAME>
+  <EV>O45 PARTIAL(88) → fuller LIVE. Replayability ceiling raised. Requires DRAFT phase first.</EV>
+  <RISK>MEDIUM-HIGH. 12 genres need specification + wiring.</RISK>
+</C>
+<C rank="12" ratio="1.33" ev="4" cost="3" sys="S28" conditional="post-DRAFT review">
+  <NAME>LOCK blocker evaluate/remove</NAME>
+  <EV>O13(50). Board space freed for higher-value tiles if removed.</EV>
+  <RISK>LOW. Spawn-weight change only. Not Sacred.</RISK>
+</C>
+<C rank="13" ratio="1.20" ev="6" cost="5" sys="S33" blocked="ADR-022,legal,Human">
+  <NAME>HollaEx PDX on-ramp</NAME>
+  <EV>Crypto→PDX funding. O27(75) PDX payout more accessible. Player acquisition broadened.</EV>
+  <RISK>HIGH. Regulatory (crypto+sweepstakes). Legal review mandatory.</RISK>
+</C>
+<C rank="14" ratio="1.00" ev="3" cost="3" sys="S34" conditional="post-DRAFT review">
+  <NAME>Mirror tile clarification or merge</NAME>
+  <EV>Reduces confusion. ValueScore=0.49. Low ceiling.</EV>
+  <RISK>LOW in clarify phase. Merge/remove deferred.</RISK>
+</C>
+</RANKED_CHANGES>
+
+<!-- ════════ READINESS ════════ -->
+<PARADOX_PAY_READINESS score="31/50" pct="62%" src="QNA#PARADOX_PAY_READINESS_SCORE">
+  <BLOCKING id="B1" sys="S24">Dead-state no recovery — production freeze risk</BLOCKING>
+  <BLOCKING id="B2" sys="S22">DRAFT phase unwired — O44=91 not delivered</BLOCKING>
+  <BLOCKING id="B3" sys="S21">Class archetype unwired — progression identity blocked</BLOCKING>
+  <CRITICAL_L3 sys="S18">spawnTiles zero board-state awareness — Law 3 not met</CRITICAL_L3>
+</PARADOX_PAY_READINESS>
+
+</PARADOX_MODEL>
