@@ -1,9 +1,18 @@
+# MCP server config — machine-local, never commit (contains API tokens and machine paths)
 .mcp.json
 node_modules/
 *.apk
 .env
 .env.*
+# Keep the example template tracked
+!.env.example
 dist/
 build/
 .DS_Store
 *.zip
+
+# Godot build artifacts
+.godot/
+*.import
+export_presets.cfg
+.godot_version
