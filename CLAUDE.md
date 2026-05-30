@@ -2,9 +2,19 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Security
+
+**NEVER commit `.mcp.json`**. It is gitignored because it contains machine-local API tokens (BrightData) and absolute paths. Use `.env.example` as a template — copy to `.env.local` and fill in values on each machine.
+
+A BrightData token was previously committed to history in commit `9323865`. **That token must be revoked at the BrightData dashboard.** Git history must be scrubbed before any public push: `git filter-repo --path .mcp.json --invert-paths` (or BFG Repo Cleaner).
+
+---
+
 ## Repository Overview
 
-This is the **dream-core-integration** monorepo — the integration layer for two independent submodule projects:
+This is the **magentadice-cyancode integration layer** (internally: dream-core-integration) — the integration layer for two independent submodule projects:
+
+Repo: https://github.com/libriopal/magentadice-cyancode
 
 - **`core/`** — FAR_NZY (Farkle Frenzy): a physics-based Match-3D puzzle/casino game (React + Three.js + Rapier3D, pnpm workspaces, Capacitor native)
 - **`dream/`** — AGROS (Adaptive Generative Research Operating System): a browser-native emotional music engine that converts FAR_NZY game state into procedural audio via the ERK pipeline
@@ -12,6 +22,8 @@ This is the **dream-core-integration** monorepo — the integration layer for tw
 - **`3libras/`** — Visual layer design specs (non-code; authoritative design law)
 
 Initialize submodules: `git submodule update --init --recursive core dream`
+
+Note: `data/` is **not** a submodule — it is a plain local directory of ~2245 tracked binary assets. No submodule init required for it.
 
 ---
 
@@ -94,7 +106,11 @@ The authoritative visual design law for FAR_NZY is in `3libras/the_visual_layer.
 
 ## Integration Points
 
-The `.mcp.json` at root configures: `brightdata`, `filesystem`, `memory`, `context7`, `sequential-thinking`.
+The `.mcp.json` at root configures MCP servers for this session (brightdata, filesystem, memory, context7, sequential-thinking). This file is **machine-local and gitignored** — it must never be committed. See `.env.example` for required variables.
+
+**Local-only tools / Prerequisites:**
+- `godot-mcp` — NOT initialized. If you need Godot MCP integration, clone and build it locally, then set `GODOT_MCP_PATH` in `.env.local`. The `godot` entry in `.mcp.json` requires `${GODOT_MCP_PATH}/build/index.js` to exist.
+- `GODOT_PATH` — must point to your local Godot executable.
 
 AGROS connects to FAR_NZY via game-state events; the ERK conductor profiles live in `dream/apps/frontend/src/` and map gameplay output to the 8-state emotional model.
 
@@ -112,7 +128,7 @@ AGROS connects to FAR_NZY via game-state events; the ERK conductor profiles live
 
 ## Five-Layer Game Architecture
 
-Defined in `newmodespec.md`. All game mode work must respect this stack — lower layers cannot be mutated by higher ones:
+Defined in `prompts/newmodespec.md`. All game mode work must respect this stack — lower layers cannot be mutated by higher ones:
 
 ```text
 L5  ADORNMENT    — cosmetic only (audio/visual); observes state, never mutates it
@@ -124,7 +140,7 @@ L1  SACRED CORE  — scoreFarkle(), CSPRNG, SixPoolManager (immutable mid-match)
 
 20 genre modules are composable layers wrapping L1. No genre module may modify scoring inputs, reroll the dice stream, or alter face distributions in the live pool.
 
-**Canonical glossary** (from `newmodespec.md`): MATCH, ROUND, CHAIN, FACET, CLASS, SHARD, TOKEN, SEAL, SURGE, HEARTBEAT, ULTIMATE — use these terms consistently.
+**Canonical glossary** (from `prompts/newmodespec.md`): MATCH, ROUND, CHAIN, FACET, CLASS, SHARD, TOKEN, SEAL, SURGE, HEARTBEAT, ULTIMATE — use these terms consistently.
 
 ---
 

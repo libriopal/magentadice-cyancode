@@ -41,6 +41,12 @@ cd apps/frontend && npm run dev
 cd apps/backend  && npm run dev
 ```
 
+## Security
+
+**NEVER commit `.mcp.json`**. It is gitignored — it contains machine-local API tokens and absolute paths. See `.env.example` for required variables.
+
+A BrightData API token was previously committed to git history. **Revoke it immediately** at the BrightData dashboard, then scrub history before any public push.
+
 ## Sacred boundaries
 
 The authoritative sacred-file list is `core/.ff-core-lock`. Files listed there implement game balance, scoring, and provably-fair RNG. **Do not modify them without explicit developer approval and full test suite passing.**
