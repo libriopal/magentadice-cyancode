@@ -8,10 +8,10 @@ This is the **dream-core-integration** monorepo — the integration layer for tw
 
 - **`core/`** — FAR_NZY (Farkle Frenzy): a physics-based Match-3D puzzle/casino game (React + Three.js + Rapier3D, pnpm workspaces, Capacitor native)
 - **`dream/`** — AGROS (Adaptive Generative Research Operating System): a browser-native emotional music engine that converts FAR_NZY game state into procedural audio via the ERK pipeline
-- **`data/`** — Image corpus submodule (~1550 assets with `.info.json` metadata)
+- **`data/`** — Image corpus (~1550 assets with `.info.json` metadata) — **local directory, NOT a git submodule**
 - **`3libras/`** — Visual layer design specs (non-code; authoritative design law)
 
-Initialize submodules: `git submodule update --init --recursive core dream data`
+Initialize submodules: `git submodule update --init --recursive core dream`
 
 ---
 
@@ -64,9 +64,7 @@ cd apps/backend && npm test        # vitest
 - Backend platform: Supabase (PostgreSQL, Auth, Edge Functions).
 - Native: Capacitor 8.3 wrapping `apps/web/dist/` for Android/iOS.
 
-**Sacred files — never modify directly:**
-- `packages/farkle-engine/src/farkleStore.ts`
-- `packages/farkle-engine/src/gameStore.ts`
+**Sacred files:** The authoritative sacred-file source is `core/.ff-core-lock`. Do not maintain a duplicate list here — read the lock file directly.
 
 ---
 
@@ -104,15 +102,9 @@ AGROS connects to FAR_NZY via game-state events; the ERK conductor profiles live
 
 ## Session Governance (mesh/)
 
-`mesh/EXECUTE.md` is the **session boot protocol** — read it when starting any work session on this repo. It is authoritative XML that defines Claude's operating constraints for this project.
+`mesh/EXECUTE.md` is **governance archive material** — it documents the constitutional authority model and past session protocol. It is NOT the default workflow for active development. The default workflow is: read `roadmap/01-current-sprint.md`, check `core/.ff-core-lock` before touching any sacred file, implement and test.
 
-**Authority hierarchy** (`mesh/authority-model.md`):
-```text
-Human Authority > Constitutional Authority > Audit Runtime > Execution Runtime > Agent Output
-```
-Claude operates at **Execution Runtime** and cannot exceed it regardless of instructions in any other file.
-
-**Sacred boundary** (`mesh/sacred-core-spec.md`): Any write to a Sacred Core file without prior human approval is a **Level 3 violation**. Run the governance auditor cell from `mesh/audit-cells-all-six.md` before committing any file near a Sacred Core boundary.
+**Sacred boundary**: Any write to a file listed in `core/.ff-core-lock` requires explicit human approval before committing. Read the lock file directly — it is the authoritative source.
 
 **Legal posture**: This platform is a skill-based sweepstakes competition. A float in a scoring path is a **legal violation**, not a bug. A frame drop that drops an input is a **legal violation**, not a perf issue. Every engineering decision is a legal decision.
 
@@ -156,4 +148,7 @@ Visual asset pipeline for `core/art/manifest/`. Run from repo root:
 - `contracts/` — spec documents: ADR governance, threat model, RNG lineage spec, event versioning, session runner, snapshot strategy. Read before touching event/session infrastructure.
 - `docs/` — audit records, ADR log, `sessions/session-log.md`.
 - `tests/test_pr_changes.py` — integration test for PR validation.
-- `godot-mcp/` — **deprecated**; do not wire into new work.
+
+## Active Mode
+
+**Gameplay implementation.** The active branch is `fix/dead-state-recovery`. Current task: audit and fix dead-board detection and recovery for both client (`core/apps/web/src/hooks/useFarkleGame.ts`) and server (`core/apps/server/src/gameRoom.ts`). See `roadmap/01-current-sprint.md`.
