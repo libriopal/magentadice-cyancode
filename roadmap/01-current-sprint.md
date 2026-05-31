@@ -28,7 +28,7 @@ cat docs/DEAD_STATE_FINDINGS.md && cat docs/DEAD_STATE_IMPLEMENTATION_PLAN.md
 
 ## P1 — Client Dead Board Recovery Validation
 
-**Status:** PENDING APPROVAL
+**Status:** COMPLETE (cb293bb)
 
 **Scope Files:**
 - `core/packages/game-core/src/systems/VoxelPhysicsSystem.ts` — fix `isDeadBoard()` adjacency check and `reshuffleBoard()` validation loop
@@ -51,7 +51,7 @@ cd core && pnpm type-check && pnpm test
 
 ## P1 — Server Dead Board Recovery Validation
 
-**Status:** PENDING APPROVAL
+**Status:** COMPLETE (cb293bb)
 
 **Scope Files:**
 - `core/apps/server/src/gameRoom.ts` (SACRED) — add dead-board detection after farkle and chain commit
@@ -72,7 +72,7 @@ cd core && pnpm --filter @match3d/server test
 
 ## P2 — OWC Opportunity Weighting
 
-**Status:** DEFERRED — blocked by P1 completion
+**Status:** COMPLETE
 
 **Scope Files:** TBD after dead-state recovery is merged
 
@@ -84,7 +84,7 @@ cd core && pnpm --filter @match3d/server test
 
 ## P2 — Play Store Release Readiness
 
-**Status:** DEFERRED — blocked by P1 completion
+**Status:** COMPLETE
 
 **Scope Files:**
 - `core/DEPLOY.md`
@@ -99,6 +99,46 @@ cd core && pnpm --filter @match3d/server test
 **Verification Command:**
 ```bash
 cd core && pnpm android:debug
+```
+
+---
+
+## P2.5 — Multiplayer Authority Consolidation
+
+**Status:** COMPLETE (f7bfcd8)
+
+**Scope Files:**
+- `core/apps/server/src/gameRoom.ts` (SACRED) — added `processChainFaces()`, `SUBMIT_CHAIN_FACES` handler, `COLLECT_ORB` handler, `CLAIM_VAULT` handler, `DOUBLER_SPAWNED` broadcast
+- `core/apps/web/src/store/farkleStore.ts` (SACRED) — added `syncFromServer` action
+- `core/apps/web/src/hooks/useFarkleGame.ts` (SACRED) — `submitChainFaces`, `collectOrb`, all bonus paths `!isMultiplayer`-gated
+- `core/apps/web/src/store/multiplayerStore.ts` — wired `CHAIN_RESULT→syncFromServer`, `DOUBLER_SPAWNED`, `ORB_COLLECTED`
+
+**Verification:** BITO_P2_5 confidence 80 — SAFE ✅
+
+---
+
+## Casino UI — Post-Launch Gate
+
+**Status:** INTENTIONALLY DEFERRED — not in scope for this PR
+
+SOLO_CASINO, VS_CASINO, RALLY_CASINO, HEIST_CASINO are handled server-side (`gameRoom.ts` `endSession()` / `checkMilestones()`) but have no UI entry points. Casino mode selection UI is a post-launch feature pending legal/compliance sign-off for each jurisdiction. Do not expose in HomeScreen or MultiplayerLobby until explicitly authorized.
+
+---
+
+## P2.6 — Server-Side Bonus Validation
+
+**Status:** IN PROGRESS
+
+**Scope Files:**
+- `core/apps/server/src/gameRoom.ts` (SACRED) — surface `orbBonus`, `doublerBonus`, `archivistBonus` in `CHAIN_RESULT` broadcast
+- `core/apps/web/src/store/farkleStore.ts` (SACRED) — extend `syncFromServer` signature with optional bonus params
+- `core/apps/web/src/store/multiplayerStore.ts` — pass bonus fields from `CHAIN_RESULT` to `syncFromServer` ✅ DONE
+
+**Authorization:** BITO_P2_6 confidence 95 — SAFE ✅ Authorized 2026-05-31
+
+**Verification Command:**
+```bash
+cd core && pnpm type-check && pnpm test
 ```
 
 ---
