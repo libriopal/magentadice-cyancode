@@ -8,8 +8,8 @@ git submodule status
 echo "Checking pipeline status..."
 ./manifest.sh status
 
-if git diff --name-only main...HEAD | grep -q "^core/"; then
-  echo "Branch has core/ changes. Running pre-merge Bito check..."
+if git diff --name-only main...HEAD | grep -qE "^core|^dream"; then
+  echo "Branch has core/ or dream/ changes. Running pre-merge Bito check..."
   ./scripts/bito-pre-merge-check.sh
   if [ $? -ne 0 ]; then
     echo "BITO PRE-MERGE CHECK FAILED — resolve before merging"
