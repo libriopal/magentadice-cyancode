@@ -510,7 +510,7 @@ Output:
 
 ## ── APPROVAL GATE A ──────────────────────────────
 ## AUDIT COMPLETE. HUMAN APPROVAL REQUIRED.
-##
+## Review Instructions
 ## Review the audit output above.
 ## Authorize Phase Group B to proceed.
 ## No cleanup or file changes occur until you approve.
@@ -521,8 +521,8 @@ Output:
 ═══════════════════════════════════════════════
 # PHASE GROUP B — CLEANUP + WORKFLOW REALIGNMENT
 # Mode: SCOPED changes only.
-#       Every change is planned first, shown to human,
-#       then executed only on explicit approval.
+# Every change is planned first, shown to human,
+# then executed only on explicit approval.
 # Sacred files: NEVER touched in this phase group.
 ═══════════════════════════════════════════════
 
@@ -666,7 +666,7 @@ Every phase:
   Expected Readiness Gain / Complexity (XS/S/M/L/XL) / Leverage Score
 
 Separate section:
-  ## DEFERRED PHASES
+## DEFERRED PHASES
   (UNKNOWN/ASSUMED — list evidence needed to unblock each)
 
 ---
@@ -680,7 +680,7 @@ Before planning any phase touching CORE SACRED:
   Include as stub only — no implementation details.
 
 Format:
-  ## Phase N
+## Phase N
   Goal / Dependencies / Success Criteria /
   Blocked Systems Unlocked / Sacred File Impact /
   Lock Files Affected / Risk / Evidence Basis
@@ -788,6 +788,6 @@ After Phase Group B: STOP. Output final package. Await approval.
 ## Sacred file modifications require explicit authorization.
 ## core/.ff-core-lock is the single authority.
 ## UNKNOWN systems require evidence before planning proceeds.
-##
+## Authorization Scope
 ## No exceptions.
 ## ────────────────────────────────────────────────

@@ -199,6 +199,11 @@ For dream/ files also verify:
 - Memory ledger files (project-memory.md, viktor.md, coderabbit.md) updated if backend engines were modified
 
 Return PASS or FAIL per file with line evidence.
+
+Note: The following are known pre-existing patterns tracked in docs/KNOWN_TECHNICAL_DEBT.md
+— do not flag as new findings:
+- MULTIPLIER_LADDER float constants [1.0, 1.25, 1.5, 2.0, 3.0, 4.0] in farkleStore.ts (DEBT-01)
+- Orb bonus 0.5 multiplier in useFarkleGame.ts (DEBT-02)
 PROMPT
 
 # ── 6 + 7. Run Bito and save output ──────────────────────────────────────────
