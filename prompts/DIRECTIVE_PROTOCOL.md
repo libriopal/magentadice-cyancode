@@ -277,10 +277,10 @@ Phases for UNKNOWN systems go to DEFERRED.
 
 ---
 
-# ═══════════════════════════════════════════════
+═══════════════════════════════════════════════
 # PHASE GROUP A — AUDIT
 # Mode: READ-ONLY. Zero file changes.
-# ═══════════════════════════════════════════════
+═══════════════════════════════════════════════
 
 ---
 
@@ -295,7 +295,7 @@ Files: chainIndex.ts / csprng.ts / farkleScorer.ts / floodFill.ts /
 
 For each:
 
-### farkle-engine Truth Table
+## farkle-engine Truth Table
 | File | Status | Prod Ready | Consumer | Evidence Path | Confidence | Lock Status |
 
 ---
@@ -310,7 +310,7 @@ Packages: ads / ai-quests / analytics / backend-client /
 
 For each:
 
-### Unclassified Package Truth Table
+## Unclassified Package Truth Table
 | Package | Status | Prod Ready | Consumer | Evidence Path | Confidence |
 
 ---
@@ -320,7 +320,7 @@ For each:
 Classify runtime systems in apps/web and apps/server.
 Check lock status against core/.ff-core-lock for each file touched.
 
-### apps/web systems to classify:
+## apps/web systems to classify:
   Board rendering      (VoxelPileScene.tsx — SURFACE)
   Chain consumer       (useFarkleGame.ts — CORE SACRED)
   Scoring consumer     (farkleStore.ts — CORE SACRED)
@@ -329,12 +329,12 @@ Check lock status against core/.ff-core-lock for each file touched.
   LiveEvents consumer  (useLiveEvents.ts — SURFACE)
   Quests consumer      (useQuests.ts — SURFACE)
 
-### apps/server systems to classify:
+## apps/server systems to classify:
   WebSocket authority  (gameRoom.ts — CORE SACRED)
   Server entry         (index.ts — SURFACE)
   Sandbox              (sandbox.ts — SURFACE)
 
-### Core App Truth Table
+## Core App Truth Table
 | System | Status | Prod Ready | Evidence Path | Confidence | Lock Status |
 
 ---
@@ -355,7 +355,7 @@ Systems:
   STRUTHIO-SEC integrity mesh (active or stub?)
   Memory ledger CI (enforced on every PR?)
 
-### AGROS Runtime Truth Table
+## AGROS Runtime Truth Table
 | System | Status | Prod Ready | Evidence Path | Confidence |
 
 ---
@@ -500,11 +500,11 @@ Output:
 
 ---
 
-# ═══════════════════════════════════════════════
+═══════════════════════════════════════════════
 # PHASE GROUP A — AUDIT COMPLETE
 # OUTPUT: Full audit report
 # STOP HERE. AWAIT HUMAN APPROVAL BEFORE GROUP B.
-# ═══════════════════════════════════════════════
+═══════════════════════════════════════════════
 
 ---
 
@@ -518,13 +518,13 @@ Output:
 
 ---
 
-# ═══════════════════════════════════════════════
+═══════════════════════════════════════════════
 # PHASE GROUP B — CLEANUP + WORKFLOW REALIGNMENT
 # Mode: SCOPED changes only.
 #       Every change is planned first, shown to human,
 #       then executed only on explicit approval.
 # Sacred files: NEVER touched in this phase group.
-# ═══════════════════════════════════════════════
+═══════════════════════════════════════════════
 
 ---
 
