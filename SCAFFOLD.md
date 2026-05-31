@@ -41,7 +41,7 @@ libriopal/magentadice-cyancode/          ← repo root, run all scripts from her
 │               ├── performance_budget.md ?  must exist before visual work starts
 │               └── unified_lattice.json  ?
 │
-└── data/                                ✓  corpus submodule (~1550 files)
+└── data/                                ✓  local corpus directory (not a submodule; ~2245 files)
     ├── *.png / *.jpg / *.webp           ✓  corpus images
     └── *.info.json                      ✓  companion metadata
 ```
@@ -79,6 +79,4 @@ libriopal/magentadice-cyancode/          ← repo root, run all scripts from her
 
 ```bash
 git submodule update --init --recursive core dream
-# data/ may be a separate large submodule:
-git submodule update --init data
 ```

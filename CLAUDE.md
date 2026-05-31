@@ -118,11 +118,36 @@ AGROS connects to FAR_NZY via game-state events; the ERK conductor profiles live
 
 ## Session Governance (mesh/)
 
-`mesh/EXECUTE.md` is **governance archive material** — it documents the constitutional authority model and past session protocol. It is NOT the default workflow for active development. The default workflow is: read `roadmap/01-current-sprint.md`, check `core/.ff-core-lock` before touching any sacred file, implement and test.
+`mesh/EXECUTE.md` is **governance archive material** — it documents the constitutional authority model and past session protocol. It is NOT the default workflow for active development. See **Default Development Workflow** below for the full 5-step process.
 
 **Sacred boundary**: Any write to a file listed in `core/.ff-core-lock` requires explicit human approval before committing. Read the lock file directly — it is the authoritative source.
 
 **Legal posture**: This platform is a skill-based sweepstakes competition. A float in a scoring path is a **legal violation**, not a bug. A frame drop that drops an input is a **legal violation**, not a perf issue. Every engineering decision is a legal decision.
+
+---
+
+## Default Development Workflow
+
+Follow this exact order for every development session:
+
+**STEP 1: Read `roadmap/01-current-sprint.md`**
+Current sprint context — what is being built now, what is pending, what is deferred.
+
+**STEP 2: Check `core/.ff-core-lock`**
+Before touching ANY file, confirm its lock status. Files listed under CORE SACRED require explicit human approval before committing. Read the lock file directly — it is the authoritative source.
+
+**STEP 3: Confirm source of truth for your work area**
+- Gameplay changes → `core/FARKLEFRENZY.md`
+- Visual changes → `3libras/the_visual_layer.md`
+- Audio/AGROS changes → `dream/constitution/operational-law.md`
+- Sacred file work → **STOP. Get human approval first.**
+
+**STEP 4: Implement and test**
+- FAR_NZY: `cd core && pnpm type-check && pnpm test`
+- AGROS: `cd dream/apps/backend && npm test`
+
+**STEP 5: Run `./manifest.sh status` before committing**
+Verify pipeline integrity. Confirm no manifest regressions before any commit.
 
 ---
 
