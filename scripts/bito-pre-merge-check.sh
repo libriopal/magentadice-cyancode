@@ -73,7 +73,7 @@ fi
 # Prefix with 'core/' so paths match the working tree from repo root
 changed_files=$(echo "$changed_files_raw" | sed 's|^|core/|')
 
-# ── 2. Filter: core/apps/** OR path-in-lock-file ─────────────────────────────
+# ── 2. Filter: core/apps/**, core/apps/web/src/game/**, OR lock-file exact ────
 
 echo "→ Filtering to sacred and apps/ files..."
 
@@ -85,8 +85,8 @@ while IFS= read -r f; do
   [[ -z "$f" ]] && continue
   include=false
 
-  # Criterion A — file lives under core/apps/
-  if [[ "$f" == core/apps/* ]]; then
+  # Criterion A — file lives under core/apps/ or core/apps/web/src/game/
+  if [[ "$f" == core/apps/* || "$f" == core/apps/web/src/game/* ]]; then
     include=true
   else
     # Criterion B — strip 'core/' prefix and match against lock-file entries
