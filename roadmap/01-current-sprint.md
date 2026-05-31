@@ -117,6 +117,14 @@ cd core && pnpm android:debug
 
 ---
 
+## Casino UI — Post-Launch Gate
+
+**Status:** INTENTIONALLY DEFERRED — not in scope for this PR
+
+SOLO_CASINO, VS_CASINO, RALLY_CASINO, HEIST_CASINO are handled server-side (`gameRoom.ts` `endSession()` / `checkMilestones()`) but have no UI entry points. Casino mode selection UI is a post-launch feature pending legal/compliance sign-off for each jurisdiction. Do not expose in HomeScreen or MultiplayerLobby until explicitly authorized.
+
+---
+
 ## P2.6 — Server-Side Bonus Validation
 
 **Status:** IN PROGRESS
