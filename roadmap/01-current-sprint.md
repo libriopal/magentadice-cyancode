@@ -143,6 +143,100 @@ cd core && pnpm type-check && pnpm test
 
 ---
 
+---
+
+## P3 — RTP Monte Carlo Simulation (Full Compliance Audit)
+
+**Status:** PLANNED
+**Branch:** `feature/p3-rtp-monte-carlo`
+**Plan:** `docs/P3_RTP_MONTE_CARLO_PLAN.md`
+**Prerequisite:** P2.6 complete
+
+**Scope Files:**
+- `core/packages/farkle-engine/src/monteCarlo.ts` (CORE SACRED — human authorization required)
+- `core/packages/farkle-engine/src/rtpConfig.ts` (CORE SACRED — human authorization required)
+- `core/packages/farkle-shared/src/types.ts` (CORE SACRED — RTPConfig interface extension)
+- `core/apps/server/src/sandbox.ts` (SURFACE — new /rtp-audit, /role-audit endpoints)
+
+**Acceptance Criteria:**
+- `MonteCarloResultV2` models all return paths: base scoring, multiplier ladder, orb, doubler, ARCHIVIST, RAINMAKER, HEADHUNTER, CONDUCTOR, bombs, milestones
+- All randomness traces to `seededRng()` — no `Math.random()`
+- Three player models (OPTIMAL / AVERAGE / WEAK) run per mode
+- 100,000 sessions per run; RTP stabilises within ±0.5% between 50k and 100k
+- All six validation gates pass (convergence, RTP band, skill delta ≥5%, bonus limits, reproducibility, role balance)
+- Results saved to `core/art/profiling/rtp_audit_<date>_<seed>.json`
+- Bito review ≥80 confidence before any sacred file write
+
+**Runtime evidence resolved (see §7 of plan):**
+1. RAINMAKER bomb is global (not radius-limited) — destroys ALL matching-face tiles board-wide
+2. Rainbow bomb target is a random draw from distinct faces present (not most common, not player choice)
+3. `GameRoomState.banked` is a shared room-level pool in RALLY; milestones are team milestones; payout = `stakeAmount × tier.multiplier` per event
+4. Stone HP discrepancy: server uses HP=2 (`GAME_CONSTANTS`); simulation must use HP=2
+
+**Verification Command:**
+```bash
+cd core && pnpm type-check && pnpm test
+# Then run: ./scripts/sandbox-cli.sh audit 42
+```
+
+---
+
+---
+
+## P3-RTP-SANDBOX — RTP Calibration Dashboard (KendoReact UI)
+
+**Status:** ✓ COMPLETE — feature/p3-rtp-sandbox-ui pushed, PR pending
+**Branch:** `feature/p3-rtp-sandbox-ui`
+**Note:** Deferred from live use until Batch A (monteCarlo V2) + OWC complete
+
+**What is complete:**
+- Full 7-panel KendoReact UI (`sandbox-ui/` — standalone Vite app, separate from `core/`)
+- WebSocket server with `sessionStore` (undo/redo/checkpoint, 50-entry cap)
+- AI advisor: Kendo AI primary, Claude sonnet-4 fallback, keys server-side only
+- Legal compliance panel: RTP band gauge per mode, skill gap indicator, gate strip
+- Coverage panel: live checklist from `monteCarlo.COVERAGE_CHECKLIST.md`
+- `sandbox-cli.sh`: headless CLI for Claude Code calibration work
+- HTTP endpoints: `POST /simulate-v2`, `POST /rtp-audit`, `POST /role-audit`, `GET /coverage-status`
+
+**Sacred files touched:** NONE
+
+---
+
+## P3-RTP-LIVE — Live RTP Calibration (Post Batch A)
+
+**Status:** DEFERRED — awaiting Batch A (monteCarlo V2)
+**Prerequisite:** Batch A `monteCarlo.ts` sacred file authorization
+
+**Action when ready:**
+```bash
+./scripts/sandbox-cli.sh audit
+# Verify all 6 gates pass in sandbox UI
+# Adjust rtpConfig.ts per AI advisor recommendations
+# Re-run until Gate 2 (RTP band) and Gate 3 (skill gap) PASS
+# Generate rtp_audit_<date>_<seed>.json for compliance record
+```
+
+---
+
+## P4-OWC-SANDBOX-INTEGRATION — Opportunity Engine Sandbox Wiring
+
+**Status:** DEFERRED — awaiting P4 Opportunity Engine implementation
+**Prerequisite:** OWC (OpportunityWeightController) implemented
+
+**Action when ready:**
+- Add OWC weight parameters to `SimConfig` in `sandbox.ts` types
+- Add OWC sliders to `ParameterEditorPanel` (new generator prompt)
+- Add OWC contribution row to `RTPBreakdownPanel` mechanic list
+- Add OWC return paths to `monteCarlo.COVERAGE_CHECKLIST.md`
+- Wire OWC simulation into monteCarlo V2 Batch A
+- Run: `./scripts/sandbox-cli.sh owc-param-list` to verify
+- Re-run full Gate A–D validation with OWC active
+
+**Note:** Sandbox designed with OWC in mind. No rework required — additive changes only.
+AI advisor and legal gauges apply to OWC-adjusted RTP automatically.
+
+---
+
 <!-- SUPERSEDED -->
 <!-- The following was the T9 sprint (branch: tier/T9-social-platform-liveops-20260525). -->
 <!-- T9 is complete and merged via PR #19. Preserved here for historical reference. -->

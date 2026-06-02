@@ -1,0 +1,372 @@
+@import '@progress/kendo-theme-material/dist/all.css';
+@import '@progress/kendo-theme-utils/dist/all.css';
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--kendo-color-app-surface);
+  color: var(--kendo-color-on-app-surface);
+  font-family: var(--kendo-font-family-sans-serif);
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+div.app-header.k-appbar.app-header {
+  background-color: var(--kendo-color-app-surface);
+  border-bottom: 1px solid var(--kendo-color-border);
+  box-shadow: none;
+  padding: 0;
+  height: 80px;
+  overflow: visible;
+}
+
+.app-header-inner {
+  max-width: 1030px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.app-logo img {
+  width: 302px;
+  height: 36px;
+  display: block;
+}
+
+.page-main {
+  flex: 1;
+  max-width: 1030px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 0 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 32px;
+}
+
+.hero-section {
+  width: 100%;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.hero-heading {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 58px;
+  color: var(--kendo-color-on-app-surface);
+  margin: 0;
+  text-align: center;
+  width: 100%;
+}
+
+.hero-heading .accent {
+  background: linear-gradient(97.22deg, #00BFFF 1.84%, #61DAFB 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.hero-subtitle {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 29px;
+  color: var(--kendo-color-subtle);
+  margin: 0;
+  text-align: center;
+}
+
+.resources-grid {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 32px;
+  width: 100%;
+}
+
+.resources-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.resources-heading {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 32px;
+  letter-spacing: 0.07px;
+  color: var(--kendo-color-on-app-surface);
+  margin: 0;
+}
+
+.resources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.resources-link.k-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  gap: 10px;
+  border-radius: 9px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 150%;
+  color: #4264FF;
+  width: 100%;
+  height: 60px;
+  box-sizing: border-box;
+  transition: background 0.15s ease;
+}
+
+.resources-link.k-button .k-button-icon,
+.resources-link.k-button > svg:last-child {
+  color: inherit;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.resources-link.k-button:hover,
+.resources-link.k-button:focus-visible {
+  color: #4264FF;
+  outline: none;
+}
+
+.resources-link.k-button:focus-visible {
+  outline: 2px solid #4264FF;
+  outline-offset: -2px;
+}
+
+.promo-card.k-card {
+  width: 100%;
+  max-width: 1030px;
+  min-height: 123px;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--kendo-color-app-surface), var(--kendo-color-app-surface)) padding-box,
+    linear-gradient(275.25deg, #61dafb 0%, #00c8ff 100%) border-box;
+  border-radius: 16px;
+  box-sizing: border-box;
+}
+
+.promo-card.k-card > .k-card-body {
+  padding: 24px 36px 24px 24px;
+}
+
+.promo-card-inner {
+  display: flex;
+  gap: 16px;
+  min-height: 75px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.promo-text {
+  flex: 1 1 680px;
+  max-width: 680px;
+  min-width: 0;
+}
+
+.promo-title {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 36px;
+  margin: 0;
+  color: var(--kendo-color-on-app-surface);
+}
+
+.promo-description {
+  font-size: 18px;
+  line-height: 36px;
+  margin: 0 !important;
+  color: var(--kendo-color-on-app-surface);
+}
+
+.btn-gradient.k-button.k-button-primary {
+  background: linear-gradient(94.72deg, #00C8FF 0.08%, #478BFF 101.62%);
+  border: none;
+  box-shadow: none;
+  color: #FFFFFF;
+  border-radius: 8px;
+  padding: 12px 0 12px 18px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 19px;
+  gap: 10px;
+  width: auto;
+  min-width: 160px;
+  height: 48px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-gradient.k-button .k-button-icon {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  flex-shrink: 0;
+}
+
+.btn-gradient.k-button:hover,
+.btn-gradient.k-button:active,
+.btn-gradient.k-button.k-active {
+  background: linear-gradient(#478BFF, #478BFF);
+  border: none;
+  box-shadow: none;
+  color: #ffffff;
+  
+}
+
+.btn-gradient.k-button:focus-visible {
+  outline: 2px solid #415bd3;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+@media (max-width: 800px) {
+  .app-header-inner {
+    box-sizing: border-box;
+    gap: 8px;
+  }
+
+  .app-logo {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .app-logo img {
+    width: 100%;
+    max-width: 302px;
+    height: auto;
+  }
+
+  .page-main {
+    padding: 2rem 1rem 3rem;
+  }
+
+  .resources-grid {
+    flex-direction: column;
+  }
+
+  .resources-column {
+    width: 100%;
+  }
+
+  .promo-text {
+    width: 100%;
+  }
+
+  .btn-gradient.k-button {
+    width: 100%;
+  }
+
+  .promo-title {
+    line-height: 32px;
+  }
+
+  .promo-description {
+    line-height: 24px;
+  }
+}
+
+@media (max-width: 800px) and (min-width: 601px) {
+  .app-header-inner {
+    padding: 0 12px;
+  }
+
+  .app-logo img {
+    max-height: 36px;
+  }
+
+  .hero-heading {
+    font-size: 36px;
+    line-height: 44px;
+  }
+
+  .hero-subtitle {
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .promo-card-inner {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .promo-text {
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-header-inner {
+    padding: 0 10px;
+  }
+
+  .app-logo img {
+    max-height: 32px;
+  }
+
+  .hero-heading {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .hero-subtitle {
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .promo-card.k-card > .k-card-body {
+    padding: 20px;
+  }
+
+  .promo-card-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .promo-text {
+    flex: 1 1 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
