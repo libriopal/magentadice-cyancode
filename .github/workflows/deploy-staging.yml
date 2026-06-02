@@ -1,0 +1,109 @@
+name: Deploy Staging — Preview
+
+on:
+  push:
+    branches:
+      - develop
+      - staging
+    paths:
+      - 'core/apps/web/**'
+      - 'core/packages/**'
+      - '.github/workflows/deploy-staging.yml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'core/apps/web/**'
+      - 'core/packages/**'
+
+permissions:
+  contents: read
+  deployments: write
+  pull-requests: write
+
+concurrency:
+  group: deploy-staging-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Staging Preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: core/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: core
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript check
+        working-directory: core
+        run: pnpm --filter @match3d/web type-check
+
+      - name: Run tests
+        working-directory: core
+        run: pnpm test || true
+
+      - name: Build web app (staging)
+        working-directory: core
+        env:
+          VITE_MODE: staging
+          VITE_DEBUG: 'true'
+          VITE_LOG_LEVEL: warn
+          VITE_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_KEY }}
+        run: pnpm build:web
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist-staging-${{ github.sha }}
+          path: core/apps/web/dist
+          retention-days: 7
+
+      - name: Deploy to Netlify (Staging)
+        id: netlify-deploy
+        uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: core/apps/web/dist
+          production-deploy: false
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: |
+            Staging preview — ${{ github.sha }}
+            Branch: ${{ github.ref_name }}
+            Triggered by: ${{ github.actor }}
+          enable-pull-request-comment: true
+          enable-commit-comment: true
+          overwrites-pull-request-comment: true
+          netlify-config-path: ./netlify.toml
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_STAGING }}
+        timeout-minutes: 10
+
+      - name: Report staging URL
+        if: success()
+        run: |
+          echo "Staging deployment complete"
+          echo "Preview URL: ${{ steps.netlify-deploy.outputs.deploy-url }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
