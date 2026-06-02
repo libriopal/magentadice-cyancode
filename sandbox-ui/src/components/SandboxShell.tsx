@@ -232,10 +232,10 @@ export function SandboxShell({ state, dispatch, isConnected }: SandboxShellProps
   })();
 
   const rtpSummary = state.lastResult ? {
-    optimal: optimalRTP ?? 0,
-    average: state.lastResult.playerModel === 'AVERAGE' ? computeRTP(state.lastResult) : 0,
-    weak:    weakRTP ?? 0,
-    skillGap: (optimalRTP ?? 0) - (weakRTP ?? 0),
+    optimal: optimalRTP,
+    average: state.lastResult.playerModel === 'AVERAGE' ? computeRTP(state.lastResult) : null,
+    weak:    weakRTP,
+    skillGap: optimalRTP !== null && weakRTP !== null ? optimalRTP - weakRTP : null,
   } : null;
 
   // ── Export handler ──────────────────────────────────────────────────────────

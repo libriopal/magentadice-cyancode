@@ -155,7 +155,7 @@ print(f'{total:.4f}')
 cmd_audit() {
   require_server
   local seed="${1:-$((RANDOM * RANDOM))}"
-  info "Running full audit: seed=$seed (18 simulation runs — may take ~3 min)"
+  info "Running full audit: seed=$seed (9 simulation runs — may take ~2 min)"
   local r; r=$(post /rtp-audit "{\"seed\":$seed}")
   echo "$r"
 
@@ -210,13 +210,17 @@ cmd_set() {
   [ -z "$key" ] && err "Usage: sandbox-cli.sh set <param> <value>"
   [ -z "$val" ] && err "Usage: sandbox-cli.sh set <param> <value>"
 
-  # Detect value type
+  # JSON-aware value parsing: booleans, numbers, objects parsed correctly
   local body
-  if python3 -c "float('$val')" 2>/dev/null; then
-    body="{\"$key\": $val}"
-  else
-    body="{\"$key\": \"$val\"}"
-  fi
+  body=$(python3 -c "
+import json,sys
+key='$key'; raw='$val'
+try:
+    parsed=json.loads(raw)
+except Exception:
+    parsed=raw
+print(json.dumps({key: parsed}))
+")
 
   local r; r=$(ws_send "{\"type\":\"CONFIG_CHANGE\",\"payload\":$body}")
   echo "$r"
@@ -419,9 +423,15 @@ cmd_watch_gate() {
     info "Attempt $attempt/$max_attempts..."
 
     local r; r=$(post /rtp-audit "{\"seed\":42,\"sessions\":50000}" 2>/dev/null || echo '{}')
-    local status; status=$(echo "$r" | python3 -c \
-      "import json,sys; d=json.load(sys.stdin); print(d.get('gates',{}).get('$gate',{}).get('status','UNKNOWN'))" \
-      2>/dev/null || echo "UNKNOWN")
+    local status; status=$(echo "$r" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+gate_data=d.get('gates',{}).get('$gate',{})
+# Try mode-specific status first, fall back to gate-level status
+status=(gate_data.get('modes',{}).get('$mode',{}).get('status')
+        or gate_data.get('status','UNKNOWN'))
+print(status)
+" 2>/dev/null || echo "UNKNOWN")
 
     if [ "$status" = "PASS" ]; then
       pass "$gate PASS on attempt $attempt"

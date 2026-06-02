@@ -221,7 +221,7 @@ function SkillWindowIndicator({ optimalRTP, weakRTP }: {
     ? '⚠️ Marginal — may not satisfy all jurisdictions'
     : '❌ Below threshold — reclassification risk';
 
-  const barFillPct = Math.min(100, (gap / BAR_MAX) * 100);
+  const barFillPct = Math.min(100, (Math.max(0, gap) / BAR_MAX) * 100);
   const targetPct  = (SKILL_TARGET / BAR_MAX) * 100;
 
   return (

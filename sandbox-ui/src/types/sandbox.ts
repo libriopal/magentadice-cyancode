@@ -153,8 +153,6 @@ export interface LogEntry {
   level: 'INFO' | 'WARN' | 'ERROR';
 }
 
-// ─── AI chat ──────────────────────────────────────────────────────────────────
-
 // ─── Coverage checklist ───────────────────────────────────────────────────────
 
 export interface CoverageItem {

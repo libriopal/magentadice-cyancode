@@ -9,7 +9,7 @@ import type { CoverageItem, CoverageReport } from '../types/sandbox';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const COVERAGE_URL = 'http://localhost:3001/coverage-status';
+const COVERAGE_URL = '/coverage-status';
 const GROUP: GroupDescriptor[] = [{ field: 'category' }];
 
 // ─── ProgressBar label ────────────────────────────────────────────────────────

@@ -176,7 +176,7 @@ cd core && pnpm type-check && pnpm test
 **Verification Command:**
 ```bash
 cd core && pnpm type-check && pnpm test
-# Then hit: GET /rtp-audit?seed=42
+# Then run: ./scripts/sandbox-cli.sh audit 42
 ```
 
 ---

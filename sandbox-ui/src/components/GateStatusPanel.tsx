@@ -7,7 +7,7 @@ import type { GateResult, GateStatus, AIAgent } from '../types/sandbox';
 
 export interface GateStatusPanelProps {
   gates: GateResult[];
-  rtpSummary: { optimal: number; average: number; weak: number; skillGap: number } | null;
+  rtpSummary: { optimal: number | null; average: number | null; weak: number | null; skillGap: number | null } | null;
   activeAgent: AIAgent;
 }
 
@@ -100,7 +100,7 @@ function SkeletonGateRow() {
 // ─── RTP summary section ──────────────────────────────────────────────────────
 
 interface RTPSummaryProps {
-  rtpSummary: { optimal: number; average: number; weak: number; skillGap: number } | null;
+  rtpSummary: { optimal: number | null; average: number | null; weak: number | null; skillGap: number | null } | null;
 }
 
 function RTPSummary({ rtpSummary }: RTPSummaryProps) {
@@ -118,9 +118,11 @@ function RTPSummary({ rtpSummary }: RTPSummaryProps) {
 
   const { optimal, average, weak, skillGap } = rtpSummary;
 
-  const weakColor   = weak < 0.82 ? '#f44336' : '#4caf50';
-  const gapColor    = skillGap >= 0.05 ? '#4caf50' : skillGap >= 0.03 ? '#ff9800' : '#f44336';
-  const gapBadge    = skillGap >= 0.05 ? ' ✅' : skillGap >= 0.03 ? ' ⚠️' : ' ❌';
+  const fmt = (v: number | null) => v !== null ? (v * 100).toFixed(1) + '%' : '—';
+  const weakColor  = weak !== null ? (weak < 0.82 ? '#f44336' : '#4caf50') : '#777';
+  const gapColor   = skillGap === null ? '#777'
+    : skillGap >= 0.05 ? '#4caf50' : skillGap >= 0.03 ? '#ff9800' : '#f44336';
+  const gapBadge   = skillGap === null ? '' : skillGap >= 0.05 ? ' ✅' : skillGap >= 0.03 ? ' ⚠️' : ' ❌';
 
   const row = (label: string, value: string, color: string, suffix = '') => (
     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
@@ -131,10 +133,10 @@ function RTPSummary({ rtpSummary }: RTPSummaryProps) {
 
   return (
     <>
-      {row('OPTIMAL:',   (optimal  * 100).toFixed(1) + '%', '#4caf50')}
-      {row('AVERAGE:',   (average  * 100).toFixed(1) + '%', '#d0d0e8')}
-      {row('WEAK:',      (weak     * 100).toFixed(1) + '%', weakColor)}
-      {row('Skill Gap:', (skillGap * 100).toFixed(1) + '%', gapColor, gapBadge)}
+      {row('OPTIMAL:',   fmt(optimal),  '#4caf50')}
+      {row('AVERAGE:',   fmt(average),  '#d0d0e8')}
+      {row('WEAK:',      fmt(weak),     weakColor)}
+      {row('Skill Gap:', fmt(skillGap), gapColor, gapBadge)}
     </>
   );
 }

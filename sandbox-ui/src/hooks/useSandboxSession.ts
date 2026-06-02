@@ -275,8 +275,9 @@ export function useSandboxSession(): {
         try {
           const msg = JSON.parse(event.data as string) as WSMessage;
           setState(s => mergeWSMessage(s, msg));
-        } catch {
-          setState(s => appendLog(s, 'Received malformed WS message.', 'WARN'));
+        } catch (e) {
+          const detail = e instanceof Error ? e.message : String(e);
+          setState(s => appendLog(s, `Received malformed WS message: ${detail}`, 'WARN'));
         }
       };
 

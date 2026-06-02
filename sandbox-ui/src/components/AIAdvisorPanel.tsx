@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardBody, ExpansionPanel, ExpansionPanelContent } from '@progress/kendo-react-layout';
 import { Button } from '@progress/kendo-react-buttons';
 import { Loader } from '@progress/kendo-react-indicators';
@@ -198,6 +198,40 @@ interface Toast { id: string; title: string }
 
 const TOAST_DURATION_MS = 3000;
 
+// Attach an individual auto-dismiss timer for each toast so adding a new
+// toast does not reset the timer of existing ones.
+function usePerToastDismiss(
+  toasts: Toast[],
+  setToasts: React.Dispatch<React.SetStateAction<Toast[]>>,
+) {
+  const timerRefs = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  useEffect(() => {
+    const activeIds = new Set(toasts.map(t => t.id));
+
+    // Cancel timers for removed toasts
+    for (const [id, timer] of timerRefs.current) {
+      if (!activeIds.has(id)) { clearTimeout(timer); timerRefs.current.delete(id); }
+    }
+
+    // Start timers for new toasts
+    for (const toast of toasts) {
+      if (!timerRefs.current.has(toast.id)) {
+        const timer = setTimeout(() => {
+          setToasts(prev => prev.filter(t => t.id !== toast.id));
+          timerRefs.current.delete(toast.id);
+        }, TOAST_DURATION_MS);
+        timerRefs.current.set(toast.id, timer);
+      }
+    }
+  }, [toasts, setToasts]);
+
+  // Clean up all timers on unmount
+  useEffect(() => {
+    return () => { timerRefs.current.forEach(clearTimeout); };
+  }, []);
+}
+
 // ─── AIAdvisorPanel ───────────────────────────────────────────────────────────
 
 export function AIAdvisorPanel({
@@ -217,14 +251,8 @@ export function AIAdvisorPanel({
     ? 'Kendo AI 🔒 — auto mode'
     : 'Claude 🔒 — complex analysis';
 
-  // Auto-dismiss toasts
-  useEffect(() => {
-    if (toasts.length === 0) return;
-    const timer = setTimeout(() => {
-      setToasts(prev => prev.slice(1));
-    }, TOAST_DURATION_MS);
-    return () => clearTimeout(timer);
-  }, [toasts]);
+  // Per-toast auto-dismiss — each toast gets its own timer
+  usePerToastDismiss(toasts, setToasts);
 
   const handleToggleExpand = useCallback((id: string) => {
     setExpandedIds(prev => {

@@ -720,7 +720,7 @@ POST /simulate-v2
 
 POST /rtp-audit
   Body: { seed?: number, sessions?: number }
-  → runs all casino modes × 3 player models = 6 simulation runs
+  → runs all casino modes × 3 player models = 9 simulation runs
      (SOLO_CASINO, VS_CASINO, RALLY_CASINO × OPTIMAL, AVERAGE, WEAK)
   → computes all 6 validation gates (§6)
   → saves to core/art/profiling/rtp_audit_<YYYY-MM-DD>_<seed>.json
