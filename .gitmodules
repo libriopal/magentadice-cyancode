@@ -4,3 +4,4 @@
 [submodule "dream"]
 	path = dream
 	url = https://github.com/libriopal/adabt-core.git
+	branch = main
