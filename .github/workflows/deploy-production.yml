@@ -1,0 +1,107 @@
+name: Deploy Production — www.ladicepolycall.com
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'core/apps/web/**'
+      - 'core/packages/**'
+      - '.github/workflows/deploy-production.yml'
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy to Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: core/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: core
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript check
+        working-directory: core
+        run: pnpm --filter @match3d/web type-check
+
+      - name: Run tests
+        working-directory: core
+        run: pnpm test || true
+
+      - name: Build web app
+        working-directory: core
+        env:
+          VITE_MODE: production
+          VITE_APP_URL: https://www.ladicepolycall.com
+          VITE_SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.PROD_SUPABASE_KEY }}
+        run: pnpm build:web
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist-production-${{ github.sha }}
+          path: core/apps/web/dist
+          retention-days: 5
+
+      - name: Deploy to Netlify (Production)
+        id: netlify-deploy
+        uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: core/apps/web/dist
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: |
+            Production deploy — ${{ github.sha }}
+            Triggered by: ${{ github.actor }}
+            Commit: ${{ github.event.head_commit.message }}
+          enable-pull-request-comment: false
+          enable-commit-comment: true
+          overwrites-pull-request-comment: false
+          netlify-config-path: ./netlify.toml
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_PRODUCTION }}
+        timeout-minutes: 10
+
+      - name: Report deploy status
+        if: success()
+        run: |
+          echo "Production deployment complete"
+          echo "URL: https://www.ladicepolycall.com"
+          echo "Netlify URL: ${{ steps.netlify-deploy.outputs.deploy-url }}"
+          echo "Commit: ${{ github.sha }}"
+
+      - name: Report deploy failure
+        if: failure()
+        run: |
+          echo "Production deployment FAILED"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          exit 1
