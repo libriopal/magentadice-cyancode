@@ -1,3 +1,9 @@
+# ARCHIVED — SUPERSEDED
+# Superseded by: docs/MASTER_DIRECTIVE.md (v2.0, June 2026)
+# This file is preserved for its authorization log history only.
+# Do not treat this as an active directive for any session.
+# ────────────────────────────────────────────────────────────
+
 # CLAUDE CODE DIRECTIVE PROTOCOL
 ## REPOSITORY TRUTH RESET + CLEANUP + WORKFLOW REALIGNMENT
 ### Project: FAR_NZY + AGROS / magentadice-cyancode
@@ -760,6 +766,50 @@ DO:
   stop at 90% confidence
   show diffs before executing any change
   await human approval at every gate
+
+## AUTOMATIC DIFF REVIEW PROTOCOL
+
+Before writing ANY sacred file, Claude Code must:
+
+1. Write the proposed changes to a temp file only:
+   /tmp/proposed_<filename>_<timestamp>.ts
+
+2. Generate a unified diff:
+   diff -u <original> /tmp/proposed_<filename>_<timestamp>.ts \
+     > /tmp/diff_<filename>_<timestamp>.patch
+
+3. Run Bito review on the diff:
+   bito -f /tmp/diff_<filename>_<timestamp>.patch -p "
+   Review this proposed change to <filename> (CORE SACRED).
+
+   Check for:
+   - Float arithmetic without Math.round() in scoring paths
+   - Math.random() anywhere in simulation logic
+   - Any removal of existing exported symbols
+   - CSPRNG lineage violations (wrong stream for event type)
+   - MonteCarloResultV2 fields missing from accumulator
+   - any type widening to 'any'
+   - Backward compat: runMonteCarlo() and calibrateNormalizer()
+     must still export and call through to V2
+
+   Score 0-100. EXIT 1 if score < 80.
+   " > codex_pr/BITO_DIFF_<filename>_<timestamp>.md
+   echo "BITO_DIFF EXIT:$?"
+
+4. If Bito diff score < 80: STOP. Report findings here.
+   Do not write the sacred file.
+   Fix the proposed changes and repeat from step 1.
+
+5. If Bito diff score >= 80: Report score and findings.
+   Then await human "AUTHORIZED" before writing.
+
+6. On "AUTHORIZED": write the file, run tsc + pnpm test,
+   then run full bito-pre-merge-check.sh as final gate.
+
+This protocol applies to ALL sacred files in core/.ff-core-lock.
+It runs automatically — human does not need to request it.
+
+---
 
 # PRE-MERGE GATE
 
