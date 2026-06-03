@@ -20,7 +20,7 @@ Parity bugs must be resolved before Priority 2 (Opportunity Scanner).
 | # | Mechanic | Status | Server Location | Client Location | Notes |
 |---|---|---|---|---|---|
 | 1 | Board truth (grid state, tile placement) | **DIVERGE** | `gameRoom.ts:104-114` (createGrid once) | `useFarkleGame.ts:259-290` (physics bodies) | Server initializes grid but NEVER updates it after chain submission. Client physics engine maintains independent body positions. Server grid is static zombie state. |
-| 2 | Chain validation (adjacency, legality) | **DIVERGE** | `gameRoom.ts:207-211` (length ≥ 2 only) | `useFarkleGame.ts:196-245` (full adjacency, proximity, NORMAL-mode, backtrack, dedup) | Server ONLY checks chain.length ≥ 2. No adjacency, proximity, column-tolerance, Y-tolerance, NORMAL-mode (1/5-only), backtrack, or duplicate validation. All legality rules enforced client-side only. |
+| 2 | Chain validation (adjacency, legality) | ~~**DIVERGE**~~ **PARTIAL** | `gameRoom.ts` SUBMIT_CHAIN: 4-way adjacency + dedup + length cap; SUBMIT_CHAIN_FACES: column adjacency + chainLength clamp | `useFarkleGame.ts:196-245` (full adjacency, proximity, NORMAL-mode, backtrack, dedup) | BUG-02 RESOLVED 2026-06-03. Server now validates 4-way grid adjacency and no-duplicate for SUBMIT_CHAIN. SUBMIT_CHAIN_FACES: column adjacency (1 axis) + chainLength clamp. Row-axis validation pending BUG-01 (grid sync). NORMAL-mode face restriction not yet server-enforced. |
 | 3 | Refill / spawnTiles | **MISSING** | `gridUtils.ts:335-364` (function exists) | `useFarkleGame.ts:282-291` (physics cascade, sends faces to server) | Server NEVER calls spawnTiles(). No cascade, no gravity, no spawn on server. Grid is static after init. Client sends resolved face arrays to server; server scores them but does not refill. |
 | 4 | RNG ownership | **DIVERGE** | `gameRoom.ts:99` (CSPRNG init), `gameRoom.ts:567` (used only for doubler column) | `useFarkleGame.ts:26-28` (seededRng created, never used for game ops) | Server CSPRNG used only for doubler column selection (~once every 3 banks). Physics engine RNG is opaque and client-local. Neither party has authoritative per-turn seeding. |
 | 5 | Reward eligibility (bank, vault, orb, doubler) | **MATCH** | `gameRoom.ts:376-479` (orb, doubler, vault split, ARCHIVIST%) | `useFarkleGame.ts:303-336` (solo-only; server authoritative in MP) | Server authoritative in multiplayer (computes and broadcasts deltas). Solo applies client-side. Constants (70/30 vault, 0.15 ARCHIVIST_PCT) match. |
@@ -56,7 +56,7 @@ Server chain validation, dead-board detection, and any future opportunity scanne
 
 ---
 
-### BUG-02 — Chain Validation: Server Does Not Validate Adjacency or Legality (DIVERGE) — CRITICAL
+### BUG-02 — Chain Validation: Server Does Not Validate Adjacency or Legality — ✅ RESOLVED 2026-06-03
 
 **Files:** `gameRoom.ts:207-211`, `useFarkleGame.ts:196-245`
 

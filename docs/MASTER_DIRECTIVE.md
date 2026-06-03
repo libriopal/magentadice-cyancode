@@ -565,4 +565,4 @@ Format:
   [date] [file] [description] — AUTHORIZED
 
 Log:
-  (empty — append entries below as they occur)
+  [2026-06-03] core/apps/server/src/gameRoom.ts — BUG-02: add 4-way adjacency validation to SUBMIT_CHAIN; column adjacency + chainLength clamp to SUBMIT_CHAIN_FACES — AUTHORIZED
