@@ -78,7 +78,7 @@ Defined in `mesh/sacred-core-spec.md`. Not yet active in deployed code paths.
 
 ## Authorization Chain Summary
 
-```
+```text
 1. Propose     — Execution Runtime drafts, no code written
 2. Approve     — Human gives explicit written approval
 3. ADR         — Write and commit ADR before implementation begins

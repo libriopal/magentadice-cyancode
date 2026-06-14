@@ -899,7 +899,7 @@ OWC controls wired into the KendoReact sandbox UI and the WebSocket `RUN_SIM` ha
 | verdict | PASS_PROPOSE_COMMIT |
 | branch | fix/p5-governance-compliance |
 | PR | #29 |
-| ADR | ADR-021 |
+| ADR | docs/adr/ADR-021-p5-governance-compliance.md |
 
 ### Summary
 
