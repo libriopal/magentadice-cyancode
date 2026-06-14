@@ -212,22 +212,37 @@ cd core && pnpm type-check && pnpm test
 
 ---
 
+## P4-OWC — Opportunity Weight Controller
+
+**Status:** COMPLETE — surface layer merged FAR_NZY PR #2 (2026-06-14)
+**Branch:** `feat/p4-owc`
+**Package:** `core/packages/owc/src/index.ts`
+
+**Surface layer (complete):**
+- `packages/owc` — `computeWeights()` with Slipstream, Rally balance, RTP drift correction, Farkle stabiliser
+- `apps/server/src/sandbox.ts` — OWC wired into `/simulate`, `/owc-weights` endpoint, zod validation, NaN guard
+- POST /owc-weights: direct weight computation without simulation
+- All 4 adjustment paths: slipstream, cooperative balance, RTP drift, farkle stabiliser
+
+**Sacred file integration (complete — merged PR #3, 2026-06-14):**
+- `packages/farkle-shared/src/types.ts` — `OWCConfig` interface added
+- `packages/farkle-engine/src/monteCarlo.ts` — `biasedFaceDraw()`, per-turn OWC, `owcContributionRtp`, `owcErrorCount`
+- All 6 RTP gates re-validated PASS at seed=42, 50k sessions
+- `scripts/validate-gates.ts` — headless gate audit (no server needed)
+
 ## P4-OWC-SANDBOX-INTEGRATION — Opportunity Engine Sandbox Wiring
 
-**Status:** DEFERRED — awaiting P4 Opportunity Engine implementation
-**Prerequisite:** OWC (OpportunityWeightController) implemented
+**Status:** READY — OWC fully integrated (surface + sacred); no further auth required
+**Prerequisite:** P4-OWC sacred file integration (above)
 
-**Action when ready:**
-- Add OWC weight parameters to `SimConfig` in `sandbox.ts` types
+**Action when sacred auth granted:**
 - Add OWC sliders to `ParameterEditorPanel` (new generator prompt)
 - Add OWC contribution row to `RTPBreakdownPanel` mechanic list
-- Add OWC return paths to `monteCarlo.COVERAGE_CHECKLIST.md`
-- Wire OWC simulation into monteCarlo V2 Batch A
+- Wire OWC into monteCarlo V2 Batch A
 - Run: `./scripts/sandbox-cli.sh owc-param-list` to verify
 - Re-run full Gate A–D validation with OWC active
 
 **Note:** Sandbox designed with OWC in mind. No rework required — additive changes only.
-AI advisor and legal gauges apply to OWC-adjusted RTP automatically.
 
 ---
 
