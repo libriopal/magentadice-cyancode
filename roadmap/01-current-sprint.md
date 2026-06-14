@@ -226,9 +226,17 @@ cd core && pnpm type-check && pnpm test
 
 **Sacred file integration (complete — merged PR #3, 2026-06-14):**
 - `packages/farkle-shared/src/types.ts` — `OWCConfig` interface added
-- `packages/farkle-engine/src/monteCarlo.ts` — `biasedFaceDraw()`, per-turn OWC, `owcContributionRtp`, `owcErrorCount`
+- `packages/farkle-engine/src/monteCarlo.ts` — `biasedFaceDraw()`, per-turn OWC, `owcContributionRTP`, `owcErrorCount`
 - All 6 RTP gates re-validated PASS at seed=42, 50k sessions
 - `scripts/validate-gates.ts` — headless gate audit (no server needed)
+
+**Bito follow-up (complete — 7680f2b, 2026-06-14):**
+- `types.ts` — `turnsElapsed?` added to `OWCConfig` (HIGH); JSDoc clarifies preview-only scope
+- `monteCarlo.ts` — `owcContributionRtp` → `owcContributionRTP` (MED); `catch (err)` + `DEBUG_OWC` stderr logging (HIGH)
+- `farkle-engine/src/index.ts` — re-exports `OWCInput`, `OWCOutput`, `FaceBiasWeights` for consumers
+- `sandbox.ts` — `sumRTP()` now includes `owcContributionRTP`; cascade renames + turnsElapsed doc comment
+- `packages/owc` — `type:module`, `@types/node`, test script, 17-test suite (all 4 paths + validation + clamping)
+- All 4 sacred edits bito-cleared (0 HIGH each); 33/33 tests green
 
 ## P4-OWC-SANDBOX-INTEGRATION — Opportunity Engine Sandbox Wiring
 
