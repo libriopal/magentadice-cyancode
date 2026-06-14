@@ -1,0 +1,203 @@
+[SUCCESS] Found changes in 24 file(s)
+{
+  "summary": "Reviewed 3 file(s) in 1 chunk(s) with integration review. Found 14 issue(s).",
+  "filesChanged": 3,
+  "issues": [
+    {
+      "severity": "high",
+      "category": "Type Safety",
+      "file": "core/packages/farkle-shared/src/types.ts",
+      "line": 268,
+      "title": "Missing turnsElapsed field in OWCConfig interface",
+      "description": "The OWCConfig interface is missing the `turnsElapsed` field, but it's defined in sandbox.ts's OWCParams interface (line 81) and passed to the OWC compute function. This creates a type mismatch between the shared type and its actual usage in sandbox.ts. The monteCarlo.ts also uses turnsElapsed when calling computeWeights (line 375).",
+      "suggestion": "Add `turnsElapsed?: number;` to the OWCConfig interface to match the actual usage pattern across the codebase.",
+      "codeSnippet": "export interface OWCConfig {\n  enabled: boolean;\n  playerRank: number;\n  playerCount: number;\n  targetRTP?: number;\n}",
+      "suggestedFix": "export interface OWCConfig {\n  enabled: boolean;\n  playerRank: number;\n  playerCount: number;\n  turnsElapsed?: number;\n  targetRTP?: number;\n}"
+    },
+    {
+      "severity": "medium",
+      "category": "Type Safety",
+      "file": "core/packages/farkle-shared/src/types.ts",
+      "line": 268,
+      "title": "Missing mode field in OWCConfig interface",
+      "description": "The OWCConfig interface doesn't include the `mode` field, but it's required in the OWCInput interface (owc package, line 16) and always passed when calling computeWeights. While the mode is typically known from context in SimConfig, having it in OWCConfig would make the type more complete for standalone usage.",
+      "suggestion": "Consider adding `mode?: GameMode;` to OWCConfig for type completeness, or document that mode should always be provided from the parent SimConfig.",
+      "codeSnippet": "export interface OWCConfig {\n  enabled: boolean;\n  playerRank: number;\n  playerCount: number;\n  targetRTP?: number;\n}",
+      "suggestedFix": "export interface OWCConfig {\n  enabled: boolean;\n  playerRank: number;\n  playerCount: number;\n  turnsElapsed?: number;\n  targetRTP?: number;\n  mode?: GameMode;\n}"
+    },
+    {
+      "severity": "medium",
+      "category": "Test Coverage",
+      "file": "core/packages/owc/src/index.ts",
+      "line": 1,
+      "title": "No test coverage for OWC package",
+      "description": "The new @match3d/owc package has no test files. The computeWeights() function contains complex logic with multiple adjustment paths (Slipstream, Rally balance, RTP drift correction, Farkle stabiliser) that should be tested to ensure correctness and prevent regressions.",
+      "suggestion": "Add test coverage for the OWC package, particularly for: 1) Each adjustment path (Slipstream, Rally, RTP drift, Farkle stabiliser), 2) Input validation (NaN/Infinity rejection), 3) Bias clamping to [-0.20, +0.20], 4) Edge cases like zero turnsElapsed.",
+      "codeSnippet": "// No test file exists for the OWC package",
+      "suggestedFix": "Create core/packages/owc/src/index.test.ts with tests covering:\n- Slipstream calculation for trailing players\n- Rally cooperative balance when RTP is lagging\n- RTP drift correction (high and low)\n- Farkle rate stabiliser (high and low rates)\n- Input validation throwing on non-finite numbers\n- Bias clamping at FACE_BIAS_CAP (0.20)"
+    },
+    {
+      "severity": "medium",
+      "category": "Code Consistency",
+      "file": "core/packages/farkle-engine/src/monteCarlo.ts",
+      "line": 81,
+      "title": "Inconsistent property naming (owcContributionRtp vs owcContributionRTP)",
+      "description": "The MonteCarloResultV2 interface uses `owcContributionRtp` (lowercase 'p') while other contribution fields use uppercase 'RTP' (e.g., `orbContributionRTP`, `doublerContributionRTP`). This inconsistency could lead to confusion when accessing these properties.",
+      "suggestion": "Consider renaming to `owcContributionRTP` for consistency with other contribution fields in the same interface.",
+      "codeSnippet": "  owcContributionRtp:         number;\n  owcErrorCount:              number;",
+      "suggestedFix": "  owcContributionRTP:         number;  // Renamed for consistency\n  owcErrorCount:              number;"
+    },
+    {
+      "severity": "low",
+      "category": "Code Safety",
+      "file": "core/packages/farkle-engine/src/monteCarlo.ts",
+      "line": 220,
+      "title": "Potential edge case in biasedFaceDraw when all weights are zero",
+      "description": "In biasedFaceDraw, when total === 0, it falls back to uniform distribution. This could happen if all adjustment values are -1/6 (making all weights zero). While the clamp function prevents this (cap is 0.20 > 1/6 ≈ 0.167), this defensive check is good but could be documented.",
+      "suggestion": "Add a comment explaining when total could be zero, or consider adding an assertion since this should never happen with current FACE_BIAS_CAP = 0.20.",
+      "codeSnippet": "  if (total === 0) return (Math.floor(rng() * 6) + 1) as DieFace;",
+      "suggestedFix": "  // Defensive: should never happen with FACE_BIAS_CAP=0.20, but handle gracefully\n  if (total === 0) return (Math.floor(rng() * 6) + 1) as DieFace;"
+    },
+    {
+      "severity": "low",
+      "category": "Documentation",
+      "file": "core/packages/owc/src/index.ts",
+      "line": 132,
+      "title": "OWC RTP contribution estimation formula may need validation",
+      "description": "The owcContributionRtp calculation uses a simplified formula: `(weights.face_1 * 0.6 + weights.face_5 * 0.3) * input.targetRTP`. The comment says this is an 'estimation' but doesn't explain the derivation of the 0.6 and 0.3 coefficients. These appear to be approximate scoring weights for face_1 (100 pts) and face_5 (50 pts) relative to average scoring, but this should be documented or validated.",
+      "suggestion": "Add documentation explaining the derivation of the 0.6 and 0.3 coefficients, or reference where these values come from in the scoring system.",
+      "codeSnippet": "  // face_1 bias × 0.6 + face_5 bias × 0.3 ≈ high-value score delta fraction\n  const owcContributionRtp = (weights.face_1 * 0.6 + weights.face_5 * 0.3) * input.targetRTP;",
+      "suggestedFix": "  // Estimate OWC RTP contribution based on high-value face biases.\n  // Coefficients derived from relative scoring value: face_1 (100 pts) ≈ 0.6 weight,\n  // face_5 (50 pts) ≈ 0.3 weight, normalized against average scoring patterns.\n  // This is an approximation; actual contribution depends on board state and player decisions.\n  const owcContributionRtp = (weights.face_1 * 0.6 + weights.face_5 * 0.3) * input.targetRTP;"
+    },
+    {
+      "severity": "high",
+      "category": "integration",
+      "file": "core/packages/farkle-engine/src/monteCarlo.ts",
+      "line": 386,
+      "title": "Silent error handling masks OWC computation failures",
+      "description": "The per-turn OWC computation in runMonteCarloV2() catches all errors from computeWeights() silently (line 386-389), only incrementing an error counter. This means invalid inputs, NaN propagation, or logic errors in the OWC package are silently ignored without logging the actual error message, making debugging extremely difficult in production simulations.",
+      "suggestion": "Consider logging the actual error details to stderr before swallowing the exception, or provide a debug mode that surfaces OWC errors. At minimum, capture the error message in the error count structure for diagnostic access.",
+      "codeSnippet": "          } catch {\n            owcAdj.face_1 = owcAdj.face_2 = owcAdj.face_3 = owcAdj.face_4 = owcAdj.face_5 = owcAdj.face_6 = 0;\n            totalOwcErrors++;\n          }",
+      "suggestedFix": "          } catch (err) {\n            owcAdj.face_1 = owcAdj.face_2 = owcAdj.face_3 = owcAdj.face_4 = owcAdj.face_5 = owcAdj.face_6 = 0;\n            totalOwcErrors++;\n            if (process.env.DEBUG_OWC) {\n              process.stderr.write(`OWC error turn ${turn}: ${String(err)}\\n`);\n            }\n          }"
+    },
+    {
+      "severity": "medium",
+      "category": "integration",
+      "file": "core/packages/owc/src/index.ts",
+      "line": 32,
+      "title": "SpawnWeights interface name collision with farkle-shared",
+      "description": "The OWC package exports a SpawnWeights interface (face_1..face_6) that collides with the SpawnWeights interface in @match3d/farkle-shared (die, sphere, ice, etc.). This creates potential import confusion when both packages are used together - developers may accidentally import the wrong type or get confusing autocomplete suggestions.",
+      "suggestion": "Consider renaming the OWC interface to FaceBiasWeights or OWCSpawnWeights to disambiguate from the entity spawn weights in farkle-shared. Alternatively, ensure both are clearly namespaced in documentation.",
+      "codeSnippet": "export interface SpawnWeights {\n  face_1: number;\n  face_2: number;\n  face_3: number;\n  face_4: number;\n  face_5: number;\n  face_6: number;\n}",
+      "suggestedFix": "export interface FaceBiasWeights {\n  face_1: number;\n  face_2: number;\n  face_3: number;\n  face_4: number;\n  face_5: number;\n  face_6: number;\n}"
+    },
+    {
+      "severity": "medium",
+      "category": "integration",
+      "file": "core/apps/server/src/sandbox.ts",
+      "line": 90,
+      "title": "Zod schema stricter than TypeScript OWCInput interface",
+      "description": "The OWCInputSchema uses z.number().finite() which rejects NaN and Infinity at runtime, but the OWCInput TypeScript interface in @match3d/owc doesn't explicitly indicate these constraints. This creates a gap where TypeScript may compile code that passes invalid values, only to fail at runtime validation. The OWC package does throw for non-finite values, but the error message comes from a different validation path.",
+      "suggestion": "Consider aligning the TypeScript interface with runtime validation by using branded types or documentation comments. Alternatively, ensure the Zod schema and OWC runtime validation produce consistent error messages.",
+      "codeSnippet": "const OWCInputSchema = z.object({\n  mode:               z.enum(GAME_MODES),\n  playerRank:         z.number().int().min(1),\n  playerCount:        z.number().int().min(1),\n  turnsElapsed:       z.number().int().min(0),\n  currentRTP:         z.number().min(0).finite(),\n  targetRTP:          z.number().positive().finite(),\n  sessionFarkleRate:  z.number().min(0).max(1).finite(),\n});",
+      "suggestedFix": "// In packages/owc/src/index.ts, add branded type or comments:\nexport interface OWCInput {\n  mode: GameMode;\n  playerRank: number;       // must be finite integer >= 1\n  playerCount: number;      // must be finite integer >= 1\n  turnsElapsed: number;     // must be finite integer >= 0\n  currentRTP: number;       // must be finite >= 0\n  targetRTP: number;        // must be finite > 0\n  sessionFarkleRate: number; // must be finite in [0, 1]\n}"
+    },
+    {
+      "severity": "medium",
+      "category": "integration",
+      "file": "core/packages/farkle-engine/src/index.ts",
+      "line": 1,
+      "title": "OWC types not re-exported from farkle-engine",
+      "description": "Consumers of @match3d/farkle-engine who want to use runMonteCarloV2 with OWC must import OWCInput, OWCOutput, and SpawnWeights directly from @match3d/owc. This creates a tight coupling to the internal package structure and requires consumers to add @match3d/owc as a direct dependency even though it's only used through farkle-engine.",
+      "suggestion": "Consider re-exporting the OWC types that are part of the public API of runMonteCarloV2 from farkle-engine's index.ts. This allows consumers to import all needed types from a single package.",
+      "codeSnippet": "// Consumers currently need:\nimport { runMonteCarloV2, SimConfig } from '@match3d/farkle-engine';\nimport type { OWCInput } from '@match3d/owc'; // extra dependency",
+      "suggestedFix": "// In packages/farkle-engine/src/index.ts:\nexport type { OWCInput, OWCOutput, SpawnWeights as FaceBiasWeights } from '@match3d/owc';\n\n// Or in monteCarlo.ts where SimConfig is defined:\nexport type { OWCInput } from '@match3d/owc';"
+    },
+    {
+      "severity": "medium",
+      "category": "integration",
+      "file": "core/apps/server/src/sandbox.ts",
+      "line": 127,
+      "title": "Inconsistent default values for turnsElapsed across integration points",
+      "description": "The sandbox.ts defaults turnsElapsed to 10 when calling computeWeights (line 127), but monteCarlo.ts uses the actual current turn number (line 375). This inconsistency means sandbox simulations and actual Monte Carlo runs may produce different OWC behavior for the same effective game state, potentially causing confusion when comparing results.",
+      "suggestion": "Consider aligning the default values or documenting why they differ. The sandbox default of 10 may be appropriate for initial simulations, but this should be explicitly documented to prevent confusion when comparing with actual game simulations.",
+      "codeSnippet": "sandbox.ts line 127:\nturnsElapsed:       owcParams.turnsElapsed ?? 10,\n\nmonteCarlo.ts line 375:\nturnsElapsed: turn,",
+      "suggestedFix": "// Add comment in sandbox.ts explaining the default:\nturnsElapsed: owcParams.turnsElapsed ?? 10, // Default to mid-game for representative weight preview"
+    },
+    {
+      "severity": "low",
+      "category": "integration",
+      "file": "core/packages/owc/src/index.ts",
+      "line": 75,
+      "title": "Unsupported game modes silently ignored in OWC",
+      "description": "The computeWeights function checks if the mode is in SLIPSTREAM_MODES or COOPERATIVE_MODES, but silently does nothing for other modes (like SOLO_FREE, SOLO_CASINO). While this is correct behavior (no adjustment needed), there's no indication to callers that the mode was unrecognized, which could mask typos or missing mode support.",
+      "suggestion": "Consider adding a debug mode warning or returning a reason code indicating the mode was unrecognized, to help catch configuration errors during development.",
+      "codeSnippet": "if (SLIPSTREAM_MODES.has(input.mode) && input.playerCount > 1) {\n  // ... slipstream logic\n}\n\nif (COOPERATIVE_MODES.has(input.mode)) {\n  // ... rally logic\n}\n// Other modes fall through silently",
+      "suggestedFix": "// Add fallback reason for unsupported modes:\nif (!SLIPSTREAM_MODES.has(input.mode) && !COOPERATIVE_MODES.has(input.mode)) {\n  reasons.push(`MODE_INACTIVE mode=${input.mode}`);\n}"
+    },
+    {
+      "severity": "low",
+      "category": "integration",
+      "file": "core/packages/owc/package.json",
+      "line": 6,
+      "title": "OWC package lacks test script infrastructure",
+      "description": "While chunk issue #3 noted the lack of test coverage, this issue highlights that the package.json doesn't even have a test script defined (only type-check). This means CI pipelines and developers cannot easily run tests for this package even if tests were added.",
+      "suggestion": "Consider adding a test script to package.json, even if it initially does nothing or runs a placeholder. This establishes the infrastructure for future test additions.",
+      "codeSnippet": "\"scripts\": {\n  \"type-check\": \"tsc --noEmit\"\n}",
+      "suggestedFix": "\"scripts\": {\n  \"type-check\": \"tsc --noEmit\",\n  \"test\": \"node --import tsx/esm --test src/**/*.test.ts || echo 'No tests yet'\"\n}"
+    },
+    {
+      "severity": "low",
+      "category": "integration",
+      "file": "core/packages/owc/package.json",
+      "line": 11,
+      "title": "Peer dependency version constraint may drift",
+      "description": "The OWC package has @match3d/farkle-shared as a peerDependency with \"workspace:*\" constraint. While this works within the monorepo, it doesn't specify a minimum compatible version. If farkle-shared introduces breaking changes (like the GameMode type), OWC may fail at runtime without clear indication of version incompatibility.",
+      "suggestion": "Consider adding a minimum version constraint to the peerDependency, or ensure both packages are versioned and released together with clear compatibility documentation.",
+      "codeSnippet": "\"peerDependencies\": {\n  \"@match3d/farkle-shared\": \"workspace:*\"\n}",
+      "suggestedFix": "\"peerDependencies\": {\n  \"@match3d/farkle-shared\": \"workspace:^\"\n}"
+    }
+  ],
+  "positives": [
+    {
+      "category": "Input Validation",
+      "description": "Excellent input validation in OWC computeWeights() - validates all numeric fields are finite and throws descriptive RangeError for non-finite inputs (NaN, Infinity, -Infinity). This prevents silent failures that could propagate NaN through the simulation."
+    },
+    {
+      "category": "API Design",
+      "description": "Clean separation between OWCParams (sandbox-specific) and OWCConfig (shared). The Zod schema in sandbox.ts provides runtime validation with proper bounds checking (min/max values) for the /owc-weights endpoint."
+    },
+    {
+      "category": "CSPRNG Compliance",
+      "description": "The biasedFaceDraw function in monteCarlo.ts correctly preserves the CSPRNG lineage - uses the same number of diceRng() calls as uniform draw (one per die), ensuring deterministic behavior with seeded RNG."
+    },
+    {
+      "category": "Error Handling",
+      "description": "Good error handling in monteCarlo.ts OWC integration - try/catch around computeWeights() call (lines 372-389) with fallback to zero adjustments and error counting, preventing simulation crashes from OWC errors."
+    },
+    {
+      "category": "Type Safety",
+      "description": "Proper TypeScript typing throughout - OWCInput and OWCOutput interfaces are well-defined, and the spawnWeightAdjustments uses a proper SpawnWeights interface with explicit face_1..face_6 properties."
+    },
+    {
+      "category": "Documentation",
+      "description": "Comprehensive inline documentation in OWC package explaining the four adjustment paths (Slipstream, Rally balance, RTP drift, Farkle stabiliser) and the invariants that must never be violated."
+    }
+  ],
+  "recommendations": [
+    "Add the missing `turnsElapsed` field to OWCConfig interface in farkle-shared to ensure type consistency across the codebase",
+    "Create test coverage for the @match3d/owc package to validate the four adjustment paths and input validation",
+    "Consider standardizing the property naming convention (RTP vs Rtp) across MonteCarloResultV2 for consistency",
+    "Run the validate-gates.ts script after OWC integration to ensure all 6 gates still pass with OWC enabled",
+    "Document the 0.6 and 0.3 coefficients in the OWC RTP contribution formula for future maintainers",
+    "Add integration tests that verify OWC computeWeights output is correctly consumed by monteCarloV2",
+    "Consider creating a shared 'types' package or consolidating type exports to reduce direct @match3d/owc imports",
+    "Document the OWC adjustment behavior for each game mode in the coverage checklist",
+    "Add a debug/verbose mode to surface OWC computation details during development"
+  ],
+  "metrics": {
+    "highSeverityCount": 2,
+    "mediumSeverityCount": 7,
+    "lowSeverityCount": 5
+  }
+}
