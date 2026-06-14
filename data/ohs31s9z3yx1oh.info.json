@@ -1,0 +1,19 @@
+{
+  "meta": {
+    "id": "ohs31s9z3yx1oh",
+    "date": 1781427163251,
+    "rating": 0,
+    "w": 512,
+    "h": 512,
+    "source": "meshy-ai",
+    "taskId": "019ec553-24a7-7a9e-8f73-0e8f8c8cd295",
+    "artStyle": "realistic",
+    "pillar": "biological",
+    "format": "glb"
+  },
+  "info": {
+    "prompt": "d6 die, single face showing a glowing pip cluster, overgrown with fungal tendrils and translucent membrane, underground biomechanical casino relic, wet biomechanical surface, translucent membrane, fungal growth, neon moss glow, gothic hacker aesthetic",
+    "pillarSuffix": ", wet biomechanical surface, translucent membrane, fungal growth, neon moss glow, gothic hacker aesthetic"
+  },
+  "mime": "image/jpeg"
+}

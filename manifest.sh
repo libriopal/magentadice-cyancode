@@ -197,18 +197,22 @@ cmd_corpus() {
     exit 1
   fi
 
-  local total info_json images usable_pairs=0
+  local total info_json images usable_pairs=0 models meshy_count
 
   total=$(find "$DATA_DIR" -maxdepth 1 -type f | wc -l | tr -d ' ')
   info_json=$(find "$DATA_DIR" -maxdepth 1 -name '*.info.json' | wc -l | tr -d ' ')
   images=$(find "$DATA_DIR" -maxdepth 1 \
     \( -name '*.png' -o -name '*.jpg' -o -name '*.jpeg' -o -name '*.webp' \) \
     | wc -l | tr -d ' ')
+  models=$(find "$DATA_DIR" -maxdepth 1 -name '*.glb' | wc -l | tr -d ' ')
+  meshy_count=$({ grep -rl '"source": "meshy-ai"' "$DATA_DIR" 2>/dev/null || true; } | wc -l | tr -d ' ')
 
   echo
-  printf "  %-22s %s\n" "total files:"    "$total"
+  printf "  %-22s %s\n" "total files:"      "$total"
   printf "  %-22s %s\n" ".info.json files:" "$info_json"
-  printf "  %-22s %s\n" "image files:"    "$images"
+  printf "  %-22s %s\n" "image files:"      "$images"
+  printf "  %-22s %s\n" "3D models (.glb):" "$models"
+  printf "  %-22s %s\n" "Meshy AI assets:"  "$meshy_count"
 
   # paired coverage: for each .info.json, check a matching image exists
   while IFS= read -r jf; do

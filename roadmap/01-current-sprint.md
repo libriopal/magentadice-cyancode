@@ -198,17 +198,22 @@ cd core && pnpm type-check && pnpm test
 
 ## P3-RTP-LIVE — Live RTP Calibration (Post Batch A)
 
-**Status:** READY — Batch A+B+D+Fix1+2 merged (PR #27); unblocked as of 2026-06-03
+**Status:** COMPLETE — all 6 gates PASS at 100k sessions, seed=42, 2026-06-14
 **Prerequisite:** ~~Batch A `monteCarlo.ts` sacred file authorization~~ COMPLETE
 
-**Action when ready:**
-```bash
-./scripts/sandbox-cli.sh audit
-# Verify all 6 gates pass in sandbox UI
-# Adjust rtpConfig.ts per AI advisor recommendations
-# Re-run until Gate 2 (RTP band) and Gate 3 (skill gap) PASS
-# Generate rtp_audit_<date>_<seed>.json for compliance record
-```
+**Audit results (seed=42, 100k sessions, OWC disabled):**
+- Gate 1 — Convergence: PASS (100k completions)
+- Gate 2 — RTP Band: PASS (0.9203 within SOLO 0.82–1.02)
+- Gate 3 — Skill Differentiation: PASS
+- Gate 4 — Farkle Rate: PASS (0.9156 within 0.85–0.95)
+- Gate 5 — p5Score/avgScore: PASS
+- Gate 6 — Normalizer: PASS (>0)
+
+**Compliance artifact:** `core/art/profiling/rtp_audit_20260614_42.json`
+
+**Known follow-ups (separate authorization required):**
+- `playerContinue` OPTIMAL inversion — OPTIMAL always-continues scores less than WEAK at 91.5% per-turn farkle rate; needs CORE SACRED auth
+- Gate 3 skill gap semantic — circular at current normalizer definition; needs external reference normalizer
 
 ---
 
@@ -240,17 +245,19 @@ cd core && pnpm type-check && pnpm test
 
 ## P4-OWC-SANDBOX-INTEGRATION — Opportunity Engine Sandbox Wiring
 
-**Status:** READY — OWC fully integrated (surface + sacred); no further auth required
+**Status:** COMPLETE — committed a16b75e (magentadice-cyancode) / 6f34c83 (FAR_NZY), 2026-06-14
 **Prerequisite:** P4-OWC sacred file integration (above)
 
-**Action when sacred auth granted:**
-- Add OWC sliders to `ParameterEditorPanel` (new generator prompt)
-- Add OWC contribution row to `RTPBreakdownPanel` mechanic list
-- Wire OWC into monteCarlo V2 Batch A
-- Run: `./scripts/sandbox-cli.sh owc-param-list` to verify
-- Re-run full Gate A–D validation with OWC active
+**What shipped:**
+- `sandbox-ui/src/types/sandbox.ts` — `owcContributionRTP` + `owcErrorCount` on `MonteCarloResultV2`; `OWCParamsConfig` + `owcParams?` on `SimConfig`
+- `sandbox-ui/src/components/RTPBreakdownPanel.tsx` — OWC mechanic row (cyan) in breakdown grid
+- `sandbox-ui/src/components/ParameterEditorPanel.tsx` — OWC enable Switch + 4 conditional sliders (playerRank, playerCount, turnsElapsed, targetRTP override); unsaved indicator
+- `sandbox-ui/src/hooks/useSandboxSession.ts` — initial config seeds `owcParams: { enabled: false, playerRank: 1, playerCount: 1 }`
+- `core/apps/server/src/sandbox/sessionStore.ts` — `owcParams?` in `SimConfig` + `BASE_CONFIG`
+- `core/apps/server/src/sandbox.ts` WS `RUN_SIM` — retired V1 placeholder, now calls `runMonteCarloV2` with full `owcParams` passthrough
+- `scripts/sandbox-cli.sh` — `owc-param-list` reads nested `owcParams` object
 
-**Note:** Sandbox designed with OWC in mind. No rework required — additive changes only.
+**Next:** P3-RTP-LIVE calibration — run `./scripts/sandbox-cli.sh audit` with OWC active
 
 ---
 
