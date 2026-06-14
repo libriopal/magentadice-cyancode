@@ -6,7 +6,7 @@
 **Human Authorization:** PENDING
 **Sprint:** P6-PLAYERMODEL-FIX
 **DEBT reference:** DEBT-03 (`docs/KNOWN_TECHNICAL_DEBT.md`)
-**Sacred file:** `core/packages/farkle-engine/src/monteCarlo.ts` line 126
+**Sacred files:** `core/packages/farkle-engine/src/monteCarlo.ts` lines 126 and 178
 
 ---
 
@@ -35,13 +35,27 @@ above the calibration point.
 - This directly inverts the skill-game legal defence: a player making optimal
   decisions loses to a weak player, which undermines the sweepstakes classification
 
+**Same miscalibration in `simulateRallyVote` (line 178):**
+`simulateRallyVote` contains a separate OPTIMAL branch with the same root problem:
+
+```typescript
+if (model === 'OPTIMAL') {
+  if (multiplierStep >= 3 && unbanked > 10_000) return 'bank';
+  return 'continue';  // always continues at 91.56% farkle rate
+}
+```
+
+`multiplierStep >= 3` is rare (farkles reset step to 0), and `unbanked > 10_000`
+is almost never reached before a farkle at this rate. OPTIMAL in RALLY_CASINO
+therefore also always continues — same inversion, different code path.
+
 ---
 
 ## EV Analysis — New Threshold Derivation
 
 On any turn, the incremental expected value of continuing vs banking is:
 
-```
+```text
 ΔEV(continue) = P(survive) × E[rawScore × mult] − P(farkle) × unbanked
               = (1 − r) × E[S] − r × U
 ```
@@ -72,11 +86,9 @@ ran a very different scoring distribution at the original calibration point.
 
 ---
 
-## Proposed Change
+## Proposed Changes
 
-**File:** `core/packages/farkle-engine/src/monteCarlo.ts`
-**Line:** 126
-**Type:** Sacred — `payout_math` category
+### Change 1 — `playerContinue` (Sacred, `monteCarlo.ts:126`)
 
 ```diff
 -  // Optimal: continue when multiplier gain outweighs farkle risk
@@ -89,72 +101,166 @@ ran a very different scoring distribution at the original calibration point.
 +  const optimal = multiplierStep < 3 && unbanked < 300;
 ```
 
-**Rationale for 300:**
+**Rationale for `unbanked < 300`:**
 - Minimum scoring roll in 6-die farkle = 50 pts (single 5); average ≈ 200–400 pts
 - EV breakeven at r=0.9156 ≈ 18–37 pts for these scoring values
 - 300 ≈ 8–16× breakeven → allows 2–3 roll chains before mandatory banking
 - At step=0–2 with unbanked < 300, chaining has positive EV if next roll scores
 - At step ≥ 3 (mult ≥ 2.0) or unbanked ≥ 300, risk/reward flips negative → bank
 
-**Rationale for step < 3 (was step < 4):**
+**Rationale for `step < 3` (was `step < 4`):**
 - Step 3 means current mult = 2.0 → next mult would be 3.0 (+50%)
 - At 91.56% farkle rate the expected cost of one more roll is `0.9156 × unbanked`
 - Even a 50% multiplier jump rarely justifies 91.56% loss probability on any
   meaningful unbanked stack
 - Step < 3 allows chaining through ×1.0 → ×1.25 → ×1.5 before mandatory banking
 
-**Effect on AVERAGE and WEAK models:**
-Both models reference `optimal` with probabilistic noise layers:
-- `AVERAGE`: continues `0.70 × optimal + 0.30 × 0.50` → banks more conservatively
-- `WEAK`:    continues `0.40 × optimal + 0.60 × 0.30` → less affected (already noisier)
+---
 
-The recalibration should increase all three models' scores (all were inversely
-calibrated). The ordering requirement `OPTIMAL > AVERAGE > WEAK` must hold
-post-fix and is verified by the mandatory Monte Carlo pass.
+### Change 2 — `simulateRallyVote` OPTIMAL branch (Sacred, `monteCarlo.ts:177–179`)
+
+```diff
+  if (model === 'OPTIMAL') {
+-   if (multiplierStep >= 3 && unbanked > 10_000) return 'bank';
+-   return 'continue';
++   // Aligned with playerContinue recalibration (ADR-022): same threshold,
++   // same EV rationale. Rally mode has role bonuses but not a higher survival rate.
++   return multiplierStep < 3 && unbanked < 300 ? 'continue' : 'bank';
+  }
+```
+
+Both code paths govern the same OPTIMAL player model in the same simulation.
+Using different thresholds across modes would produce inconsistent and
+legally-indefensible skill ordering results across SOLO vs RALLY modes.
+
+---
+
+### Change 3 — `isOptimalDecision` alignment (Non-sacred, `apps/server/src/skillMetrics.ts`)
+
+`gameRoom.ts:411+542` calls `isOptimalDecision()` from `skillMetrics.ts` to record
+`was_optimal` in analytics. The current implementation uses an EV-based algorithm
+with a caller-supplied `farkleRisk` parameter. After Change 1, simulation and
+analytics will use different definitions of "optimal", corrupting the `was_optimal`
+field that supports the skill-game legal defence.
+
+`skillMetrics.ts` is NOT in `.ff-core-lock` — this is a non-sacred change, no
+Human authorization required. It must be implemented in the same commit batch as
+Changes 1 and 2 to prevent divergence.
+
+```diff
+  export function isOptimalDecision(
+    decision: 'BANK' | 'CONTINUE',
+    unbanked: number,
+    multiplierStep: number,
+-   estimatedFarkleRisk: number,
++   _estimatedFarkleRisk: number,  // deprecated — kept for API compatibility
+  ): boolean {
+-   const bankValue = unbanked;
+-   const currentMult = MULTIPLIER_STEPS[Math.min(multiplierStep, 5)] ?? 4.0;
+-   const nextMult    = MULTIPLIER_STEPS[Math.min(multiplierStep + 1, 5)] ?? 4.0;
+-   const multiplierGain = nextMult / currentMult;
+-   const expectedContinueValue = unbanked * (1 - estimatedFarkleRisk) * multiplierGain;
+-   return decision === 'CONTINUE'
+-     ? expectedContinueValue > bankValue
+-     : bankValue >= expectedContinueValue;
++   // Aligned with monteCarlo.ts playerContinue (ADR-022).
++   // Empirical farkleRate=0.9156 makes continuing EV-positive only at low unbanked
++   // and early multiplier steps. Uses same threshold as simulation for consistency.
++   const shouldContinue = multiplierStep < 3 && unbanked < 300;
++   return decision === 'CONTINUE' ? shouldContinue : !shouldContinue;
+  }
+```
+
+---
+
+### Change 4 — Gate 3 ordering check (Non-sacred, `core/scripts/validate-gates.ts`)
+
+Gate 3 currently only checks `soloOpt.averageScore !== soloWeak.averageScore`
+(inequality). This passes even with inverted ordering (OPTIMAL < WEAK) as long as
+they differ. The acceptance criterion requires `OPTIMAL > AVERAGE > WEAK` strict
+ordering. This is a non-sacred surface file change.
+
+```diff
+- const skillGapRaw  = Math.round(Math.abs(soloOpt.averageScore - soloWeak.averageScore));
+- const skillGapNorm = Number((skillGapRaw / soloWeak.averageScore).toFixed(4));
++ const skillGapRaw     = Math.round(soloOpt.averageScore - soloWeak.averageScore);
++ const properOrdering  = soloOpt.averageScore > soloAvg.averageScore &&
++                         soloAvg.averageScore > soloWeak.averageScore;
++ const skillGapNorm    = Number((Math.abs(skillGapRaw) / soloWeak.averageScore).toFixed(4));
+
+  Gate3: {
+-   pass: soloOpt.averageScore !== soloWeak.averageScore,
+-   metric: 'skill_gap_raw (OPTIMAL-WEAK)',
+-   value: skillGapRaw,
+-   threshold: 'OPTIMAL≠WEAK (normalized: ' + skillGapNorm + ')',
++   pass: properOrdering,
++   metric: 'skill_ordering (OPTIMAL>AVERAGE>WEAK)',
++   value: `${soloOpt.averageScore}>${soloAvg.averageScore}>${soloWeak.averageScore} (gap_norm:${skillGapNorm})`,
++   threshold: 'strict ordering required',
+  },
+```
+
+---
+
+## Effect on AVERAGE and WEAK Models
+
+Both models reference `optimal` with probabilistic noise layers:
+- `AVERAGE`: continues `0.70 × optimal + 0.30 × 0.50` — now banks more when optimal=false
+- `WEAK`:    continues `0.40 × optimal + 0.60 × 0.30` — less affected (noisier)
+
+The recalibration increases all three models' scores. The strict ordering
+`OPTIMAL > AVERAGE > WEAK` is enforced by the updated Gate 3 in the MC pass.
 
 ---
 
 ## Acceptance Criteria (all must pass before commit)
 
-1. **10,000-session Monte Carlo pass** at seed=42, stakeAmount=1, all modes:
-   - OPTIMAL avgScore > WEAK avgScore (inversion resolved)
-   - OPTIMAL avgScore > AVERAGE avgScore (correct ordering)
-   - Gate 4 farkleRate remains 0.85–0.95 (farkle rate is a physics property, not a function of playerContinue — should be stable)
-   - Gate 2 RTP remains 0.82–1.02
-2. **100,000-session compliance audit** (mandatory, not just validation):
-   - All 6 gates PASS
-   - New compliance record committed to `core/art/profiling/`
+1. **10,000-session Monte Carlo pass** (`packages/farkle-engine/node_modules/.bin/tsx scripts/validate-gates.ts`):
+   - Gate 3 PASS: strict ordering `OPTIMAL > AVERAGE > WEAK` (updated gate)
+   - Gate 4 farkleRate 0.85–0.95 (physics property, unaffected by playerContinue)
+   - Gate 2 RTP 0.82–1.02
+2. **100,000-session compliance audit** (full run, all 6 gates PASS):
+   - New record committed to `core/art/profiling/rtp_audit_P6_42.json`
 3. **TypeScript type-check**: `cd core && pnpm type-check` — 0 errors
 4. **Existing tests**: `cd core && pnpm test` — all pass, no regressions
-5. **Bito review** of the sacred diff before commit (per `feedback_sacred_bito.md`)
+5. **Bito review** of the full sacred+non-sacred diff before commit
 
 ---
 
 ## Threshold Adjustment Protocol
 
-If the 10k pass shows `OPTIMAL avgScore < WEAK avgScore`, the threshold must be
-adjusted before proceeding. Adjustment range to explore (each requires re-running
-the MC pass, no Human re-approval needed for threshold tuning within this ADR):
+If the 10k pass shows Gate 3 FAIL (ordering not OPTIMAL > AVERAGE > WEAK),
+adjust threshold and re-run. No Human re-approval needed within this ADR:
 
-| Attempt | Condition | Intent |
-|---------|-----------|--------|
-| 1 (proposed) | `step < 3 && unbanked < 300` | Conservative, likely correct |
-| 2 (if 1 fails) | `step < 3 && unbanked < 150` | Tighter banking |
-| 3 (if 2 fails) | `step < 2 && unbanked < 100` | Near-immediate banking |
+| Attempt | `playerContinue` condition | `simulateRallyVote` condition | Intent |
+|---------|---------------------------|-------------------------------|--------|
+| 1 (proposed) | `step < 3 && unbanked < 300` | `step < 3 && unbanked < 300` | Conservative |
+| 2 (if 1 fails) | `step < 3 && unbanked < 150` | `step < 3 && unbanked < 150` | Tighter banking |
+| 3 (if 2 fails) | `step < 2 && unbanked < 100` | `step < 2 && unbanked < 100` | Near-immediate banking |
 
-If Attempt 3 still fails (OPTIMAL < WEAK), return to Human with findings — a deeper
-model design issue exists beyond threshold tuning.
+If Attempt 3 fails, return to Human — deeper model design issue exists.
+
+---
+
+## Known Side Effect — Dream Submodule Tension
+
+`dream/apps/frontend/src/erk/receptor.ts:152` computes UI tension as
+`multiplierStep / MAX_MULTIPLIER_STEP`. With OPTIMAL banking more aggressively,
+`multiplierStep` will advance less frequently — tension values will cluster lower.
+
+**No change required before P6.** Monitor tension curve post-deployment;
+adjust dream weights if player-facing feedback becomes disconnected from risk.
 
 ---
 
 ## Rollback
 
-If the fix causes Gate 2 (RTP band) to fail or any test regression:
 ```bash
-git -C core revert HEAD   # revert the sacred commit
+git -C core revert HEAD   # revert sacred commit
 cd core && pnpm type-check && pnpm test
 ```
-The revert itself is not a sacred change (it restores a known-good state).
+
+The revert restores a known-good state and is not itself a sacred change.
 
 ---
 
@@ -163,8 +269,9 @@ The revert itself is not a sacred change (it restores a known-good state).
 - `AVERAGE` and `WEAK` model noise parameters (the `rng()` probabilities)
 - `multiplierStep` advancement or reset logic
 - `MULTIPLIER_LADDER` values
-- `farkleScorer.ts`, `rtpConfig.ts`, `csprng.ts`, or any other sacred file
+- `farkleScorer.ts`, `rtpConfig.ts`, `csprng.ts`, or any other sacred file besides `monteCarlo.ts`
 - Scoring arithmetic anywhere in the codebase
+- `gameRoom.ts` call sites — `isOptimalDecision` API signature unchanged
 
 ---
 
@@ -173,6 +280,7 @@ The revert itself is not a sacred change (it restores a known-good state).
 - `docs/KNOWN_TECHNICAL_DEBT.md` DEBT-03
 - `docs/adr/ADR-021-p5-governance-compliance.md` (Finding A diagnosis)
 - `core/art/profiling/rtp_audit_20260614B_42.json` (baseline metrics)
+- `core/.ff-core-lock` (sacred file manifest)
 - `mesh/sacred-core-spec.md` — payout_math authorization requirements
 - `mesh/authority-model.md` — Sacred tier process
 - `feedback_sacred_bito.md` — bito review gate for sacred diffs

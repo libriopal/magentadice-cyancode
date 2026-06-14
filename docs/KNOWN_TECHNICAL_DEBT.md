@@ -38,11 +38,13 @@ calibrated at `farkleRate≈0.37`. Current observed farkle rate is 0.9156 — 2.
 design breakeven. OPTIMAL continues in ~99.7% of turns (step=0 in 99.3%), farkles almost
 every turn. Result: OPTIMAL avgScore=272, WEAK avgScore=1,842 — a 6.8× inversion.
 OPTIMAL is the worst-performing model, not the best.
-**Fix:** Recalibrate `playerContinue` thresholds using empirical farkle rate (0.9156).
-Break-even is approximately `unbanked > 272 / (1 - 0.9156) ≈ 3,223` at step=0.
-New condition likely: `multiplierStep < 2 && unbanked < 3500`.
+**Fix:** Recalibrate `playerContinue` (line 126) and `simulateRallyVote` OPTIMAL branch (line 178)
+using empirical farkle rate 0.9156. EV breakeven ≈ 18–55 pts; new condition proposed in ADR-022:
+`multiplierStep < 3 && unbanked < 300`. Non-sacred companion: align `isOptimalDecision` in
+`skillMetrics.ts` and upgrade Gate 3 ordering check in `validate-gates.ts` to OPTIMAL>AVG>WEAK.
 Requires full Monte Carlo re-validation after change.
 **Priority:** HIGH — directly inverts the skill-game legal defence (OPTIMAL player loses to WEAK player)
-**Sacred:** YES — requires ADR-022 + Human written approval + 10k MC pass before implementation
-**Resolve before:** P6-PLAYERMODEL-FIX sprint (planned next)
+**Sacred:** YES — requires ADR-022 (`docs/adr/ADR-022-p6-playercontinue-recalibration.md`) +
+Human written approval + 10k MC pass before any implementation
+**Resolve before:** P6-PLAYERMODEL-FIX sprint (in progress)
 **First flagged:** Production-readiness assessment, P3-RTP-LIVE audit review 2026-06-14
