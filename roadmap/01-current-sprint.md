@@ -270,7 +270,7 @@ cd core && pnpm type-check && pnpm test
 **What shipped:**
 - `docs/SACRED.md` — formal registry of sacred systems (payout_math / rng / game_state_authority)
 - `docs/AUTHORIZATION.md` — three-tier auth model (Routine / Elevated / Sacred) with finding map
-- `docs/sessions/session-log.md` — P5, P4-OWC, P3-RTP-LIVE, P2.6 session entries
+- `sessions/session-log.md` — Sessions 15–18 appended (P3-RTP-LIVE, P4-OWC, P4-OWC-SANDBOX, P5-GOVERNANCE)
 - `docs/KNOWN_TECHNICAL_DEBT.md` — DEBT-03 added (Finding A playerContinue OPTIMAL inversion)
 - Finding B (circular normalizer) fixed in `validate-gates.ts` (non-sacred):
   - Gate 3 now reports `skill_gap_raw = |OPTIMAL_avg − WEAK_avg|` (1570 pts) and `skill_gap_norm = skill_gap_raw / WEAK_avg` (0.8523 = 85.2%)
