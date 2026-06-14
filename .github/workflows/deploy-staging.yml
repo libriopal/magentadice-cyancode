@@ -6,6 +6,7 @@ on:
       - develop
       - staging
     paths:
+      - 'core'
       - 'core/apps/web/**'
       - 'core/packages/**'
       - '.github/workflows/deploy-staging.yml'
@@ -14,6 +15,7 @@ on:
       - main
       - develop
     paths:
+      - 'core'
       - 'core/apps/web/**'
       - 'core/packages/**'
 
