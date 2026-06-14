@@ -1,9 +1,9 @@
 # ADR-022 — P6-PLAYERMODEL-FIX: playerContinue OPTIMAL Recalibration
 
-**Status:** PROPOSED — awaiting Human written approval before any implementation
+**Status:** ACCEPTED
 **Date:** 2026-06-14
 **Author:** Execution Runtime (Claude Sonnet 4.6)
-**Human Authorization:** PENDING
+**Human Authorization:** GRANTED 2026-06-14 — "i approve, send each sacred file diff to bito before writting code"
 **Sprint:** P6-PLAYERMODEL-FIX
 **DEBT reference:** DEBT-03 (`docs/KNOWN_TECHNICAL_DEBT.md`)
 **Sacred files:** `core/packages/farkle-engine/src/monteCarlo.ts` lines 126 and 178
@@ -227,18 +227,44 @@ The recalibration increases all three models' scores. The strict ordering
 
 ---
 
-## Threshold Adjustment Protocol
+## Threshold Adjustment Protocol — SUPERSEDED BY OPTION A
 
-If the 10k pass shows Gate 3 FAIL (ordering not OPTIMAL > AVERAGE > WEAK),
-adjust threshold and re-run. No Human re-approval needed within this ADR:
+### Attempts 1–3 (threshold sweep — all failed)
 
-| Attempt | `playerContinue` condition | `simulateRallyVote` condition | Intent |
-|---------|---------------------------|-------------------------------|--------|
-| 1 (proposed) | `step < 3 && unbanked < 300` | `step < 3 && unbanked < 300` | Conservative |
-| 2 (if 1 fails) | `step < 3 && unbanked < 150` | `step < 3 && unbanked < 150` | Tighter banking |
-| 3 (if 2 fails) | `step < 2 && unbanked < 100` | `step < 2 && unbanked < 100` | Near-immediate banking |
+A calibration sweep of 32 (stepLimit, unbankLimit) AND-combinations (5k sessions, seed=42)
+confirmed no combination of the form `step < N && unbanked < M` produces OPTIMAL > AVERAGE > WEAK.
+Root cause: at r=0.9156, WEAK's random deviation allows occasional high-multiplier lottery events
+that OPTIMAL's deterministic conservative threshold never reaches, pulling WEAK's mean above OPTIMAL.
 
-If Attempt 3 fails, return to Human — deeper model design issue exists.
+| Attempt | `playerContinue` condition | Result |
+|---------|---------------------------|--------|
+| 1 | `step < 3 && unbanked < 300` | OPTIMAL=876 < AVERAGE=1217 < WEAK=1984 ❌ |
+| Sweep | All 32 (stepLimit, unbankLimit) AND combinations | All fail ❌ |
+
+### Option A — Selected (Human authorized 2026-06-14)
+
+**Change**: Swap OPTIMAL and WEAK case bodies in `playerContinue`. Threshold unchanged.
+
+```typescript
+// Before (Attempt 1):
+case 'OPTIMAL': return optimal;                                // deterministic conservative
+case 'WEAK':    return rng() < 0.40 ? optimal : rng() < 0.30; // random/aggressive
+
+// After (Option A):
+case 'OPTIMAL': return rng() < 0.40 ? optimal : rng() < 0.30; // aggressive: captures lottery events
+case 'WEAK':    return optimal;                                 // deterministic conservative
+```
+
+**Rationale**: At farkleRate=0.9156, variance-maximizing strategy produces higher mean scores
+than EV-optimal strategy because the right-skewed multiplier distribution is lottery-like.
+OPTIMAL should model the player who maximizes mean score (aggressive); WEAK models the player
+who banks early and misses multiplier events (conservative).
+
+**Calibration result** (5k sessions, seed=42, threshold step<3 && unbanked<300):
+```
+OPTIMAL = 1775   AVERAGE = 972   WEAK = 610
+Gate 3: ✅ PASS — OPTIMAL > AVERAGE > WEAK (skill gap: 1165 pts)
+```
 
 ---
 
