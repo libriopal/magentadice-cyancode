@@ -11,6 +11,7 @@ import { SimulationProgressPanel } from './SimulationProgressPanel';
 import { AIAdvisorPanel } from './AIAdvisorPanel';
 import { CommandHistoryPanel } from './CommandHistoryPanel';
 import { CoveragePanel } from './CoveragePanel';
+import { CohereDashboardPanel } from './CohereDashboardPanel';
 
 import type { SandboxSessionState, ChatMessage, AIAgent, MonteCarloResultV2 } from '../types/sandbox';
 import type { DispatchAction } from '../hooks/useSandboxSession';
@@ -356,6 +357,12 @@ export function SandboxShell({ state, dispatch, isConnected }: SandboxShellProps
               <TabStripTab title="COVERAGE">
                 <div style={{ padding: 8, height: 'calc(100vh - 48px - 220px - 80px)', boxSizing: 'border-box' }}>
                   <CoveragePanel />
+                </div>
+              </TabStripTab>
+
+              <TabStripTab title="GOVERNANCE">
+                <div style={{ padding: 8, height: 'calc(100vh - 48px - 220px - 80px)', boxSizing: 'border-box' }}>
+                  <CohereDashboardPanel />
                 </div>
               </TabStripTab>
             </TabStrip>
