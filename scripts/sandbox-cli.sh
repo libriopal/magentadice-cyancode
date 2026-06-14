@@ -59,7 +59,7 @@ get() {
 
 post() {
   local path="$1"; shift
-  local body="${1:-{}}"
+  local body; body="${1:-\{\}}"
   curl -sf --max-time "$TIMEOUT" -X POST "$BASE_URL$path" \
     -H "Content-Type: application/json" \
     -d "$body" || err "POST $path failed"
