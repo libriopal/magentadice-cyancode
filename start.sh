@@ -17,7 +17,14 @@ if git diff --name-only main...HEAD | grep -qE "^core|^dream"; then
   fi
 fi
 
+  echo ""
+  echo "  ┌─────────────────────────────────────────────────────┐"
+  echo "  │  COHERE GOVERNANCE LAYER                            │"
+  echo "  │  Directive: core/protocols/COHERE_INTEGRATION_      │"
+  echo "  │             DIRECTIVE.md                            │"
+  echo "  │  Run status: check COHERE_IMPLEMENTATION_SUMMARY.md │"
+  echo "  └─────────────────────────────────────────────────────┘"
+  echo ""
 echo "Launching Claude Code..."
 claude --permission-mode plan \
   "read CLAUDE.md, core/.ff-core-lock, and roadmap/01-current-sprint.md. Then check codex_pr/ for any pending Bito verification results. Then await instructions. Do not modify any CORE SACRED file without showing a diff and waiting for explicit human authorization."
-EOF
