@@ -1,7 +1,7 @@
 # Sacred Systems Registry — FAR_NZY
 ## Authority: Constitutional (mesh/sacred-core-spec.md)
 ## Status: Informational — derived from sacred-core-spec.md v1.0.0
-## Changes to this document require: Human approval + ADR
+## Changes to this document require: Human approval (Elevated tier — no ADR required)
 
 ---
 

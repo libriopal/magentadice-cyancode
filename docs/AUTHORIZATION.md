@@ -1,7 +1,7 @@
 # Authorization Model — FAR_NZY
 ## Authority: Constitutional (mesh/authority-model.md)
 ## Status: Operational summary for sprint work
-## Changes to this document require: Human approval + ADR
+## Changes to this document require: Human approval (Elevated tier — no ADR required)
 
 ---
 

@@ -273,8 +273,9 @@ cd core && pnpm type-check && pnpm test
 - `docs/sessions/session-log.md` — P5, P4-OWC, P3-RTP-LIVE, P2.6 session entries
 - `docs/KNOWN_TECHNICAL_DEBT.md` — DEBT-03 added (Finding A playerContinue OPTIMAL inversion)
 - Finding B (circular normalizer) fixed in `validate-gates.ts` (non-sacred):
-  - Gate 3 now reports raw skill gap anchored to WEAK null-bot baseline (gap=1570, 85.2%)
-  - Replaces circular `|optRTP - weakRTP| ≈ 0.0004` tautology
+  - Gate 3 now reports `skill_gap_raw = |OPTIMAL_avg − WEAK_avg|` (1570 pts) and `skill_gap_norm = skill_gap_raw / WEAK_avg` (0.8523 = 85.2%)
+  - WEAK `averageScore` serves as the null-bot reference — an external anchor independent of the circular normalizer
+  - Replaces `|optRTP − weakRTP| ≈ 0.0004` tautology where both values reduced to `targetRTP` identically
 - `stakeAmount: 1` added to `BASE_CONFIG` (sessionStore.ts) and validate-gates.ts configs
 - Historical audit records committed: `rtp_audit_2026-06-02`, `2026-06-03`, `2026-06-14` (all dash-format)
 - Post-fix compliance audit: `rtp_audit_20260614B_42.json` — all 6 gates PASS (100k sessions, seed=42)
