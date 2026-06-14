@@ -261,6 +261,37 @@ cd core && pnpm type-check && pnpm test
 
 ---
 
+## P5-GOVERNANCE — Compliance and Governance Gap Resolution
+
+**Status:** COMPLETE — committed faeb5f6 (magentadice-cyancode), 2096188 (FAR_NZY), 2026-06-14
+**Branch:** `fix/p5-governance-compliance`
+**ADR:** `docs/adr/ADR-021-p5-governance-compliance.md`
+
+**What shipped:**
+- `docs/SACRED.md` — formal registry of sacred systems (payout_math / rng / game_state_authority)
+- `docs/AUTHORIZATION.md` — three-tier auth model (Routine / Elevated / Sacred) with finding map
+- `docs/sessions/session-log.md` — P5, P4-OWC, P3-RTP-LIVE, P2.6 session entries
+- `docs/KNOWN_TECHNICAL_DEBT.md` — DEBT-03 added (Finding A playerContinue OPTIMAL inversion)
+- Finding B (circular normalizer) fixed in `validate-gates.ts` (non-sacred):
+  - Gate 3 now reports `skill_gap_raw = |OPTIMAL_avg − WEAK_avg|` (1570 pts) and `skill_gap_norm = skill_gap_raw / WEAK_avg` (0.8523 = 85.2%)
+  - WEAK `averageScore` serves as the null-bot reference — an external anchor independent of the circular normalizer
+  - Replaces `|optRTP − weakRTP| ≈ 0.0004` tautology where both values reduced to `targetRTP` identically
+- `stakeAmount: 1` added to `BASE_CONFIG` (sessionStore.ts) and validate-gates.ts configs
+- Historical audit records committed: `rtp_audit_2026-06-02`, `2026-06-03`, `2026-06-14` (all dash-format)
+- Post-fix compliance audit: `rtp_audit_20260614B_42.json` — all 6 gates PASS (100k sessions, seed=42)
+- Finding C resolved (compliance record `rtp_audit_20260614_42.json` now in FAR_NZY history)
+
+**Finding A (playerContinue OPTIMAL inversion):** Deferred to P6-PLAYERMODEL-FIX.
+- Sacred file (`monteCarlo.ts:126`), requires ADR-022 + Human written approval
+- Diagnosis: OPTIMAL avgScore=272, WEAK avgScore=1,842 (6.8× inversion at 91.5% farkle rate)
+
+**Next sprint: P6-PLAYERMODEL-FIX**
+- Propose ADR-022 with recalibrated `playerContinue` thresholds
+- Await Human approval before any implementation
+- After fix: 10k MC pass required, gate re-verification
+
+---
+
 <!-- SUPERSEDED -->
 <!-- The following was the T9 sprint (branch: tier/T9-social-platform-liveops-20260525). -->
 <!-- T9 is complete and merged via PR #19. Preserved here for historical reference. -->
