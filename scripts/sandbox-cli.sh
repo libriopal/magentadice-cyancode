@@ -466,9 +466,10 @@ cmd_owc_param_list() {
 import json,sys
 d=json.loads(sys.stdin.read())
 config=d.get('payload',{}).get('config',d)
-owc={k:v for k,v in config.items() if k.startswith('owc_')}
+# owcParams is a nested object; also surface any flat owc_ prefixed fields
+owc=config.get('owcParams', {k:v for k,v in config.items() if k.startswith('owc_')})
 if not owc:
-    print('No OWC parameters set yet (P4 pending)',file=sys.stderr)
+    print('OWC disabled (owcParams.enabled=false)',file=sys.stderr)
 else:
     print(json.dumps(owc,indent=2))
 " 2>&1 || echo "{}"

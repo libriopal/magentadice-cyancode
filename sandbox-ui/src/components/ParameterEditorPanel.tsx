@@ -2,10 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardBody } from '@progress/kendo-react-layout';
 import { Button } from '@progress/kendo-react-buttons';
 import { DropDownList, type DropDownListChangeEvent } from '@progress/kendo-react-dropdowns';
-import { NumericTextBox } from '@progress/kendo-react-inputs';
+import { NumericTextBox, Switch } from '@progress/kendo-react-inputs';
 import { Dialog, DialogActionsBar } from '@progress/kendo-react-dialogs';
 import { Badge, BadgeContainer } from '@progress/kendo-react-indicators';
-import type { SimConfig, GameMode, PlayerModel } from '../types/sandbox';
+import type { SimConfig, GameMode, PlayerModel, OWCParamsConfig } from '../types/sandbox';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -104,6 +104,13 @@ export function ParameterEditorPanel({
   const [localOrbProb, setLocalOrbProb] = useState(config.orbSpawnProbability);
   const [localSessions, setLocalSessions] = useState(config.sessions);
 
+  // OWC local numeric state
+  const owc = config.owcParams;
+  const [localOwcPlayerRank, setLocalOwcPlayerRank] = useState(owc?.playerRank ?? 1);
+  const [localOwcPlayerCount, setLocalOwcPlayerCount] = useState(owc?.playerCount ?? 1);
+  const [localOwcTurnsElapsed, setLocalOwcTurnsElapsed] = useState(owc?.turnsElapsed ?? 10);
+  const [localOwcTargetRTP, setLocalOwcTargetRTP] = useState(owc?.targetRTP ?? config.targetRTP);
+
   // Sync local state when config changes externally (undo/redo/server update)
   useEffect(() => {
     setLocalTargetRTP(config.targetRTP);
@@ -111,6 +118,15 @@ export function ParameterEditorPanel({
     setLocalOrbProb(config.orbSpawnProbability);
     setLocalSessions(config.sessions);
   }, [config.targetRTP, config.bombSpawnRate, config.orbSpawnProbability, config.sessions]);
+
+  useEffect(() => {
+    const o = config.owcParams;
+    setLocalOwcPlayerRank(o?.playerRank ?? 1);
+    setLocalOwcPlayerCount(o?.playerCount ?? 1);
+    setLocalOwcTurnsElapsed(o?.turnsElapsed ?? 10);
+    setLocalOwcTargetRTP(o?.targetRTP ?? config.targetRTP);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config.owcParams]);
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -163,6 +179,13 @@ export function ParameterEditorPanel({
   const handleSessionsBlur = useCallback(() => {
     onConfigChange({ sessions: localSessions ?? config.sessions });
   }, [localSessions, config.sessions, onConfigChange]);
+
+  // OWC helpers
+  const patchOwc = useCallback((patch: Partial<OWCParamsConfig>) => {
+    onConfigChange({ owcParams: { enabled: false, ...config.owcParams, ...patch } });
+  }, [config.owcParams, onConfigChange]);
+
+  const isOwcUnsaved = JSON.stringify(config.owcParams) !== JSON.stringify(lastRunConfig.owcParams);
 
   // ── Common input style ───────────────────────────────────────────────────────
 
@@ -284,6 +307,79 @@ export function ParameterEditorPanel({
               🎲 RANDOMISE
             </Button>
           </div>
+        </div>
+
+        {/* ── OWC section ────────────────────────────────────────────── */}
+        <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid #2a2a4a' }}>
+          <div style={{ ...labelStyle, marginBottom: 8, fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            Opportunity Weight Controller
+            {isOwcUnsaved && <UnsavedDot show />}
+          </div>
+
+          {/* Enable toggle */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <Switch
+              checked={config.owcParams?.enabled ?? false}
+              onChange={e => patchOwc({ enabled: e.value })}
+              disabled={isRunning}
+              size="small"
+            />
+            <span style={{ fontFamily: 'monospace', fontSize: 11, color: config.owcParams?.enabled ? '#00e5ff' : '#555' }}>
+              {config.owcParams?.enabled ? 'ENABLED' : 'DISABLED'}
+            </span>
+          </div>
+
+          {config.owcParams?.enabled && (
+            <>
+              {/* Player Rank */}
+              <FieldRow label="Player Rank (1=leader)" unsaved={false}>
+                <NumericTextBox
+                  value={localOwcPlayerRank}
+                  min={1} max={4} step={1} format="n0"
+                  onChange={e => setLocalOwcPlayerRank(e.value ?? 1)}
+                  onBlur={() => patchOwc({ playerRank: localOwcPlayerRank })}
+                  style={inputStyle}
+                  disabled={isRunning}
+                />
+              </FieldRow>
+
+              {/* Player Count */}
+              <FieldRow label="Player Count" unsaved={false}>
+                <NumericTextBox
+                  value={localOwcPlayerCount}
+                  min={1} max={4} step={1} format="n0"
+                  onChange={e => setLocalOwcPlayerCount(e.value ?? 1)}
+                  onBlur={() => patchOwc({ playerCount: localOwcPlayerCount })}
+                  style={inputStyle}
+                  disabled={isRunning}
+                />
+              </FieldRow>
+
+              {/* Turns Elapsed (preview default only — sim uses actual turn) */}
+              <FieldRow label="Turns Elapsed (preview)" unsaved={false}>
+                <NumericTextBox
+                  value={localOwcTurnsElapsed}
+                  min={0} max={200} step={1} format="n0"
+                  onChange={e => setLocalOwcTurnsElapsed(e.value ?? 10)}
+                  onBlur={() => patchOwc({ turnsElapsed: localOwcTurnsElapsed })}
+                  style={inputStyle}
+                  disabled={isRunning}
+                />
+              </FieldRow>
+
+              {/* OWC Target RTP override */}
+              <FieldRow label="OWC Target RTP (override)" unsaved={false}>
+                <NumericTextBox
+                  value={localOwcTargetRTP}
+                  min={0.50} max={1.10} step={0.01} format="p2"
+                  onChange={e => setLocalOwcTargetRTP(e.value ?? config.targetRTP)}
+                  onBlur={() => patchOwc({ targetRTP: localOwcTargetRTP })}
+                  style={inputStyle}
+                  disabled={isRunning}
+                />
+              </FieldRow>
+            </>
+          )}
         </div>
 
         {/* Button row */}

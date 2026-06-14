@@ -27,6 +27,8 @@ export interface MonteCarloResultV2 {
   archivistContributionRTP: number;
   bombStandardRTP: number;
   bombRainbowRTP: number;
+  owcContributionRTP: number;
+  owcErrorCount: number;
   milestonePayout: number;
   bombStandardRate: number;
   bombRainbowRate: number;
@@ -85,6 +87,14 @@ export interface ConfigCommand {
   simulationResultAfter: MonteCarloResultV2 | null;
 }
 
+export interface OWCParamsConfig {
+  enabled: boolean;
+  playerRank?: number;
+  playerCount?: number;
+  turnsElapsed?: number;
+  targetRTP?: number;
+}
+
 export interface SimConfig {
   mode: GameMode;
   sessions: number;
@@ -98,6 +108,7 @@ export interface SimConfig {
   bombSpawnRate: number;
   orbSpawnProbability: number;
   doublerSpawnEvery: number;
+  owcParams?: OWCParamsConfig;
 }
 
 // ─── WebSocket message types ─────────────────────────────────────────────────

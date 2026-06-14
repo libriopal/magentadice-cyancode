@@ -82,6 +82,7 @@ function makeInitialState(): SandboxSessionState {
       bombSpawnRate: 0.07,
       orbSpawnProbability: 0.03,
       doublerSpawnEvery: 3,
+      owcParams: { enabled: false, playerRank: 1, playerCount: 1 },
     },
     undoDepth: 0,
     redoDepth: 0,

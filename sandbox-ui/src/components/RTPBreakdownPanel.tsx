@@ -38,6 +38,7 @@ const MECHANICS: MechanicConfig[] = [
   { label: 'Orb',          field: 'orbContributionRTP',      rateField: 'orbActivationRate',    color: '#eab308' },
   { label: 'Doubler',      field: 'doublerContributionRTP',  rateField: 'doublerTriggerRate',   color: '#22c55e' },
   { label: 'Archivist',    field: 'archivistContributionRTP',rateField: null,                   color: '#ec4899' },
+  { label: 'OWC',          field: 'owcContributionRTP',       rateField: null,                   color: '#00e5ff' },
 ];
 
 const LADDER_CATEGORIES = ['×1.0', '×1.25', '×1.5', '×2.0', '×3.0', '×4.0'];
