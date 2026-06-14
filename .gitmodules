@@ -5,3 +5,6 @@
 	path = dream
 	url = https://github.com/libriopal/adabt-core.git
 	branch = main
+[submodule "devos"]
+	path = devos
+	url = https://github.com/libriopal/libriopal-devos.git
