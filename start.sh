@@ -41,7 +41,8 @@ fi
 
 # Current-branch Bito result in codex_pr/
 BRANCH_SLUG=$(echo "$CURRENT_BRANCH" | tr '/' '-')
-BITO_RESULT=$(ls codex_pr/ 2>/dev/null | grep -i "$BRANCH_SLUG\|${BRANCH_SLUG//-/_}" | tail -1)
+BITO_RESULT=$(ls codex_pr/ 2>/dev/null | grep -iF "$BRANCH_SLUG" | tail -1)
+[ -z "$BITO_RESULT" ] && BITO_RESULT=$(ls codex_pr/ 2>/dev/null | grep -iF "${BRANCH_SLUG//-/_}" | tail -1)
 BITO_STATUS="${BITO_RESULT:+Pending Bito result: codex_pr/$BITO_RESULT}"
 BITO_STATUS="${BITO_STATUS:-No Bito result for current branch}"
 
@@ -51,7 +52,7 @@ COHERE_HEALTH="server not started"
 
 if $CORE_AVAILABLE && [ -f "core/apps/server/dist/index.js" ]; then
   # Skip start if server already responding — avoids orphan processes and port conflicts
-  if curl -sf http://localhost:3001/api/governance/health >/dev/null 2>&1; then
+  if curl -sf --connect-timeout 2 -m 5 http://localhost:3001/api/governance/health >/dev/null 2>&1; then
     echo "Sandbox server already running at port 3001 — skipping start"
   else
     echo ""
@@ -64,12 +65,12 @@ if $CORE_AVAILABLE && [ -f "core/apps/server/dist/index.js" ]; then
     # Poll up to 5s for server to bind
     for i in 1 2 3 4 5; do
       sleep 1
-      curl -sf http://localhost:3001/api/governance/health >/dev/null 2>&1 && break
+      curl -sf --connect-timeout 2 -m 5 http://localhost:3001/api/governance/health >/dev/null 2>&1 && break
     done
   fi
 
   # Parse health response — prefer jq for robustness, fall back to grep on correct key
-  HEALTH_JSON=$(curl -sf http://localhost:3001/api/governance/health 2>/dev/null)
+  HEALTH_JSON=$(curl -sf --connect-timeout 2 -m 5 http://localhost:3001/api/governance/health 2>/dev/null)
   if [ -n "$HEALTH_JSON" ]; then
     if command -v jq >/dev/null 2>&1; then
       COHERE_HEALTH=$(echo "$HEALTH_JSON" | jq -r '.cohereAvailable // "unknown"' 2>/dev/null || echo "unknown")

@@ -11,7 +11,7 @@
 1. git submodule status
 2. ./manifest.sh status
 3. [conditional] ./scripts/bito-pre-merge-check.sh  (only if diff touches core/ or dream/)
-4. echo COHERE governance box (static string, no live check)
+4. Conditional sandbox server start on port 3001 (live curl health check to /api/governance/health)
 5. claude --permission-mode plan "read CLAUDE.md, core/.ff-core-lock, and roadmap/01-current-sprint.md..."
 ```
 
@@ -77,21 +77,20 @@ and surface only the current-branch result in the launch prompt.
 
 ---
 
-## Bottleneck 4: sandbox server is never started
+## Bottleneck 4: sandbox server conditional startup (status: resolved as of 2026-06-16)
 
-sandbox-cli requires a server at port 3001.
-start.sh does not start the sandbox server.
-In practice: Claude uses `packages/farkle-engine/node_modules/.bin/tsx scripts/validate-gates.ts`
-directly (evidence: every P3/P4/P5/P6 session). sandbox-cli's `gate-check` is never used.
+NOTE: This analysis described the 31-line start.sh at audit time. The current start.sh (112 lines)
+conditionally starts the sandbox server: it checks `core/apps/server/dist/index.js` exists,
+checks if port 3001 already responds (to avoid orphan processes), spawns the server with a
+trap-based teardown, and polls up to 5s for bind. The COHERE health is fetched live.
 
-The sandbox server startup is a manual step (`cd apps/server && npm run dev` inside core/ or dream/).
-It is not documented in start.sh or CLAUDE.md as a required pre-session step.
+The remaining question is whether this conditional approach is sufficient:
+- If `core/apps/server/dist/index.js` does not exist (not built), the server is skipped silently.
+- The conditional means sandbox-ui is still not guaranteed to be running at session start.
+- `pnpm build` in core/ is a prerequisite that start.sh does not enforce.
 
-**Consequence**: sandbox-ui (8 components, 2667 lines) has never been used in an active
-development session because the server is not running when sessions start.
-
-**Fix if sandbox-ui is in scope**: start.sh must start sandbox server AND open sandbox-ui.
-**Fix if sandbox-ui is NOT in scope**: Document that sandbox-cli requires manual server start.
+**Current status**: Conditional startup exists. Unconditional startup would require ensuring the
+build is always up-to-date, which is a separate concern from the launcher itself.
 
 ---
 

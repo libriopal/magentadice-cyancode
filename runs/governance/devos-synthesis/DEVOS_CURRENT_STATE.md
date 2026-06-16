@@ -16,16 +16,18 @@ CONCEPTUAL = named in conversation but no code exists
 
 **Status: EXISTS (minimal)**
 
-31 lines. Responsibilities:
-1. `git submodule status`
-2. `./manifest.sh status`
-3. Conditional `./scripts/bito-pre-merge-check.sh` if branch touches core/ or dream/
-4. Print a COHERE governance box (static echo, no live check)
-5. `claude --permission-mode plan "read CLAUDE.md, .ff-core-lock, roadmap/01-current-sprint.md. Then check codex_pr/..."`
+112 lines (updated 2026-06-16, DevOS Candidate B). Responsibilities:
+1. Submodule guard — checks `core/.ff-core-lock` exists; prints init instruction and skips dependent steps if not
+2. `git submodule status`
+3. `./manifest.sh status`
+4. Conditional `./scripts/bito-pre-merge-check.sh` if branch touches core/ or dream/
+5. Dynamic context extraction — current branch, sprint summary, sacred file list, bito result for branch
+6. Conditional sandbox server start (port 3001) — checks if already running first; registers EXIT trap to kill it
+7. Live COHERE health check via `curl /api/governance/health`; prefers `jq`, falls back to `grep`
+8. `claude --permission-mode plan "BRANCH: ... $SPRINT_SUMMARY SACRED CORE FILES: ..."` (dynamically injected)
 
-The context string in step 5 is hardcoded. It does not update when the sprint changes.
-The sandbox server does not start. The sandbox-ui does not start.
-The COHERE box is decorative — no COHERE calls are live.
+NOTE (2026-06-14 analysis): The claims below that "sandbox server does not start" and "COHERE box is decorative"
+described the 31-line start.sh at the time of the Phase 0 audit. Both are now corrected in the current implementation.
 
 ---
 
@@ -206,9 +208,10 @@ Tier 3 (TYPES ONLY — not active):
 - `ai/retrieval/retrievalTypes.ts` — 7 retrieval source types
 - Activates when 100+ governance audit records exist
 
-**Start.sh status**: The COHERE governance box in start.sh is a static echo — it does NOT
-call `GET /api/governance/health`. The box implies governance is running; it is not checking.
-The live endpoint (`GET /api/governance/health`) exists but is never called at session start.
+**Start.sh status** (as of 2026-06-16): start.sh conditionally starts the sandbox server, polls
+`GET /api/governance/health` with `curl`, and injects the live `cohereAvailable` value into the
+COHERE governance box. The live endpoint IS called at session start when the server is running.
+(Note: the 2026-06-14 analysis below described the 31-line start.sh; those claims are now stale.)
 
 **Key constraint (from COHERE_IMPLEMENTATION_SUMMARY.md risk register)**:
 - `cohere-ai` and `zod` installed as deps but server may crash on Node 24 (readable-stream issue)

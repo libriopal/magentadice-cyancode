@@ -3,7 +3,7 @@
 **Status:** ACCEPTED
 **Date:** 2026-06-14
 **Author:** Execution Runtime (Claude Sonnet 4.6)
-**Human Authorization:** GRANTED 2026-06-14 — "i approve, send each sacred file diff to bito before writting code"
+**Human Authorization:** GRANTED 2026-06-14 — "i approve, send each sacred file diff to bito before writing code"
 **Sprint:** P6-PLAYERMODEL-FIX
 **DEBT reference:** DEBT-03 (`docs/KNOWN_TECHNICAL_DEBT.md`)
 **Sacred files:** `core/packages/farkle-engine/src/monteCarlo.ts` lines 126 and 178
@@ -202,6 +202,59 @@ ordering. This is a non-sacred surface file change.
 
 ---
 
+### Change 5 — Gate 3 alignment in `sandbox.ts` (Surface, `apps/server/src/sandbox.ts:405-414`)
+
+The `/rtp-audit` REST endpoint in `sandbox.ts` had an independent copy of Gate 3 logic that used
+the old inequality check (`soloOpt.averageScore !== soloWeak.averageScore`). After Change 4 updated
+`validate-gates.ts` to require strict ordering, `sandbox.ts` and the standalone script diverged —
+the same simulation data could produce different PASS/FAIL results depending on which entry point ran
+the audit. `sandbox.ts` is SURFACE tier (not CORE SACRED); no ADR authorization required.
+
+```diff
+-   const skillGapRaw  = Math.round(Math.abs(soloOpt.averageScore - soloWeak.averageScore));
+-   const skillGapNorm = Number((skillGapRaw / soloWeak.averageScore).toFixed(4));
++   // Gate 3: strict skill ordering — OPTIMAL > AVERAGE > WEAK (ADR-022, aligned with validate-gates.ts)
++   const properOrdering = soloOpt.averageScore > soloAvg.averageScore &&
++                          soloAvg.averageScore > soloWeak.averageScore;
++   const skillGapRaw   = Math.round(soloOpt.averageScore - soloWeak.averageScore);
++   const skillGapNorm  = Number((Math.abs(skillGapRaw) / soloWeak.averageScore).toFixed(4));
+
+    Gate3: {
+-     pass: soloOpt.averageScore !== soloWeak.averageScore,
+-     metric: 'skill_gap_raw (OPTIMAL-WEAK)',
+-     value: skillGapRaw,
+-     threshold: 'OPTIMAL≠WEAK ...',
++     status: properOrdering ? 'PASS' : 'FAIL',
++     metric: 'skill_ordering (OPTIMAL>AVG>WEAK)',
++     value: `${soloOpt.averageScore}>${soloAvg.averageScore}>${soloWeak.averageScore} (gap_norm:${skillGapNorm})`,
++     threshold: 'strict ordering required',
+    },
+```
+
+---
+
+### Change 6 — Player model alignment in `calibrate-threshold.ts` (Non-sacred, `scripts/calibrate-threshold.ts:51-58`)
+
+`calibrate-threshold.ts` is a calibration utility that sweeps `(stepLimit, unbankLimit)` pairs to find
+thresholds that produce `OPTIMAL > AVERAGE > WEAK`. It claims to mirror `monteCarlo.ts` player model
+logic. After Change 1 (Option A — OPTIMAL and WEAK case bodies swapped), `calibrate-threshold.ts` had
+the pre-Option-A logic: OPTIMAL deterministic, WEAK stochastic. Running calibration with inverted
+player models produces thresholds that work for the OLD behavior, not the new ADR-022 behavior.
+
+```diff
+-  // Before Option A — INVERTED from monteCarlo.ts after ADR-022
+-  case 'OPTIMAL': cont = optimal; break;                                 // deterministic
+-  case 'AVERAGE': cont = decisionRng() < 0.70 ? optimal : decisionRng() < 0.50; break;
+-  default:        cont = decisionRng() < 0.40 ? optimal : decisionRng() < 0.30; break;  // stochastic
+
++  // Mirror monteCarlo.ts playerContinue logic (ADR-022 Option A): OPTIMAL stochastic, WEAK deterministic.
++  case 'OPTIMAL': cont = decisionRng() < 0.40 ? optimal : decisionRng() < 0.30; break;  // stochastic
++  case 'AVERAGE': cont = decisionRng() < 0.70 ? optimal : decisionRng() < 0.50; break;
++  default:        cont = optimal; break;                                 // WEAK: deterministic
+```
+
+---
+
 ## Effect on AVERAGE and WEAK Models
 
 Both models reference `optimal` with probabilistic noise layers:
@@ -224,6 +277,8 @@ The recalibration increases all three models' scores. The strict ordering
 3. **TypeScript type-check**: `cd core && pnpm type-check` — 0 errors
 4. **Existing tests**: `cd core && pnpm test` — all pass, no regressions
 5. **Bito review** of the full sacred+non-sacred diff before commit
+6. **`sandbox.ts` Gate 3** (`/rtp-audit` endpoint): Gate 3 must use `properOrdering`, consistent with `validate-gates.ts` (Change 5)
+7. **`calibrate-threshold.ts`** player model: OPTIMAL must be stochastic and WEAK deterministic, mirroring `monteCarlo.ts` (Change 6)
 
 ---
 

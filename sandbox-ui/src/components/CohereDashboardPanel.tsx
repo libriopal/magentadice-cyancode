@@ -65,7 +65,17 @@ export function CohereDashboardPanel({ serverUrl = SERVER_URL, pollInterval = PO
       const res = await fetch(`${serverUrl}/api/governance/health`, { signal: controller.signal });
       clearTimeout(timeoutId);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data: GovernanceHealth = await res.json();
+      const raw = await res.json() as Record<string, unknown>;
+      const data: GovernanceHealth = {
+        status:           (raw['status'] as GovernanceHealth['status']) ?? 'offline',
+        cohereAvailable:  Boolean(raw['cohereAvailable'] ?? raw['cohereConfigured'] ?? false),
+        auditRecordCount: Number(raw['auditRecordCount'] ?? 0),
+        budget:           Array.isArray(raw['budget']) ? (raw['budget'] as GovernanceHealth['budget']) : [],
+        policyViolations: Number(raw['policyViolations'] ?? 0),
+        lastAnomalyAt:    (raw['lastAnomalyAt'] as string | null) ?? null,
+        uptimeMs:         Number(raw['uptimeMs'] ?? 0),
+        timestamp:        (raw['timestamp'] as string) ?? new Date().toISOString(),
+      };
       setHealth(data);
       setError(null);
     } catch (e) {
