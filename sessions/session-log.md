@@ -945,3 +945,67 @@ P6-PLAYERMODEL-FIX — propose ADR-022 and await Human written approval before t
 `memory.p5_governance = 'COMPLETE'`
 
 ---
+
+## Session 19 — P6-PLAYERMODEL-FIX + DevOS Phases 1–5
+
+| Field | Value |
+|---|---|
+| session_id | fix/p6-playermodel-fix |
+| date | 2026-06-14 — 2026-06-16 |
+| verdict | PASS_PROPOSE_COMMIT |
+| branch | fix/p6-playermodel-fix |
+| PR | #30 (merged 2026-06-16) |
+| ADR | docs/adr/ADR-022-p6-playercontinue-recalibration.md |
+
+### Summary
+
+Two tracks merged in one PR: P6 player model fix (DEBT-03 resolution) and DevOS development OS (Phases 1–5).
+
+### P6 — DEBT-03 Resolution
+
+OPTIMAL and WEAK `playerContinue` case bodies swapped (ADR-022 Option A). At `farkleRate=0.9156`, aggressive stochastic behaviour produces higher mean scores than EV-optimal conservative behaviour due to the right-skewed multiplier distribution. Gate 3 upgraded to strict OPTIMAL>AVERAGE>WEAK ordering in `validate-gates.ts`, `sandbox.ts`, and `calibrate-threshold.ts` (all aligned). `isOptimalDecision` in `skillMetrics.ts` aligned.
+
+**100k audit (seed=42):** OPTIMAL=1995 > AVERAGE=1214 > WEAK=870
+
+### Gate Results (seed=42, 100,000 sessions)
+
+| Gate | Metric | Value | Status |
+|---|---|---|---|
+| Gate 1 | completions ≥1 | 100,000 | PASS |
+| Gate 2 | RTP band | within 0.82–1.02 | PASS |
+| Gate 3 | skill ordering OPTIMAL>AVG>WEAK | 1995>1214>870 | PASS |
+| Gate 4 | farkle_rate 0.85–0.95 | 0.9156 | PASS |
+| Gate 5 | p5Score≥0 & avgScore>100 | PASS | PASS |
+| Gate 6 | normalizer >0 | PASS | PASS |
+
+### DevOS — Phases 1–5
+
+Private submodule `libriopal/libriopal-devos` scaffolded as a generic prompt-to-app development OS. FAR_NZY is adapter #1. Phases:
+
+- **Phase 1**: `ProjectAdapter` interface, FAR_NZY adapter, `_template` for future projects
+- **Phase 2**: Pre-commit sacred guard, post-commit session log, gate-watch/bito-watch/pr-gen scripts, `CohereDashboardPanel` in sandbox-ui
+- **Phase 3**: `devos-server` (Express+WS, port 3002) + `devos-ui` (React, port 5174)
+- **Phase 4**: Real agent wiring — Bito streaming, Cohere streaming chat, FOREST CRUD, Meshy AI 3D, Figma/Canva stubs, Claude PromptToPlan
+- **Phase 5**: `./devos` standalone launcher, DeployPanel, WizardPanel, Electron scaffold, production build; bito security audit (6 findings fixed)
+
+### Review Findings Resolved (post-review, same PR)
+
+- `start.sh`: orphan-process guard (health check before spawn, trap EXIT/INT/TERM, log redirect, curl timeouts, fixed-string grep)
+- `sacred-check.sh`: exact-line matching (`grep -Fxq`), path normalization
+- `.gitmodules`: `devos` marked optional with `branch = main`; docs updated
+- `CohereDashboardPanel.tsx`: runtime normalization before `setHealth()`
+- Core submodule: pushed unpushed P6 commits to FAR_NZY remote (prevented fresh-checkout failure)
+- ADR-022: typo fixed; Changes 5+6 (sandbox.ts + calibrate-threshold.ts) documented
+- Stale synthesis docs corrected
+
+### Sacred Core
+
+`core/packages/farkle-engine/src/monteCarlo.ts` — modified under ADR-022 + Human authorization.
+
+**FIXED_POINT_CHECK:** PASS — all player model arithmetic uses integer scores; no float introduced.
+
+### Next Session
+
+DEBT-01 (MULTIPLIER_LADDER float basis) and DEBT-02 (orb bonus float) remain open but are LOW/MEDIUM priority. Next sprint direction is Human-driven: options include HollaEx crypto payment, Play Store submission, STONE weakness mechanic, or DevOS first real use. No P7 defined yet.
+
+---

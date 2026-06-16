@@ -285,10 +285,7 @@ cd core && pnpm type-check && pnpm test
 - Sacred file (`monteCarlo.ts:126`), requires ADR-022 + Human written approval
 - Diagnosis: OPTIMAL avgScore=272, WEAK avgScore=1,842 (6.8× inversion at 91.5% farkle rate)
 
-**Next sprint: P6-PLAYERMODEL-FIX**
-- Propose ADR-022 with recalibrated `playerContinue` thresholds
-- Await Human approval before any implementation
-- After fix: 10k MC pass required, gate re-verification
+**Next sprint: P6-PLAYERMODEL-FIX** — COMPLETE (PR #30 merged 2026-06-16, see below)
 
 ---
 
@@ -309,3 +306,32 @@ cd core && pnpm type-check && pnpm test
 9. Push → `gh pr create` → PR #19
 
 **Success Criteria:** All T9 pass gates green. PR #19 opened. EXECUTE.md decision tree reaches HALT state.
+
+---
+
+## P6-PLAYERMODEL-FIX — playerContinue OPTIMAL Recalibration
+
+**Status:** COMPLETE — merged PR #30 (2026-06-16)
+**Branch:** `fix/p6-playermodel-fix`
+**ADR:** `docs/adr/ADR-022-p6-playercontinue-recalibration.md`
+**DEBT resolved:** DEBT-03
+
+**What shipped:**
+- `core/packages/farkle-engine/src/monteCarlo.ts` (CORE SACRED, ADR-022 + Human auth) — OPTIMAL and WEAK `playerContinue` case bodies swapped (Option A); `simulateRallyVote` OPTIMAL branch aligned
+- `core/packages/@match3d/farkle-engine/src/skillMetrics.ts` — `isOptimalDecision` aligned to Option A threshold
+- `core/scripts/validate-gates.ts` — Gate 3 upgraded to strict `OPTIMAL > AVERAGE > WEAK` ordering
+- `core/apps/server/src/sandbox.ts` (SURFACE) — Gate 3 aligned with validate-gates.ts
+- `core/scripts/calibrate-threshold.ts` — player model mirrored to Option A (OPTIMAL stochastic, WEAK deterministic)
+- `devos/` — DevOS Phases 1–5 complete (private submodule `libriopal/libriopal-devos`)
+- `sandbox-ui/src/components/CohereDashboardPanel.tsx` — live Cohere governance panel
+- `start.sh`, `scripts/sacred-check.sh` — launcher hardening (orphan guard, exact-line matching, curl timeouts, submodule guard)
+
+**100k compliance audit (seed=42):** OPTIMAL=1995 > AVERAGE=1214 > WEAK=870 — all 6 gates PASS
+**Artifact:** `core/art/profiling/rtp_audit_P6_42.json`
+
+**Open debt remaining:**
+- DEBT-01: `MULTIPLIER_LADDER` float basis (`farkleStore.ts:28`) — MEDIUM, Sacred, deferred
+- DEBT-02: orb bonus float intermediate (`useFarkleGame.ts:305`) — LOW, Sacred, deferred
+
+**Next sprint:** Human-directed. Options: HollaEx crypto payment, Play Store submission, STONE weakness mechanic, DevOS first real use.
+

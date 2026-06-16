@@ -30,7 +30,7 @@ resolution (all are in CORE SACRED files).
 
 ---
 
-## DEBT-03
+## DEBT-03 — RESOLVED (P6-PLAYERMODEL-FIX, PR #30, 2026-06-16)
 
 **File:** `core/packages/farkle-engine/src/monteCarlo.ts` line 126
 **Issue:** `playerContinue` OPTIMAL condition `multiplierStep < 4 || unbanked < 4054` was
@@ -38,13 +38,11 @@ calibrated at `farkleRate≈0.37`. Current observed farkle rate is 0.9156 — 2.
 design breakeven. OPTIMAL continues in ~99.7% of turns (step=0 in 99.3%), farkles almost
 every turn. Result: OPTIMAL avgScore=272, WEAK avgScore=1,842 — a 6.8× inversion.
 OPTIMAL is the worst-performing model, not the best.
-**Fix:** Recalibrate `playerContinue` (line 126) and `simulateRallyVote` OPTIMAL branch (line 178)
-using empirical farkle rate 0.9156. EV breakeven ≈ 18–55 pts; new condition proposed in ADR-022:
-`multiplierStep < 3 && unbanked < 300`. Non-sacred companion: align `isOptimalDecision` in
-`skillMetrics.ts` and upgrade Gate 3 ordering check in `validate-gates.ts` to OPTIMAL>AVG>WEAK.
-Requires full Monte Carlo re-validation after change.
-**Priority:** HIGH — directly inverts the skill-game legal defence (OPTIMAL player loses to WEAK player)
-**Sacred:** YES — requires ADR-022 (`docs/adr/ADR-022-p6-playercontinue-recalibration.md`) +
-Human written approval + 10k MC pass before any implementation
-**Resolve before:** P6-PLAYERMODEL-FIX sprint (in progress)
-**First flagged:** Production-readiness assessment, P3-RTP-LIVE audit review 2026-06-14
+**Resolution (ADR-022 Option A):** Swapped OPTIMAL and WEAK `playerContinue` case bodies.
+OPTIMAL now uses stochastic aggressive logic (`rng() < 0.40 ? optimal : rng() < 0.30`); WEAK
+uses deterministic conservative logic (`return optimal`). Threshold unchanged: `step < 3 && unbanked < 300`.
+`simulateRallyVote`, `isOptimalDecision` (skillMetrics.ts), Gate 3 (validate-gates.ts and sandbox.ts),
+and `calibrate-threshold.ts` all aligned to Option A behavior.
+**100k audit (seed=42):** OPTIMAL=1995 > AVERAGE=1214 > WEAK=870 — all 6 gates PASS.
+**Compliance artifact:** `core/art/profiling/rtp_audit_P6_42.json`
+**Sacred:** Modified under ADR-022 + Human authorization (granted 2026-06-14).
