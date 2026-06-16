@@ -2,6 +2,15 @@
 # FAR_NZY / AGROS — Claude Code session launcher (DevOS Candidate B)
 # Dynamic context injection + sandbox server + Cohere governance health
 
+# ─── Submodule guard ──────────────────────────────────────────────────────────
+CORE_AVAILABLE=true
+if [ ! -f "core/.ff-core-lock" ]; then
+  echo "WARNING: core/.ff-core-lock not found."
+  echo "  Run: git submodule update --init --recursive core"
+  echo "  Skipping sacred-file list and server start."
+  CORE_AVAILABLE=false
+fi
+
 # ─── Submodule + pipeline checks ─────────────────────────────────────────────
 echo "Checking submodule status..."
 git submodule status
@@ -23,8 +32,12 @@ fi
 CURRENT_BRANCH=$(git branch --show-current)
 SPRINT_SUMMARY=$(./scripts/sprint-status.sh 2>/dev/null || echo "Sprint status unavailable")
 
-# Sacred file list (CORE section of .ff-core-lock, one per line)
-SACRED_LIST=$(awk '/^# CORE FILES:/{f=1;next} /^# SURFACE FILES/{f=0} f && /^[^#]/' core/.ff-core-lock 2>/dev/null | tr '\n' ' ')
+# Sacred file list — only when core submodule is present
+if $CORE_AVAILABLE; then
+  SACRED_LIST=$(awk '/^# CORE FILES:/{f=1;next} /^# SURFACE FILES/{f=0} f && /^[^#]/' core/.ff-core-lock 2>/dev/null | tr '\n' ' ')
+else
+  SACRED_LIST="(unavailable — run: git submodule update --init --recursive core)"
+fi
 
 # Current-branch Bito result in codex_pr/
 BRANCH_SLUG=$(echo "$CURRENT_BRANCH" | tr '/' '-')
@@ -33,21 +46,48 @@ BITO_STATUS="${BITO_RESULT:+Pending Bito result: codex_pr/$BITO_RESULT}"
 BITO_STATUS="${BITO_STATUS:-No Bito result for current branch}"
 
 # ─── Start sandbox server ─────────────────────────────────────────────────────
-if [ -f "core/apps/server/dist/index.js" ]; then
-  echo ""
-  echo "Starting sandbox server (port 3001)..."
-  (node core/apps/server/dist/index.js 2>&1 | tee /tmp/sandbox-server.log) &
-  SANDBOX_PID=$!
-  # Brief wait for server bind — not a poll loop, server either starts or doesn't
-  sleep 1
-  COHERE_HEALTH=$(curl -sf http://localhost:3001/api/governance/health 2>/dev/null \
-    | grep -o '"cohereConfigured":[^,}]*' | head -1 || echo '"cohereConfigured":false')
-  echo "Sandbox server PID: $SANDBOX_PID | Cohere: $COHERE_HEALTH"
+SANDBOX_PID=""
+COHERE_HEALTH="server not started"
+
+if $CORE_AVAILABLE && [ -f "core/apps/server/dist/index.js" ]; then
+  # Skip start if server already responding — avoids orphan processes and port conflicts
+  if curl -sf http://localhost:3001/api/governance/health >/dev/null 2>&1; then
+    echo "Sandbox server already running at port 3001 — skipping start"
+  else
+    echo ""
+    echo "Starting sandbox server (port 3001)..."
+    # Redirect to log file so $! is the real Node PID (not a tee subshell)
+    node core/apps/server/dist/index.js > /tmp/sandbox-server.log 2>&1 &
+    SANDBOX_PID=$!
+    # Kill server we started on any exit (clean session teardown)
+    trap 'kill "$SANDBOX_PID" 2>/dev/null; wait "$SANDBOX_PID" 2>/dev/null' EXIT INT TERM
+    # Poll up to 5s for server to bind
+    for i in 1 2 3 4 5; do
+      sleep 1
+      curl -sf http://localhost:3001/api/governance/health >/dev/null 2>&1 && break
+    done
+  fi
+
+  # Parse health response — prefer jq for robustness, fall back to grep on correct key
+  HEALTH_JSON=$(curl -sf http://localhost:3001/api/governance/health 2>/dev/null)
+  if [ -n "$HEALTH_JSON" ]; then
+    if command -v jq >/dev/null 2>&1; then
+      COHERE_HEALTH=$(echo "$HEALTH_JSON" | jq -r '.cohereAvailable // "unknown"' 2>/dev/null || echo "unknown")
+    else
+      COHERE_HEALTH=$(echo "$HEALTH_JSON" | grep -o '"cohereAvailable":[^,}]*' | head -1 || echo '"cohereAvailable":unknown')
+    fi
+  else
+    COHERE_HEALTH="server not responding"
+  fi
+
+  echo "Sandbox server PID: ${SANDBOX_PID:-existing} | Cohere: $COHERE_HEALTH"
   echo "Sandbox UI: run 'cd sandbox-ui && npm run dev' to open at http://localhost:5173"
+  echo "Server log: /tmp/sandbox-server.log"
 else
-  SANDBOX_PID=""
-  COHERE_HEALTH="server not built — run: cd core && pnpm build"
-  echo "Sandbox server not built. Run 'cd core && pnpm build' to enable."
+  if $CORE_AVAILABLE; then
+    COHERE_HEALTH="server not built — run: cd core && pnpm build"
+    echo "Sandbox server not built. Run 'cd core && pnpm build' to enable."
+  fi
 fi
 
 echo ""

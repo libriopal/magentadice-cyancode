@@ -21,7 +21,9 @@ Repo: https://github.com/libriopal/magentadice-cyancode
 - **`data/`** — Image corpus (~1550 assets with `.info.json` metadata) — **local directory, NOT a git submodule**
 - **`3libras/`** — Visual layer design specs (non-code; authoritative design law)
 
-Initialize submodules: `git submodule update --init --recursive core dream`
+Initialize required submodules: `git submodule update --init --recursive core dream`
+
+`devos/` is an **optional** submodule (DevOS development OS). Initialize separately if needed: `git submodule update --init devos`. It is not required for game or audio development.
 
 Note: `data/` is **not** a submodule — it is a plain local directory of ~2245 tracked binary assets. No submodule init required for it.
 
