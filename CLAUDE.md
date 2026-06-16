@@ -23,7 +23,12 @@ Repo: https://github.com/libriopal/magentadice-cyancode
 
 Initialize required submodules: `git submodule update --init --recursive core dream`
 
-`devos/` is an **optional** submodule (DevOS development OS). Initialize separately if needed: `git submodule update --init devos`. It is not required for game or audio development.
+**DevOS** is now a **standalone private repo** (`libriopal/libriopal-devos`) — it is **no longer a submodule** of this repo. Clone it separately and point it at this repo via `GAME_ROOT` in `devos/.env`:
+```bash
+git clone https://github.com/libriopal/libriopal-devos ~/devos
+echo "GAME_ROOT=$(pwd)" >> ~/devos/.env
+cd ~/devos && ./start.sh
+```
 
 Note: `data/` is **not** a submodule — it is a plain local directory of ~2245 tracked binary assets. No submodule init required for it.
 
