@@ -16,6 +16,26 @@ pnpm dev
 
 Open **http://localhost:5173** in your browser.
 
+### Submodules
+
+| Submodule | Required | Purpose |
+|-----------|----------|---------|
+| `core/`   | Yes | FAR_NZY game engine — needed for all game development |
+| `dream/`  | Yes | AGROS audio engine |
+| `devos/`  | Optional | DevOS development OS (multi-agent tooling); not needed for game dev |
+
+If you cloned without `--recurse-submodules`, initialize only what you need:
+
+```bash
+# Game development (required)
+git submodule update --init --recursive core dream
+
+# DevOS tooling (optional)
+git submodule update --init devos
+```
+
+CI must use `submodules: recursive` (or equivalent) if `devos/` is needed in the pipeline.
+
 ---
 
 ## Dev mode features

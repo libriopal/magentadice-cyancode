@@ -5,3 +5,10 @@
 	path = dream
 	url = https://github.com/libriopal/adabt-core.git
 	branch = main
+# devos is optional — DevOS development OS (prompt-to-app engine).
+# Not required for core game development. Initialize with:
+#   git submodule update --init devos
+[submodule "devos"]
+	path = devos
+	url = https://github.com/libriopal/libriopal-devos.git
+	branch = main

@@ -181,6 +181,26 @@ export interface CoverageReport {
   items: CoverageItem[];
 }
 
+// ─── Cohere governance ───────────────────────────────────────────────────────
+
+export interface BudgetCategory {
+  category: string;
+  spent: number;
+  limit: number;
+  remaining: number;
+}
+
+export interface GovernanceHealth {
+  status: 'ok' | 'degraded' | 'offline';
+  cohereAvailable: boolean;
+  auditRecordCount: number;
+  budget: BudgetCategory[];
+  policyViolations: number;
+  lastAnomalyAt: string | null;
+  uptimeMs: number;
+  timestamp: string;
+}
+
 // ─── AI chat ──────────────────────────────────────────────────────────────────
 
 export interface ChatMessage {
