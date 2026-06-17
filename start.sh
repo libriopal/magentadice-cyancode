@@ -1,6 +1,18 @@
 #!/bin/bash
 # FAR_NZY / AGROS — Claude Code session launcher (DevOS Candidate B)
 # Dynamic context injection + sandbox server + Cohere governance health
+#
+# Usage:
+#   ./start.sh            launch a single Claude Code session (original behavior, unchanged)
+#   ./start.sh --devos    run all the same checks below, then hand off to the
+#                          standalone DevOS engine (unified orchestrator UI,
+#                          EvoEngine, auto-bito) instead of a single CLI session
+
+# ─── Parse flags ──────────────────────────────────────────────────────────────
+LAUNCH_DEVOS=false
+for arg in "$@"; do
+  [ "$arg" = "--devos" ] && LAUNCH_DEVOS=true
+done
 
 # ─── Submodule guard ──────────────────────────────────────────────────────────
 CORE_AVAILABLE=true
@@ -99,6 +111,30 @@ echo "  │  Directive: core/protocols/COHERE_INTEGRATION_      │"
 echo "  │             DIRECTIVE.md (Tier 1 complete)          │"
 echo "  └─────────────────────────────────────────────────────┘"
 echo ""
+
+if $LAUNCH_DEVOS; then
+  # ─── Hand off to DevOS ──────────────────────────────────────────────────────
+  # Every check above (submodule status, manifest pipeline, bito pre-merge,
+  # sandbox server) already ran identically to the default path — DevOS adds
+  # the unified orchestrator UI, EvoEngine, and auto-bito-after-edit on top,
+  # it does not replace any of this script's existing session protocol.
+  DEVOS_DIR="${DEVOS_ROOT:-}"
+  if [ -z "$DEVOS_DIR" ]; then
+    for candidate in "$HOME/devOS" "../devOS" "../../devOS"; do
+      [ -f "$candidate/start.sh" ] && DEVOS_DIR="$candidate" && break
+    done
+  fi
+  if [ -z "$DEVOS_DIR" ] || [ ! -f "$DEVOS_DIR/start.sh" ]; then
+    echo "ERROR: --devos requested but no DevOS install found."
+    echo "  Set DEVOS_ROOT=/path/to/devOS, or clone: git clone https://github.com/libriopal/libriopal-devos ~/devOS"
+    exit 1
+  fi
+  echo ""
+  echo "Launching DevOS (${DEVOS_DIR})..."
+  # GAME_ROOT must point at this repo (magentadice-cyancode), not devOS itself.
+  GAME_ROOT="$(pwd)" bash "$DEVOS_DIR/start.sh"
+  exit $?
+fi
 
 # ─── Launch Claude Code with enriched context ─────────────────────────────────
 echo "Launching Claude Code..."
