@@ -61,12 +61,15 @@ and the server will score it as legitimate. The server's `Cell[][]` grid model a
 discovered while investigating GAP-1 (Board State Authority); see
 `gap1_board_authority.md` and `fix/gap1-board-seed-propagation` (FAR_NZY PR #4,
 merged `c06e388`, 2026-06-22) for the narrower seed-propagation fix that shipped instead.
-**Fix:** Not yet designed. Needs its own ADR: either (a) validate client-asserted faces
-against the server's grid/RNG state before scoring, or (b) move face generation
-server-side entirely and have the client render rather than assert. Requires resolving
-the structural mismatch between the server's static `Cell[][]` grid and the client's
+**Fix:** Not yet designed/authorized — three options proposed in
+`docs/adr/ADR-023-gap1b-server-face-validation.md` (PROPOSED status): (1) server-side
+RNG with client as pure renderer, (2) post-hoc statistical anomaly detection, (3)
+bounded plausibility check at submission time. Options 1 and 3 require resolving the
+structural mismatch between the server's static `Cell[][]` grid and the client's
 continuous Rapier3D physics board (`VoxelPhysicsSystem`) — they are not the same
-representation today (see GAP-1 investigation notes).
+representation today (see GAP-1 investigation notes). No option is selected yet —
+human decision required.
+**ADR:** `docs/adr/ADR-023-gap1b-server-face-validation.md` (PROPOSED, not authorized)
 **Priority:** HIGH — for a skill-based sweepstakes game, unaudited client-side RNG
 feeding directly into the scoring path with no server validation is a compliance
 exposure, arguably larger than the seed-divergence issue GAP-1 addressed.
