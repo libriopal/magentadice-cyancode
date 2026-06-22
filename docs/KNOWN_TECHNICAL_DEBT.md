@@ -46,3 +46,32 @@ and `calibrate-threshold.ts` all aligned to Option A behavior.
 **100k audit (seed=42):** OPTIMAL=1995 > AVERAGE=1214 > WEAK=870 — all 6 gates PASS.
 **Compliance artifact:** `core/art/profiling/rtp_audit_P6_42.json`
 **Sacred:** Modified under ADR-022 + Human authorization (granted 2026-06-14).
+
+---
+
+## GAP-1b
+
+**File:** `core/apps/server/src/gameRoom.ts` — `processChainFaces()` (`SUBMIT_CHAIN_FACES` handler)
+**Issue:** The live multiplayer scoring path calls `scoreFarkle(faces)` directly on
+client-asserted face values with no server-side cross-check against the server's own
+authoritative grid (`this.state.grid`, populated by `createGrid()`). A modified or
+malicious client can submit arbitrary `faces`/`chainColumns` (e.g. all 1s) every turn
+and the server will score it as legitimate. The server's `Cell[][]` grid model and
+`hasValidChain()` dead-board check exist but are not consulted by this scoring path —
+discovered while investigating GAP-1 (Board State Authority); see
+`gap1_board_authority.md` and `fix/gap1-board-seed-propagation` (FAR_NZY PR #4,
+merged `c06e388`, 2026-06-22) for the narrower seed-propagation fix that shipped instead.
+**Fix:** Not yet designed. Needs its own ADR: either (a) validate client-asserted faces
+against the server's grid/RNG state before scoring, or (b) move face generation
+server-side entirely and have the client render rather than assert. Requires resolving
+the structural mismatch between the server's static `Cell[][]` grid and the client's
+continuous Rapier3D physics board (`VoxelPhysicsSystem`) — they are not the same
+representation today (see GAP-1 investigation notes).
+**Priority:** HIGH — for a skill-based sweepstakes game, unaudited client-side RNG
+feeding directly into the scoring path with no server validation is a compliance
+exposure, arguably larger than the seed-divergence issue GAP-1 addressed.
+**Sacred:** YES — `gameRoom.ts` is CORE SACRED; any fix requires its own ADR + explicit
+human authorization before any code change.
+**Resolve before:** Not blocking any current sprint; flagged for human prioritization.
+**First flagged:** GAP-1 investigation (Plan agent finding), 2026-06-22, during
+implementation of the GAP-1 board-seed-propagation fix.
