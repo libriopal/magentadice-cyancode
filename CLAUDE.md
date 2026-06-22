@@ -135,26 +135,313 @@ AGROS connects to FAR_NZY via game-state events; the ERK conductor profiles live
 
 ## Default Development Workflow
 
-Follow this exact order for every development session:
+_Directive v2.0 — installed 2026-06-18. Supersedes the prior 5-step workflow._
 
-**STEP 1: Read `roadmap/01-current-sprint.md`**
-Current sprint context — what is being built now, what is pending, what is deferred.
+You are operating inside **devOS** — the FAR_NZY development shell at
+`/home/johnathanallen1998/devos`. devOS has already run the full
+`magentadice-cyancode/start.sh` pre-flight on your behalf before this session
+was launched. The outputs of that pre-flight are injected above this section:
+submodule status, `./manifest.sh status`, working tree, last 15 commits, sacred
+file lock, and sprint file. Do not re-run those checks unless the human asks.
 
-**STEP 2: Check `core/.ff-core-lock`**
-Before touching ANY file, confirm its lock status. Files listed under CORE SACRED require explicit human approval before committing. Read the lock file directly — it is the authoritative source.
+### Step 0 — Ask before assuming
 
-**STEP 3: Confirm source of truth for your work area**
-- Gameplay changes → `core/FARKLEFRENZY.md`
-- Visual changes → `3libras/the_visual_layer.md`
-- Audio/AGROS changes → `dream/constitution/operational-law.md`
-- Sacred file work → **STOP. Get human approval first.**
+If the human's request is underspecified — missing a concrete detail needed
+to plan or execute correctly — ask 1-3 specific questions before proceeding.
+Getting this right upfront avoids wasted EXECUTE cycles and revision passes
+later.
 
-**STEP 4: Implement and test**
-- FAR_NZY: `cd core && pnpm type-check && pnpm test`
-- AGROS: `cd dream/apps/backend && npm test`
 
-**STEP 5: Run `./manifest.sh status` before committing**
-Verify pipeline integrity. Confirm no manifest regressions before any commit.
+
+### Step 1 — Orient before acting
+
+On every session start, before planning or writing anything, perform this
+checklist silently and report the result in a single status block:
+
+```
+[ ] 1a. Sprint file status      — read roadmap/01-current-sprint.md (injected above)
+[ ] 1b. Sprint completion check — verify current sprint's exit criteria are met (see below)
+[ ] 1c. Sacred diff check       — any CORE files in working diff? (injected above)
+[ ] 1d. Gate status             — send GATE_RUN via devOS or read last cached result
+[ ] 1e. Submodule health        — both core/ and dream/ show clean SHA (injected above)
+[ ] 1f. Manifest pipeline       — ./manifest.sh status shows PASS (injected above)
+[ ] 1g. Sandbox server          — check DEVOS_STATUS for gameServerAlive: true (port 3001)
+```
+
+Report format (paste as first response):
+
+```
+DEVOS SESSION ORIENTATION
+─────────────────────────
+Sprint file    : [found / MISSING — needs update before proceeding]
+Sprint status  : [COMPLETE / ACTIVE / INCOMPLETE — list open items]
+Current sprint : [sprint ID from file / unknown — explain if unknown]
+Sacred diff    : [clean / ALERT — list files]
+Gates          : [all pass / N failing — list which]
+Submodules     : [clean / out of sync]
+Manifest       : [PASS / FAIL / score]
+Sandbox server : [alive / offline]
+─────────────────────────
+READY TO PROCEED / BLOCKED (reason)
+```
+
+If any check is BLOCKED, stop and surface it. Do not proceed to planning.
+
+
+
+### Step 1b — Sprint completion check (run every session)
+
+Before planning any work, check roadmap/01-current-sprint.md (injected above)
+for the current sprint's actual status field. Do not assume any specific
+sprint ID is active — read it fresh each session.
+
+- If the sprint file shows a sprint marked complete with no new sprint yet
+  defined: report this clearly and ask the human what the next sprint's
+  scope should be. Do not invent placeholder tasks.
+- If a sprint is marked active: verify its exit criteria against current
+  repo state before treating it as still open.
+- If the sprint file is ambiguous or missing a status field: stop and ask,
+  per Step 10's no-assumptions rule.
+
+
+
+### Step 2 — Full project awareness (run once per session, before any task)
+
+Read the following files completely before suggesting any work. Do not plan
+from memory or assumptions — always read from disk first:
+
+```bash
+# Via devOS QUERY mode — these are already partially injected above,
+# but read them in full to form recommendations:
+roadmap/01-current-sprint.md          # current sprint tasks + exit criteria
+roadmap/                              # list all files — understand the arc
+docs/adr/                             # list all ADRs — understand past decisions
+CLAUDE.md                             # full constraints, not just this section
+core/.ff-core-lock                    # complete sacred + surface file list
+core/roadmap/ (if exists)             # any in-engine roadmap artifacts
+```
+
+After reading, produce a **Project Awareness Summary**:
+
+```
+PROJECT AWARENESS SUMMARY
+─────────────────────────
+Active sprint  : [ID + label]
+Sprint status  : [active / blocked / complete]
+Open tasks     : [list from sprint file]
+Exit criteria  : [list from sprint file — met / unmet]
+Next sprint    : [next sprint ID, or "undefined" if roadmap/01 doesn't declare one]
+ADR count      : [N ADRs — newest: ADR-NNN title]
+Sacred files   : [N core, N surface]
+Recommended    : [see Step 3]
+─────────────────────────
+```
+
+
+
+### Step 3 — Roadmap recommendations
+
+After completing Step 2, produce a **Roadmap Recommendation** section.
+This is always advisory — the human decides what goes into the roadmap.
+Base recommendations strictly on what you read in Step 2, not on prior
+session memory or assumptions.
+
+Format:
+
+```
+ROADMAP RECOMMENDATIONS
+─────────────────────────
+Carry forward from [current sprint ID] (if any):
+  • [task] — reason it wasn't completed / should move to [next sprint ID]
+
+Suggested [next sprint ID] tasks (from ADR trail + open issues):
+  • [task] — supporting evidence (ADR-NNN / gate finding / etc.)
+
+Suggested [next sprint ID] exit criteria:
+  • [measurable criterion]
+
+Roadmap file changes suggested:
+  • roadmap/01-current-sprint.md — [specific edit: mark current sprint
+    complete, add next sprint header, add tasks, add exit criteria]
+  • [other files if applicable]
+─────────────────────────
+⚠ These are recommendations only. Human confirms before any file is written.
+```
+
+Do not write any roadmap file changes until the human explicitly approves
+the recommendations. If approved, apply changes in QUERY mode (Read only)
+first to show a diff preview, then apply with EXECUTE on explicit confirmation.
+
+
+
+### Step 4 — Sacred file protocol
+
+The sacred file list is injected above from `core/.ff-core-lock`.
+
+**CORE SACRED files — absolute rules:**
+- Never write to a CORE file without showing a full diff first
+- Wait for explicit `APPROVED` in the same human message before writing
+- devOS fires `SACRED_ALERT` if a core file enters the working diff — hard stop
+- `SACRED_OVERRIDE=1` is a human-only action; never suggest it as a shortcut
+
+**SURFACE files:**
+- Can be edited but must pass Bito review before commit
+- Surface edits in EXECUTE mode trigger auto-Bito automatically
+
+**Sacred files (from .ff-core-lock CORE section — verify against injected lock above):**
+```
+core/packages/farkle-engine/src/farkleScorer.ts
+core/packages/farkle-engine/src/csprng.ts
+core/packages/farkle-engine/src/rtpConfig.ts
+core/packages/farkle-engine/src/monteCarlo.ts
+core/store/farkleStore.ts
+core/store/gameStore.ts
+```
+*(If injected lock above differs, the injected lock is authoritative.)*
+
+
+
+### Step 5 — QUERY vs EXECUTE contract
+
+devOS replaces the single `claude --permission-mode plan` session from
+`start.sh` with a two-mode system:
+
+| Mode | Equivalent | What you can do |
+|------|-----------|-----------------||
+| **QUERY** (default) | `--permission-mode plan` | Read, plan, diff preview, recommendations |
+| **EXECUTE** | `--dangerously-skip-permissions` + tools: Edit, Write, Read, Bash, Glob, LS | File writes, bash commands, full autonomous execution |
+
+**Rules:**
+- Default to QUERY. Never self-escalate to EXECUTE.
+- EXECUTE only activates when the human sends `EXECUTE:` prefix or clicks
+  the EXECUTE button in devOS UI at `http://localhost:5174`
+- After every EXECUTE session devOS auto-runs Bito essential-mode
+  (`triggerAutoBito`). Do not trigger Bito manually after EXECUTE — it is
+  already running.
+- Always show a task scope before EXECUTE: which files, what changes,
+  estimated risk level. Wait for confirmation.
+- Each EXECUTE is a fresh process. It does not carry forward tool state
+  from a prior EXECUTE call in the same devOS session. Re-read files if needed.
+- Default to the smallest reasonable scope: name the specific file or
+  function to change rather than an entire module.
+- When the task changes to something unrelated to what came before in the
+  same session, recommend a context reset rather than carrying unrelated
+  history forward.
+- Keep EXECUTE completion summaries terse — state what changed; skip
+  restating the task or narrating step-by-step process unless something
+  failed.
+
+
+
+### Step 6 — Compliance gates
+
+Gates are defined in `config/devos.config.ts` and run via:
+```bash
+cd core && pnpm test                                       # Gate 1
+cd core && node --import tsx/esm scripts/validate-gates.ts # Gates 2–6
+```
+
+| Gate | Check | Blocking |
+|------|-------|---------|
+| Gate 1 | ≥ 10,000 simulation sessions ran | yes |
+| Gate 2 | RTP 85–110% | yes |
+| Gate 3 | Skill ordering: OPTIMAL > AVERAGE > WEAK | yes |
+| Gate 4 | Farkle rate 10–30% | yes |
+| Gate 5 | P5 score ≥ 0 | yes |
+| Gate 6 | Normalizer > 0 | no |
+
+Any Gate 1–5 failure is a commit blocker. Do not suggest committing,
+opening a PR, or merging over a red gate. Surface the failure and wait.
+
+Gate 6 failure with all others passing is a sprint-close warning — report
+it but do not block. If Gate 6 is failing at sprint close, note it in the
+sprint file and the commit message.
+
+
+
+### Step 7 — Build commands reference
+
+```bash
+cd core && pnpm type-check    # TypeScript check — run before any EXECUTE
+cd core && pnpm test          # Full test suite + Gate 1
+cd core && pnpm lint          # Lint
+cd core && pnpm build:web     # Web build
+
+# Deploy targets (via devOS Deploy panel or TERMINAL_EXEC):
+cd core && pnpm android:debug # Android APK
+cd core && pnpm cap:sync      # Capacitor sync
+cd core && pnpm supabase:start # Supabase local
+```
+
+Run `pnpm type-check` before every EXECUTE task that touches TypeScript files.
+A type error before EXECUTE saves a Bito finding after it.
+
+
+
+### Step 8 — Commit and PR protocol
+
+Before any commit touching `core/` or `dream/`:
+
+1. **Type-check** — `cd core && pnpm type-check` — 0 errors
+2. **Gates** — all 6 pass (Gate 6 non-blocking but report it)
+3. **Bito** — EXECUTE sessions trigger auto-Bito; for manual staged-only
+   changes run via devOS Bito panel or `npm run bito-watch` in devOS
+4. **Sacred files** — if staged: committed ADR in `docs/adr/`, written
+   human approval in this session, `SACRED_OVERRIDE=1` set by human
+5. **PR generation** — use `scripts/pr-gen.sh --dry-run` to preview
+   the PR body before `gh pr create`. Never create a PR without showing
+   the dry-run first.
+
+Pre-merge Bito (mirrors `start.sh` step 3): if `git diff --name-only
+main...HEAD` touches `core/` or `dream/`, a pre-merge Bito review is
+required even if auto-Bito already ran during the session.
+
+
+
+### Step 9 — devOS agent roster
+
+Active agents this session:
+- `claude` — QUERY / EXECUTE / WHAT'S NEXT (this session)
+- `cohere` — governance health, spend tracking (`COHERE_CHAT`)
+- `bito` — streaming code review, auto-fires after EXECUTE edit ops
+
+Inactive (stubs — do not attempt to call):
+- `forest`, `meshy`, `figma`, `canva` — enabled: false in adapter
+
+devOS servers:
+- API + WS: `http://localhost:3002`
+- UI: `http://localhost:5174`
+- Game sandbox: `http://localhost:3001` (check `gameServerAlive` before runtime tasks)
+
+EvoEngine awareness:
+- EvoEngine tracks real vs synthetic usage events in `devos/data/devos-usage.sqlite`
+- `evo-champion.json` seeds the current best UI/routing config across restarts
+- Do not edit `evo-champion.json` manually — it is overwritten by EvoEngine on each cycle
+- `directiveProtected: true` means a panel was promoted by EvoEngine and should
+  not be removed without first running EVO_STOP and confirming with the human
+
+
+
+### Step 10 — No-assumptions rule
+
+- If `roadmap/01-current-sprint.md` is missing or its sprint status is
+  ambiguous: ask before planning
+- If a sacred file needs to change: stop, show the diff, ask for approval
+- If gates are failing at session start: surface them, do not plan around them
+- If the current sprint is not confirmed complete: do not start the next
+  sprint's work without human confirmation
+- Never self-authorize a sacred override, a gate bypass, or a sprint close
+- When in doubt: ask one specific question, not five
+- Session resume via `CLAUDE_CODE_RESUME`: treat the re-injected
+  `buildProjectContext()` as authoritative state. Prior QUERY discussion
+  is not available if devOS restarted between sessions.
+- Cost tracking: note the session cost (from `PROMPT_TO_PLAN_COST` WS event)
+  at the end of each EXECUTE session. Flag any single EXECUTE that exceeds
+  $0.50 as potentially runaway.
+
+
+
+[End DevOS Directive — injected by devOS buildProjectContext() on every session launch]
 
 ---
 
