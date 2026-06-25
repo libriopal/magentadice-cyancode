@@ -207,15 +207,24 @@ sprint ID is active — read it fresh each session.
 
 ### Step 2 — Full project awareness (run once per session, before any task)
 
-Read the following files completely before suggesting any work. Do not plan
-from memory or assumptions — always read from disk first:
+Read the following files before suggesting any work. Do not plan from memory
+or assumptions — always read from disk first. Note: "read completely" below
+means full-content reads only for the specific files marked as such — for
+docs/adr/, list filenames first and read only the most recent 2-3 ADRs in
+full, or any ADR the current sprint file explicitly references. Do not read
+the entire ADR history every session; it is large (20+ files) and mostly
+settled historical record, not live constraints.
 
 ```bash
 # Via devOS QUERY mode — these are already partially injected above,
 # but read them in full to form recommendations:
 roadmap/01-current-sprint.md          # current sprint tasks + exit criteria
 roadmap/                              # list all files — understand the arc
-docs/adr/                             # list all ADRs — understand past decisions
+docs/adr/                             # list filenames only (ls docs/adr/)
+docs/adr/<most-recent-2-3-ADRs>.md    # read these in FULL — not the whole directory
+                                       # "most recent" = highest ADR number, or
+                                       # whichever is explicitly referenced by the
+                                       # current sprint file
 CLAUDE.md                             # full constraints, not just this section
 core/.ff-core-lock                    # complete sacred + surface file list
 core/roadmap/ (if exists)             # any in-engine roadmap artifacts
@@ -290,12 +299,22 @@ The sacred file list is injected above from `core/.ff-core-lock`.
 
 **Sacred files (from .ff-core-lock CORE section — verify against injected lock above):**
 ```
+core/packages/farkle-shared/src/types.ts
+core/packages/farkle-shared/src/index.ts
+core/packages/farkle-engine/src/chainIndex.ts
 core/packages/farkle-engine/src/farkleScorer.ts
+core/packages/farkle-engine/src/farkleScorer.test.ts
 core/packages/farkle-engine/src/csprng.ts
-core/packages/farkle-engine/src/rtpConfig.ts
+core/packages/farkle-engine/src/gridUtils.ts
+core/packages/farkle-engine/src/floodFill.ts
 core/packages/farkle-engine/src/monteCarlo.ts
-core/store/farkleStore.ts
-core/store/gameStore.ts
+core/packages/farkle-engine/src/rtpConfig.ts
+core/packages/farkle-engine/src/index.ts
+core/packages/farkle-engine/src/web.ts
+core/apps/web/src/store/farkleStore.ts
+core/apps/web/src/store/gameStore.ts
+core/apps/web/src/hooks/useFarkleGame.ts
+core/apps/server/src/gameRoom.ts
 ```
 *(If injected lock above differs, the injected lock is authoritative.)*
 
@@ -344,9 +363,9 @@ cd core && node --import tsx/esm scripts/validate-gates.ts # Gates 2–6
 | Gate | Check | Blocking |
 |------|-------|---------|
 | Gate 1 | ≥ 10,000 simulation sessions ran | yes |
-| Gate 2 | RTP 85–110% | yes |
+| Gate 2 | RTP (SOLO) 0.82–1.02 — see `docs/RTP_TOLERANCE_SPEC.md` | yes |
 | Gate 3 | Skill ordering: OPTIMAL > AVERAGE > WEAK | yes |
-| Gate 4 | Farkle rate 10–30% | yes |
+| Gate 4 | Farkle rate (per-turn, OPTIMAL) 0.85–0.95 | yes |
 | Gate 5 | P5 score ≥ 0 | yes |
 | Gate 6 | Normalizer > 0 | no |
 
@@ -406,7 +425,32 @@ Active agents this session:
 - `bito` — streaming code review, auto-fires after EXECUTE edit ops
 
 Inactive (stubs — do not attempt to call):
-- `forest`, `meshy`, `figma`, `canva` — enabled: false in adapter
+- `meshy`, `figma`, `canva` — enabled: false in adapter
+
+Naming note — two unrelated "forest"-prefixed systems exist, do not confuse them:
+- `forestAgent` — CRUD decision log (data/forest-decisions.json). Nothing in
+  devOS currently reads from this log. Available for manual decision-tracking
+  but not wired into any automated flow.
+- `forestSimEngine` — usage event tracking (SQLite) + an internal catalog of
+  8 hardcoded architecture-simulation hypotheses. ACTIVE — imported directly
+  by EvoEngine (`evoEngine.ts:20`, `getUsageProfile`). This is a real,
+  load-bearing dependency, not a stub.
+
+Confirmed NOT present in devOS (do not assume these exist here):
+- TREES — no code anywhere in devOS. Referenced only as a doc filename
+  (TREES_FINDINGS.md) in planning markdown. Treat any mention of "TREES"
+  in this session as referring to that document, not a running system.
+- OWC — real system, but lives entirely in the GAME repo
+  (core/packages/owc/), wired into core/apps/server/src/sandbox.ts and
+  monteCarlo.ts. devOS has no awareness of or integration with it.
+- AGROS — real system, but lives entirely in the GAME repo
+  (dream/apps/frontend/src/agros/). Inside devOS, "AGROS" appears only as
+  a string fragment inside cohereAgent.ts's hardcoded system prompt — it
+  is not called, imported, or wired to anything live in devOS.
+
+If a task requires touching OWC or AGROS, you are working in the GAME repo
+directly, not through any devOS agent — there is no devOS-side bridge to
+either system today.
 
 devOS servers:
 - API + WS: `http://localhost:3002`
@@ -419,6 +463,35 @@ EvoEngine awareness:
 - Do not edit `evo-champion.json` manually — it is overwritten by EvoEngine on each cycle
 - `directiveProtected: true` means a panel was promoted by EvoEngine and should
   not be removed without first running EVO_STOP and confirming with the human
+- EvoEngine's directiveProtected guard logic is entirely self-contained and
+  unilateral: it does not consult forestAgent, forestSimEngine, or any other
+  system before acting. EvoEngine only reads from forestSimEngine
+  (one-directional, usage-profile data only) — nothing currently has
+  authority to override or block an EvoEngine decision.
+
+### GOAL_REVIEW mode
+
+On-demand only — never runs automatically as part of Step 1 orientation.
+Invoked explicitly via the devOS UI or a GOAL_REVIEW WS message.
+
+Target document: roadmap/00-production-goal.md (surface-tier, not sacred —
+standard Bito review on write, no lock-file gate).
+
+This document owns the DIRECTIONAL question (is this still the right goal),
+separate from the MECHANICAL production-readiness check (5 gates + sacred
+integrity + deploy path verified), which remains the static definition of
+"production-ready" used elsewhere in this directive.
+
+Approval flow — two stages, more cautious than the standard QUERY/EXECUTE
+contract, because this document shapes future roadmap decisions:
+  1. Propose recommended changes — wait for human approval of the
+     recommendation's CONTENT before writing anything
+  2. Only after content is approved: show the diff for the actual file
+     write, wait for a SEPARATE approval before committing
+
+Never collapse these into a single approval step, even if asked to move
+faster. The two-stage gate exists because a wrong production-goal document
+has a larger blast radius than a wrong sprint field.
 
 
 

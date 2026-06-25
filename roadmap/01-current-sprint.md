@@ -335,3 +335,37 @@ cd core && pnpm type-check && pnpm test
 
 **Next sprint:** Human-directed. Options: HollaEx crypto payment, Play Store submission, STONE weakness mechanic, DevOS first real use.
 
+---
+
+## ON HOLD — AWAITING APPROVAL: GAP-1b Fix, Option 1 (Server-Authoritative Board)
+
+**Status:** ON HOLD — paused by human request 2026-06-25, mid-session, before
+any code was written. Resume by reading the ADR below in full before
+continuing — do not resume from memory of a prior session summary alone.
+
+**ADR (architecture only, not yet approved):** `docs/adr/ADR-024-gap1b-option1-server-authoritative-board.md`
+**Underlying problem ADR:** `docs/adr/ADR-023-gap1b-server-face-validation.md` (PROPOSED)
+**Debt entry:** `docs/KNOWN_TECHNICAL_DEBT.md` — GAP-1b (HIGH priority)
+
+**What is and isn't done:**
+- No sacred file has been touched. No branch has been created for this work.
+- ADR-024 documents a full architecture (server-side discrete deterministic
+  tick-based board engine replacing the one-shot `createGrid()`, merging
+  `processChainFaces()`'s bonus logic into the already-grid-validated
+  `processChain()`, switching the client off `SUBMIT_CHAIN_FACES` onto the
+  existing-but-unused `SUBMIT_CHAIN` path) plus a self-audit of residual
+  risks and open implementation questions (reconciliation/snap policy, tick
+  cadence, render-delay tuning — none measured yet).
+- **Waiting on:** human approval of the ADR-024 architecture itself. Once
+  approved, the plan is to implement as a single combined sacred diff
+  across `core/apps/server/src/gameRoom.ts` and
+  `core/apps/web/src/hooks/useFarkleGame.ts` (plus non-sacred changes to
+  `VoxelPhysicsSystem.ts` and `multiplayerStore.ts`), with Bito review of
+  the sacred diff happening **after** approval, not before (per explicit
+  human instruction).
+
+**To resume:** re-read ADR-024 in full, confirm nothing has changed in the
+files it cites since 2026-06-25, then either approve the architecture as
+written, request changes to it, or proceed to the combined diff if already
+approved.
+

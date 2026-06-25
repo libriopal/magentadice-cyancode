@@ -78,3 +78,25 @@ human authorization before any code change.
 **Resolve before:** Not blocking any current sprint; flagged for human prioritization.
 **First flagged:** GAP-1 investigation (Plan agent finding), 2026-06-22, during
 implementation of the GAP-1 board-seed-propagation fix.
+
+---
+
+## GAP-2
+
+**File:** `core/scripts/validate-gates.ts` — Gate 2 (line 61)
+**Issue:** Gate 2 computes Monte Carlo results for `VS_CASINO` and `RALLY_CASINO` (line
+14 loop) alongside `SOLO_CASINO`, but only `SOLO_CASINO`'s result is checked against a
+numeric RTP band (`0.82–1.02`). `VS_CASINO`/`RALLY_CASINO`/`HEIST_CASINO` have no
+code-enforced RTP threshold today — their simulation output is computed and logged but
+never gated. Surfaced while writing `docs/RTP_TOLERANCE_SPEC.md` (the single authoritative
+RTP-threshold reference) — confirming the only real gate is SOLO-scoped revealed this gap.
+**Fix:** Not yet designed. Requires deciding what RTP band (if any) should apply to
+multiplayer modes before adding a Gate 2b/2c check — not a mechanical addition, since
+`targetRTP` differs by mode (`rtpConfig.ts`: VS_CASINO=1.00, RALLY_CASINO=0.92).
+**Priority:** MEDIUM — multiplayer/casino modes currently ship with zero RTP compliance
+gate, only solo does.
+**Sacred:** Partial — `validate-gates.ts` itself is not in `.ff-core-lock`, but any fix
+likely needs to read `rtpConfig.ts` (CORE SACRED) to set mode-specific bands correctly.
+**Resolve before:** Not blocking any current sprint; flagged for human prioritization.
+**First flagged:** RTP tolerance audit (X-4), 2026-06-24, while compiling
+`docs/RTP_TOLERANCE_SPEC.md`.
