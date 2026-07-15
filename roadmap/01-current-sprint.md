@@ -369,3 +369,54 @@ files it cites since 2026-06-25, then either approve the architecture as
 written, request changes to it, or proceed to the combined diff if already
 approved.
 
+---
+
+## D2-STAGE1-EVIDENCE — Research Environment (Claude Design handoff)
+
+**Status:** IN PROGRESS — Phases 2/3/5 shipped 2026-07-15; Phase 4 partially done; Phase 6 needs no work.
+**⚠ Out-of-band session:** this work was done in a Claude Code session started
+*without* `start.sh` (human ran the CLI directly, realized partway through,
+and asked for this note so the next `start.sh`-launched session can pick up
+seamlessly). Normal devOS pre-flight/orientation did **not** run for this
+work — nothing here has been through gate re-validation or a Bito
+integration review beyond what's logged below. Treat this section, not
+CLAUDE.md's stale "Active Mode: fix/dead-state-recovery" line, as the
+authoritative current-sprint state.
+
+**Origin:** Claude Design project `b0815c65-5c3a-496c-88f5-3ea5e05a6299`,
+handoff doc `D2_STAGE1_RESEARCH_ENVIRONMENT_HANDOFF_V3.md` — turns this repo
+into an instrument that records real human playtesting evidence (raw-only,
+anti-circularity law enforced) and returns it as an Evidence Return Package
+for the next Claude Design analysis round. Full findings: `docs/audits/D2_STAGE1_REPO_AUDIT_FINDINGS.md`.
+
+**Human §27 decisions already made (do not re-ask):**
+1. Evidence source: reuse existing Plane B Supabase (not local-first).
+2. Storage: Supabase (same decision).
+3. Discovery-notes prompt: in scope for Stage 1.
+4. Export file set + zero-forbidden-field rule: approved.
+5. Replay/verifier: stays deferred (§14) — do not build.
+6. Implementation: authorized to proceed.
+
+**What shipped (FAR_NZY commits `f98590f`, `45c1d91` — pushed to `origin/main`):**
+- `core/supabase/migrations/002_evidence_tables.sql`, `003_enable_rls_analytics_tables.sql`
+- `core/apps/server/src/evidence/{types,supabaseClient,evidenceStore,evidenceExport,evidenceRouter}.ts`
+- `core/apps/server/src/analytics.ts` (refactor only — shares the new client helper), `index.ts` (router wired)
+- `core/apps/web/src/evidence/evidenceClient.ts`, `core/apps/web/src/components/SessionRetrospectivePrompt.tsx` (embedded in Win/Lose screens)
+- `.env.example` updated with server-side Supabase vars + `VITE_API_URL`
+- No `.ff-core-lock` file touched. All 16 farkle scorer cases pass. `tsc --noEmit` clean on `apps/server`/`apps/web`.
+- Bito (`bitoreview --type working`) reviewed the diff: 1 high / 3 med / 4 low findings, 4 validated and fixed (doc/comment-only — see commit `f98590f`'s follow-up fixes), rest confirmed pre-existing/out-of-scope.
+
+**Live infrastructure state (Supabase project `magentadice-cyancode`, id `hmgqxojfmguknprkrznr`):**
+- Was `INACTIVE` (paused) at session start — restored via Supabase MCP, now `ACTIVE_HEALTHY`.
+- Migration `evidence_tables` applied: `session_analytics`, `chain_decisions`, `discovery_events`, `experiments`, `hypotheses` all live, 0 rows. (`session_analytics`/`chain_decisions` had never actually been created here before — they previously existed only as a manual-SQL-editor comment in `analytics.ts`.)
+- Supabase advisor flagged RLS disabled on `session_analytics`/`chain_decisions` (anon-key-exposed) — fixed live via migration `enable_rls_analytics_tables`, tracked in `003_enable_rls_analytics_tables.sql`. All 5 evidence-related tables now have RLS enabled, service-role-only policies.
+
+**Explicitly NOT done yet (per handoff's own §29 phase gating):**
+- Phase 4 general discovery-notes capture (§13/§31 — the "why did you do that?" in-session prompt) — only the end-of-session retrospective (§38) is wired to UI so far.
+- Experiment/hypothesis registry seed data — tables exist, nothing registered in them yet.
+- No live human playtest has run against this yet — 0 rows everywhere is expected, not a bug.
+- Phase 6 (APK packaging, §20) needs **no new work** — Capacitor/Android tooling already exists and works (confirmed in the audit).
+- Replay/verifier (§14) — deferred, do not build without a separate human decision reopening it.
+
+**To resume:** read `docs/audits/D2_STAGE1_REPO_AUDIT_FINDINGS.md` in full, then this section, then decide whether to continue Phase 4 (discovery-notes UI + registry seed data) or move to a live human playtest with what's already shipped. If connecting to the Claude Design MCP again, the project (`b0815c65-...`) and handoff doc (`V3`) are the same ones already read — no need to re-fetch unless checking for a newer version.
+

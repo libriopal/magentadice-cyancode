@@ -1009,3 +1009,55 @@ Private submodule `libriopal/libriopal-devos` scaffolded as a generic prompt-to-
 DEBT-01 (MULTIPLIER_LADDER float basis) and DEBT-02 (orb bonus float) remain open but are LOW/MEDIUM priority. Next sprint direction is Human-driven: options include HollaEx crypto payment, Play Store submission, STONE weakness mechanic, or DevOS first real use. No P7 defined yet.
 
 ---
+
+## Session 20 — D2-STAGE1-EVIDENCE (Claude Design handoff, out-of-band session)
+
+| Field | Value |
+|---|---|
+| session_id | (none — started without `start.sh`; no devOS session id assigned) |
+| date | 2026-07-15 |
+| verdict | PASS_PROPOSE_COMMIT (implementation shipped + pushed; migration applied live) |
+| branch | main (both repos — no feature branch used) |
+| PR | none — committed directly to `main` in both FAR_NZY and magentadice-cyancode |
+| Roadmap | `roadmap/01-current-sprint.md` — D2-STAGE1-EVIDENCE section |
+
+### ⚠ Process note
+
+This session was started by running Claude Code directly, **not** via
+`magentadice-cyancode/start.sh`. None of the normal devOS pre-flight
+(submodule health check, `manifest.sh status`, sacred-file lock re-read,
+sprint-file injection) ran automatically. The human caught this partway
+through and asked for this entry plus the roadmap section above so the next
+`start.sh`-launched session has an accurate, complete picture despite the
+irregular start. No sacred file was touched at any point, so the sacred-diff
+gate was never actually at risk — but this should not be treated as
+precedent for skipping `start.sh` in future sessions.
+
+### Summary
+
+Implemented Stage 1 of a Claude-Design-authored handoff
+(`D2_STAGE1_RESEARCH_ENVIRONMENT_HANDOFF_V3.md`, project
+`b0815c65-5c3a-496c-88f5-3ea5e05a6299`): a research-evidence recorder layered
+additively on top of FAR_NZY, per the handoff's own gating (read-only repo
+audit → human §27 decisions → phased implementation, replay/verifier
+explicitly deferred).
+
+1. **Repo audit** (read-only, `docs/audits/D2_STAGE1_REPO_AUDIT_FINDINGS.md`) — confirmed the handoff's assumptions about `game-core` (partially live, not fully dead), `IEventStore` (frozen contract exists, no implementation), Plane B persistence (already live, includes `skill_score`), nondeterminism sources, and zero `.ff-core-lock` collisions for proposed new files.
+2. **Human decisions (§27):** Plane B Supabase as evidence source/storage; discovery-notes in scope; export file set + zero-forbidden-field rule approved; replay stays deferred; implementation authorized.
+3. **Implementation** (FAR_NZY `f98590f`): `evidence/{types,supabaseClient,evidenceStore,evidenceExport,evidenceRouter}.ts`, `evidenceClient.ts` + `SessionRetrospectivePrompt.tsx` on the client, `002_evidence_tables.sql` migration. `analytics.ts` refactored (not behaviorally changed) to share the new client helper.
+4. **Bito review** (`bitoreview --type working`, per global CLI guidelines): 8 issues found, 4 validated as caused by this work and fixed (doc/comment-only — dual-Supabase-client clarification, `.env.example` gaps, migration dependency note, API-URL derivation note); remaining 4 confirmed pre-existing/out-of-scope (Android SDK bump, test skeleton, cross-package type divergence predating this session).
+5. **Migration applied live** via Supabase MCP to project `magentadice-cyancode` (`hmgqxojfmguknprkrznr`) — project was `INACTIVE`, restored first. All 5 tables created (0 rows).
+6. **Post-migration Supabase advisor finding:** `session_analytics`/`chain_decisions` had RLS disabled (anon-key-exposed — these tables had never actually existed live before this session). Fixed live (`45c1d91`, migration `003_enable_rls_analytics_tables.sql`) with service-role-only policies matching the other three evidence tables.
+7. Both FAR_NZY (`f98590f`, `45c1d91`) and magentadice-cyancode (`a2a2f2f`, `b88293f`, `0f444ba`) pushed to `origin/main`.
+
+### Sacred Core
+
+Not modified. `.ff-core-lock` untouched. All 16 farkle scorer cases pass; `tsc --noEmit` clean on `apps/server` and `apps/web`.
+
+**FIXED_POINT_CHECK:** N/A — no scoring-path code touched; evidence tables store integers/text/jsonb only, no float introduced.
+
+### Next Session
+
+Read `roadmap/01-current-sprint.md`'s D2-STAGE1-EVIDENCE section in full before continuing. Remaining: Phase 4 general discovery-notes capture UI (§13/§31 — beyond the retrospective prompt already shipped), experiment/hypothesis registry seed data, and a live human playtest (0 rows everywhere currently is expected, not a bug). Phase 6 (APK) needs no new work. GAP-1b (previous section, still ON HOLD since 2026-06-25) is untouched and separate — do not conflate the two.
+
+---
