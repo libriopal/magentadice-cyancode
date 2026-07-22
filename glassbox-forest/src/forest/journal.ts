@@ -41,7 +41,35 @@ export class ForestJournal {
 
   append(e: ForestEvent): void {
     this.events.push(e);
-    ls()?.setItem(this.key, JSON.stringify(this.events));
+    this.persist();
+  }
+
+  /** Persist to localStorage, tolerant of quota exhaustion: on failure, shed the oldest low-value events
+   *  (region-checks, then sparks — both derivable/non-load-bearing) and retry, and NEVER throw upward so a
+   *  play can't crash from a full store. Worst case it keeps the log in memory for the session. */
+  private persist(): void {
+    const store = ls();
+    if (!store) return;
+    for (let attempt = 0; attempt < 6; attempt++) {
+      try { store.setItem(this.key, JSON.stringify(this.events)); return; }
+      catch {
+        const before = this.events.length;
+        this.shedOldest();
+        if (this.events.length === before) return; // nothing left to shed — give up quietly
+      }
+    }
+  }
+
+  private shedOldest(): void {
+    const drop = (kind: ForestEvent['kind']) => {
+      const i = this.events.findIndex((x) => x.kind === kind);
+      if (i >= 0) { this.events.splice(i, 1); return true; }
+      return false;
+    };
+    // shed the most numerous, least load-bearing first; keep plays/surveys/promotes/nourish/archive/proposals.
+    if (drop('region-check')) return;
+    if (drop('sparks')) return;
+    this.events.shift(); // last resort: drop the single oldest event
   }
 
   clear(): void {

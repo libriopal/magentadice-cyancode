@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { catalog, promoteBranch, nourishBranch, runEpoch } from '../forestApp';
+import { catalog, promoteBranch, nourishBranch, runEpoch, generateProposals } from '../forestApp';
 import { coordinateLabel } from '../../geometry/d2geometry';
 import { branchIsPlayable } from '../../engine/ruleLayers';
 
@@ -29,7 +29,8 @@ export function Library({ onPlay }: { onPlay: (experimentId: string) => void }) 
       </p>
       <div className="row">
         <button className="btn" onClick={doEpoch} title="shelves untouched branches; flags real-play-threshold branches to nourish">Run epoch</button>
-        <span className="muted">Archiving is reversible + never synthetic-driven; nourish needs real play.</span>
+        <button className="btn" onClick={() => { const ids = generateProposals(3); setEpochMsg(`Proposed ${ids.length} new dormant variation(s) (synthetic) — promote any you want to try. Cohere enriches these node-side.`); force((n) => n + 1); }} title="deterministic in-app proposer; Cohere enriches node-side">Propose variations</button>
+        <span className="muted">Archiving is reversible + never synthetic-driven; nourish needs real play; proposals land dormant.</span>
       </div>
       {epochMsg && <p className="muted">{epochMsg}</p>}
 

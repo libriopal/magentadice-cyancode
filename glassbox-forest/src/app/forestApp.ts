@@ -4,6 +4,7 @@
 // event: it feeds the FOREST ledger (real, observed) AND the exportable evidence, and is persisted.
 import { buildCanonicalCatalog, type CatalogHandle } from '../forest/catalog';
 import { ForestJournal, replay, applyEvent, exportEvidence as strip, type ForestEvent } from '../forest/journal';
+import { proposeLocal } from '../forest/proposeLocal';
 import { decideRegion, toRegionCheckRecord, type RegionDecision } from '../region/regionGate';
 import { makeEarnRecord, SPARKS } from '../sparks/wallet';
 import type { EvidenceStoreShape, RegionMethod } from '../evidence/schema';
@@ -90,6 +91,19 @@ export function recordSurvey(sessionId: string, experimentId: string, answers: u
 /** Human promotes a dormant branch to playable (the selection step the proposer may never take). */
 export function promoteBranch(branchId: string): void {
   emit({ kind: 'promote', at: new Date().toISOString(), branchId });
+}
+
+/** Generate deterministic (browser-safe) proposals into the ledger as DORMANT candidates. Returns the
+ *  newly-registered branch ids. The human then promotes; the proposer never does. */
+export function generateProposals(n = 3): string[] {
+  const now = new Date().toISOString();
+  const registered: string[] = [];
+  for (const p of proposeLocal(catalog, n)) {
+    if (catalog.ledger.get(p.spec.id)) continue;
+    emit({ kind: 'proposal', at: now, spec: p.spec, origin: p.origin, rationale: p.rationale });
+    registered.push(p.spec.id);
+  }
+  return registered;
 }
 
 /** Human nourishes a branch (continue growth). Ledger refuses without real play — a no-op if it throws. */

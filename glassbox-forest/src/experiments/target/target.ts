@@ -6,6 +6,7 @@
 // still never compute or store skill_score / was_optimal (C7).
 import type { DieFace } from '../../engine/farkle-engine';
 import { scoreFarkle } from '../../engine/farkle-engine';
+import { bestSubsetScore } from '../../engine/bestSubset';
 import { commit, rollDice, deriveCombinedSeed, verifyRoll, clampInt, type CommitData } from '../shared/fairness';
 
 export const EXPERIMENT_ID = 'target';
@@ -44,7 +45,10 @@ export async function reveal(
   const target = clampInt(targetScore, MIN_TARGET, MAX_TARGET);
   const combined = await deriveCombinedSeed(commitData.serverSeed, [clientSeed]);
   const faces = await rollDice(combined, count);
-  const result = scoreFarkle(faces);
+  // Calibration scoring: the roll is worth its BEST scoring subset (partial credit), not all-or-nothing.
+  // (The full-roll scoreFarkle would return 0 for ~91% of 6-die rolls, making "hit your number" degenerate.)
+  const best = bestSubsetScore(faces);
+  const combo = scoreFarkle(best.keptIndices.map((i) => faces[i]!)).combo;
   return {
     experiment_id: 'target',
     client_seed: clientSeed,
@@ -54,10 +58,10 @@ export async function reveal(
     dice_count: count,
     target_score: target,
     faces,
-    score: result.score,
-    met_target: result.score >= target,
-    is_farkle: result.isFarkle,
-    combo: result.combo,
+    score: best.score,
+    met_target: best.score >= target,
+    is_farkle: best.isFarkle,
+    combo,
   };
 }
 
@@ -72,7 +76,7 @@ export interface TargetVerification {
 
 export async function verifyOutcome(o: TargetOutcome): Promise<TargetVerification> {
   const base = await verifyRoll(o.server_seed, o.commitment, o.client_seed, o.combined_seed, o.faces);
-  const score = scoreFarkle(o.faces).score;
+  const score = bestSubsetScore(o.faces).score;
   const scoreMatch = score === o.score;
   const metTargetMatch = (score >= o.target_score) === o.met_target;
   return {

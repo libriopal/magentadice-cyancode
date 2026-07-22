@@ -3,6 +3,12 @@
 // Fewer dice = a cleaner but lower-ceiling outcome; more dice = higher ceiling but more
 // Farkle risk. That single pre-commitment is the "skill decision" whose reflection we capture.
 //
+// SCORING MODE = "all-or-nothing" (INTENTIONAL, load-bearing): One-Roll scores the FULL roll via
+// scoreFarkle, so EVERY rolled die must contribute or the roll is a Farkle. This is deliberate — it is
+// exactly what makes "how many dice" a real decision (fewer dice are likelier to all-score, at a lower
+// ceiling). Do NOT switch this to best-subset: that would make more-dice strictly better and delete the
+// skill decision. (Contrast: Target/Hold-Crown/Author/Transmute use best-subset "value of a roll".)
+//
 // Provable fairness (Constitution C4): commit-reveal.
 //   1) commit:  server picks serverSeed, publishes commitment = sha256(serverSeed).
 //   2) player:  supplies a clientSeed + the dice-count decision.
