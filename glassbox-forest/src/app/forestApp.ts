@@ -92,6 +92,36 @@ export function promoteBranch(branchId: string): void {
   emit({ kind: 'promote', at: new Date().toISOString(), branchId });
 }
 
+/** Human nourishes a branch (continue growth). Ledger refuses without real play — a no-op if it throws. */
+export function nourishBranch(branchId: string, reason = 'human nourish'): boolean {
+  try { catalog.ledger.nourish(branchId, reason); emit({ kind: 'nourish', at: new Date().toISOString(), branchId, reason }); return true; }
+  catch { return false; }
+}
+
+/**
+ * Run one epoch (the FOREST "others are archived" half). NON-destructive + reversible: it shelves only
+ * TRULY untouched branches — 'generated', zero real plays, never promoted — and returns the branches that
+ * have crossed the real-play threshold as NOURISH candidates for the human to confirm. It never nourishes
+ * or archives on synthetic signal, and never archives anything with real play or a human promotion.
+ */
+export function runEpoch(nourishThreshold = 3): { archived: string[]; nourishCandidates: string[] } {
+  const now = new Date().toISOString();
+  const archived: string[] = [];
+  const nourishCandidates: string[] = [];
+  for (const spec of catalog.specs) {
+    const e = catalog.ledger.get(spec.id);
+    if (!e) continue;
+    if (e.state === 'generated' && e.realPlayCount === 0) {
+      catalog.ledger.archive(spec.id, 'epoch: untouched (0 real plays)', now);
+      journal.append({ kind: 'archive', at: now, branchId: spec.id, reason: 'epoch: untouched (0 real plays)' });
+      archived.push(spec.id);
+    } else if (e.realPlayCount >= nourishThreshold && e.state !== 'nourished' && e.state !== 'archived') {
+      nourishCandidates.push(spec.id); // real-evidence-driven; human confirms via nourishBranch
+    }
+  }
+  return { archived, nourishCandidates };
+}
+
 export function sparksBalance(userId: string = getUserId()): number {
   return evidence.sparks_ledger.filter((s) => s.user_id === userId).reduce((sum, s) => sum + s.delta, 0);
 }
