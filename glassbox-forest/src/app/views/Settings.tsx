@@ -4,6 +4,7 @@ import { audio } from '../../audio/audioEngine';
 import { surveyMood } from '../forestApp';
 import { OSS_CREDITS, PROVENANCE } from '../../credits';
 import { Die } from '../components/Die';
+import { GatedFeatures } from './GatedFeatures';
 
 // Settings — theme picker (cosmetic; never changes outcomes), audio toggle (survey-mood-driven), and
 // source appreciation / credits for every open-source project this is built on.
@@ -44,6 +45,8 @@ export function Settings({ onTheme }: { onTheme: (t: ThemeName) => void }) {
         <button className="btn primary" onClick={() => void toggleSound()} disabled={busy}>{sound ? 'Sound: ON' : 'Sound: OFF'}</button>
         <span className="muted">Per-experiment music + SFX. Brightness follows the average survey mood ({surveyMood().toFixed(1)}/5) — audio observes evidence, never changes it.</span>
       </div>
+
+      <GatedFeatures />
 
       <h3 className="sub">Credits &amp; source appreciation</h3>
       <p className="muted">Built with open source, not from scratch. Thank you to:</p>

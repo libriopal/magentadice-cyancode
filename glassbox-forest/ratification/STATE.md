@@ -122,9 +122,26 @@ FAR_NZY core); pure-TS 2D mobile-only; beautiful HD themed visuals; per-experime
 - POLISH: Verify "Load my last session"; Hold-the-Crown re-entrancy guard (#9 closed). +3 tests → 103 total.
 - Chromium: proposal→promote loop works in-app; verify-load-last PROVABLY FAIR; no errors. Client bundle secret-free.
 
-## Still open (all gated — need a human token + artifact)
-- Info-surface variant "social-witness" = multiplayer spotlight → G2. Real Cohere spend / real DB → G3.
-  Real-money value model → G1 + G4 + counsel. Graduation into FAR_NZY production → per the merged plan.
+## Built UP TO gates G1/G2/G3 (HALTS at each boundary; no gate crossed)
+Human directive: "built up to g1 g2 and g3". No tokens were placed (agent cannot create them), so every
+seam is inert. Structural enforcement is now EXECUTABLE, not just documented.
+- src/governance/gates.ts — requireGate()/GateError; browser is fail-closed (no gate ever granted client-side);
+  no code path grants a gate. scripts/lib/gatesNode.mjs reads ratification/<GATE>.granted on disk for node scripts.
+- **G1 seam** src/economy/redemption.ts — redeemSparks() calls requireGate('G1') → throws; VALUE_MODEL='closed-loop'.
+- **G2 seam** src/multiplayer/socialWitness.ts (spotlight scaffold, dormant) + scripts/deploy_readiness.mjs
+  (`npm run deploy:check`) — verifies build + rollback/target artifacts, then HALTS at G2 with an ESCALATION.
+  It NEVER deploys/exposes. deploy/TARGET.md + deploy/ROLLBACK_PLAN.md are human-fill templates (<FILL-IN>).
+- **G3 seam** src/persistence/adapter.ts — RemoteDbPersistence.connect() → requireGate('G3') → throws; app stays
+  on LocalStoragePersistence. .env.example documents the G3 secrets (COHERE_API_KEY, DATABASE_URL) — no real values.
+- Honest UI: Settings → "Gated features" shows G1/G2/G3 LOCKED with what each needs; "Try it" proves the refusal
+  (Chromium: 3 refusals, 3 locked badges, no errors).
+- ratification/PENDING_GATES.md — exactly what a human places to open each gate.
+- 108 tests green; type-check clean; web build passes; deploy:check HALTS at G2; client bundle has no secret
+  VALUES / no api.cohere.com / no node:fs (only token-path + env-var-NAME label strings, intended).
+
+## To actually OPEN a gate (human-only)
+Place the token in ratification/ per PENDING_GATES.md + the artifact (G1 counsel; G2 target+rollback; G3 creds).
+The agent builds right up to it; it will not create the token.
 
 ## Gated (unchanged; require a human token + artifact)
 - G1 real-money/value model · G2 deploy/multiplayer · G3 real Cohere key/real DB · G4 geo-legal · G5 irreversible.
