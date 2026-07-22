@@ -20,20 +20,19 @@ describe('rule-layer registry (L2 seam)', () => {
     expect(RULE_LAYERS['closed-loop-contest']!.implemented).toBe(true);
   });
 
-  test('shaping + foresight + commitment are playable today; intervention + transformation are not', () => {
+  test('all five competency families now have at least one playable experiment', () => {
     const playable = playableFamilies();
-    expect(playable).toContain('shaping');
-    expect(playable).toContain('foresight');
-    expect(playable).toContain('commitment');
-    expect(playable).not.toContain('intervention');
-    expect(playable).not.toContain('transformation');
+    for (const fam of ['shaping', 'foresight', 'commitment', 'intervention', 'transformation']) {
+      expect(playable).toContain(fam);
+    }
   });
 
-  test('branchIsPlayable is true only when all referenced rule layers are implemented', () => {
+  test('branchIsPlayable reflects implemented rule layers', () => {
     const catalog = generateCatalog('seed-42');
     const commitmentBranch = catalog.find((s) => s.coordinate.family === 'commitment' && s.coordinate.infoSurface === 'hidden');
-    const interventionBranch = catalog.find((s) => s.coordinate.family === 'intervention');
     expect(commitmentBranch && branchIsPlayable(commitmentBranch.ruleLayers)).toBe(true);
-    expect(interventionBranch && branchIsPlayable(interventionBranch.ruleLayers)).toBe(false);
+    // a branch referencing a still-unimplemented info layer (partial reveal) is not playable
+    const partial = catalog.find((s) => s.coordinate.infoSurface === 'partial');
+    expect(partial && branchIsPlayable(partial.ruleLayers)).toBe(false);
   });
 });

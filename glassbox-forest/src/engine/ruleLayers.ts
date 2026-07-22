@@ -25,13 +25,13 @@ export const RULE_LAYERS: Record<string, RuleLayerDescriptor> = {
   // commitment (KING OF TOKYO family)
   'push-your-luck': { name: 'push-your-luck', scope: 'family', implemented: true, note: 'realized by Hold the Crown' },
   'closed-loop-contest': { name: 'closed-loop-contest', scope: 'family', implemented: true, note: 'hold-under-pressure, solo/closed-loop' },
-  // intervention (planned)
-  'author-seed': { name: 'author-seed', scope: 'family', implemented: false, note: 'planned (author the draw)' },
-  'force-combo': { name: 'force-combo', scope: 'family', implemented: false, note: 'planned' },
-  'create-scarcity': { name: 'create-scarcity', scope: 'family', implemented: false, note: 'planned' },
-  // transformation (planned)
-  recombine: { name: 'recombine', scope: 'family', implemented: false, note: 'planned (recombine dice)' },
-  'unlock-eureka': { name: 'unlock-eureka', scope: 'family', implemented: false, note: 'planned' },
+  // intervention (Author's Gambit)
+  'author-seed': { name: 'author-seed', scope: 'family', implemented: true, note: 'realized by Author\'s Gambit' },
+  'force-combo': { name: 'force-combo', scope: 'family', implemented: true, note: 'force dice at a value cost' },
+  'create-scarcity': { name: 'create-scarcity', scope: 'family', implemented: true, note: 'authoring reduces the multiplier' },
+  // transformation (Transmute)
+  recombine: { name: 'recombine', scope: 'family', implemented: true, note: 'realized by Transmute (+1 upgrades)' },
+  'unlock-eureka': { name: 'unlock-eureka', scope: 'family', implemented: true, note: 'discover a hidden combo' },
   // information-surface layers
   'reveal-partial-distribution': { name: 'reveal-partial-distribution', scope: 'info', implemented: false, note: 'planned' },
   'reveal-full-distribution': { name: 'reveal-full-distribution', scope: 'info', implemented: true, note: 'full-read shown (Keeper)' },
@@ -55,6 +55,8 @@ export const FAMILY_EXPERIMENTS: Partial<Record<Family, ExperimentBinding[]>> = 
   ],
   foresight: [{ experimentId: 'target', family: 'foresight', label: 'Call Your Shot', provablyFair: true }],
   commitment: [{ experimentId: 'hold-crown', family: 'commitment', label: 'Hold the Crown (King of Tokyo family)', provablyFair: true }],
+  intervention: [{ experimentId: 'author-gambit', family: 'intervention', label: "Author's Gambit", provablyFair: true }],
+  transformation: [{ experimentId: 'transmute', family: 'transformation', label: 'Transmute', provablyFair: true }],
 };
 
 /** Families with at least one playable experiment today. */

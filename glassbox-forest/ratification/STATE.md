@@ -101,10 +101,21 @@ FAR_NZY core); pure-TS 2D mobile-only; beautiful HD themed visuals; per-experime
   (src/credits.ts): React, Vite, TypeScript, Tone.js, Vitest, tsx + provenance (FAR_NZY farkle-engine, D2 corpus).
 - 91 tests green; type-check clean; web build passes; Chromium smoke: HD dice render, theme switch works, audio loads, no errors.
 
-## Still open (non-gated; next)
-- #4 realize more of the geometry (info-surface variants + intervention/transformation families).
-- #5 fully merge glassbox-labs → glassbox-forest (retire the duplicate) — labs subsystems now largely reimplemented in forest.
-- #8 epoch/archive policy (human-set thresholds; real-play-only). #9 Hold-the-Crown closure hardening. #10 single CLAUDE.md of record.
+## Geometry realized to all 5 families (#4 DONE) + labs retired (#5 DONE)
+- **Author's Gambit** (intervention family): author/force up to 3 dice pre-roll at a multiplier cost
+  (author-seed/force-combo/create-scarcity). Provably fair (random half verifiable, forces recorded). +5 tests.
+- **Transmute** (transformation family): roll, then +1-upgrade dice from a budget to discover a hidden combo
+  (recombine/unlock-eureka). Provably fair. +4 tests.
+- All 5 competency families now have a playable experiment (6 total: one-roll, keeper, target, hold-crown,
+  author-gambit, transmute); wired into ruleLayers, catalog playable subset, Verify dispatch, App, Library.
+  Chromium smoke: both new experiments play, no errors.
+- glassbox-labs marked DEPRECATED (DEPRECATED.md pointer → glassbox-forest); kept for provenance, not deleted
+  (avoids an irreversible mass-delete; git preserves it; removable on request).
+- 100 tests green; type-check clean; web build passes.
+
+## Still open (non-gated; smaller)
+- #9 Hold-the-Crown async-closure hardening (low; record is authoritative). Info-surface variants
+  (partial/social-witness) beyond authored/full-read remain planned (social-witness is multiplayer → G2).
 
 ## Gated (unchanged; require a human token + artifact)
 - G1 real-money/value model · G2 deploy/multiplayer · G3 real Cohere key/real DB · G4 geo-legal · G5 irreversible.

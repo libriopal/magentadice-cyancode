@@ -25,6 +25,8 @@ export const PLAYABLE_BINDINGS: PlayableBinding[] = [
   { experimentId: 'one-roll', label: 'One-Roll', anchorId: 'anchor:one-roll' },
   { experimentId: 'keeper', label: "Keeper's Dilemma", anchorId: 'anchor:keeper' },
   { experimentId: 'target', label: 'Call Your Shot', anchorId: 'anchor:target' },
+  { experimentId: 'author-gambit', label: "Author's Gambit", coord: { family: 'intervention', infoSurface: 'authored' } },
+  { experimentId: 'transmute', label: 'Transmute', coord: { family: 'transformation', infoSurface: 'hidden' } },
 ];
 
 function resolveBranchId(specs: BranchSpec[], b: PlayableBinding): string {

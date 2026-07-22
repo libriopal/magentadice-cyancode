@@ -3,6 +3,8 @@ import { verifyOutcome as vOne, type OneRollOutcome } from '../../experiments/on
 import { verifyOutcome as vKeep, type KeeperOutcome } from '../../experiments/keeper/keeper';
 import { verifyOutcome as vTgt, type TargetOutcome } from '../../experiments/target/target';
 import { verifyOutcome as vHold, type HoldCrownOutcome } from '../../experiments/hold-crown/holdCrown';
+import { verifyOutcome as vAuthor, type AuthorGambitOutcome } from '../../experiments/author-gambit/authorGambit';
+import { verifyOutcome as vTrans, type TransmuteOutcome } from '../../experiments/transmute/transmute';
 
 interface Check { label: string; ok: boolean }
 
@@ -35,6 +37,24 @@ async function verifyAny(raw: unknown): Promise<{ checks: Check[]; ok: boolean }
       { label: 'Faces recompute', ok: r.facesMatch },
       { label: 'Score recomputes', ok: r.scoreMatch },
       { label: 'Met-target flag recomputes', ok: r.metTargetMatch },
+    ] };
+  }
+  if (o.experiment_id === 'author-gambit') {
+    const r = await vAuthor(raw as AuthorGambitOutcome);
+    return { ok: r.ok, checks: [
+      { label: 'Commitment matches revealed server seed', ok: r.commitmentValid },
+      { label: 'Raw roll recomputes', ok: r.rolledMatch },
+      { label: 'Authored final faces recompute', ok: r.finalMatch },
+      { label: 'Score (with authoring cost) recomputes', ok: r.scoreMatch },
+    ] };
+  }
+  if (o.experiment_id === 'transmute') {
+    const r = await vTrans(raw as TransmuteOutcome);
+    return { ok: r.ok, checks: [
+      { label: 'Commitment matches revealed server seed', ok: r.commitmentValid },
+      { label: 'Raw roll recomputes', ok: r.rolledMatch },
+      { label: 'Transformed final faces recompute', ok: r.finalMatch },
+      { label: 'Score recomputes', ok: r.scoreMatch },
     ] };
   }
   const r = await vOne(raw as OneRollOutcome);

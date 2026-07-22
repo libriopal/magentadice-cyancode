@@ -6,6 +6,7 @@ import { Gate } from './views/Gate';
 import { Library } from './views/Library';
 import { PlayHoldCrown } from './views/PlayHoldCrown';
 import { PlayOneRoll, PlayKeeper, PlayTarget } from './views/PlaySimple';
+import { PlayAuthorGambit, PlayTransmute } from './views/PlayIntervention';
 import { Verify } from './views/Verify';
 import { Admin } from './views/Admin';
 import { Settings } from './views/Settings';
@@ -17,6 +18,8 @@ const PLAY_VIEWS: Record<string, () => JSX.Element> = {
   'one-roll': PlayOneRoll,
   keeper: PlayKeeper,
   target: PlayTarget,
+  'author-gambit': PlayAuthorGambit,
+  transmute: PlayTransmute,
 };
 
 export function App() {
