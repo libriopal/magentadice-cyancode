@@ -11,7 +11,7 @@
 // We record the raw rolls, the hold/bank decisions, and the final total. We NEVER compute or store a
 // skill grade (no skill_score / was_optimal) — the system captures the decision, it never judges it.
 import type { DieFace } from '../../engine/farkle-engine';
-import { scoreFarkle } from '../../engine/farkle-engine';
+import { bestSubsetScore } from '../../engine/bestSubset';
 import { commit, rollDice, deriveCombinedSeed, verifyServerSeed, type CommitData } from '../shared/fairness';
 
 export const EXPERIMENT_ID = 'hold-crown';
@@ -51,18 +51,41 @@ export function multiplierFor(round: number): number {
   return BASE_MULT + HOLD_INCREMENT * round;
 }
 
+// CALIBRATION surface (grounded in the D2 King-of-Tokyo discovery: KoT = commitment + CALIBRATION +
+// intervention + consequence). Each held round is 6 fresh fair dice, so the per-round bust (Farkle)
+// probability is CONSTANT — the stakes rise, not the odds ("rising-variance-under-commitment"). We
+// surface this read so the hold decision is a calibrated wager, informed but not solved.
+let _bustProb: number | null = null;
+export function bustProbabilityPerRound(): number {
+  if (_bustProb !== null) return _bustProb;
+  const total = 6 ** DICE;
+  const faces = new Array<DieFace>(DICE).fill(1) as DieFace[];
+  let zeros = 0;
+  for (let i = 0; i < total; i++) {
+    let n = i;
+    for (let d = 0; d < DICE; d++) {
+      faces[d] = ((n % 6) + 1) as DieFace;
+      n = Math.floor(n / 6);
+    }
+    if (bestSubsetScore(faces).isFarkle) zeros += 1; // true bust = no subset scores
+  }
+  _bustProb = zeros / total;
+  return _bustProb;
+}
+
 /** Deterministically roll round `r` from the committed seed + client seed. Each round has an
  *  independent, reproducible sub-stream keyed by the round index. */
 export async function playRound(commitData: HoldCrownCommit, clientSeed: string, round: number): Promise<RoundResult> {
   const combined = await deriveCombinedSeed(commitData.serverSeed, [clientSeed, `round:${round}`]);
   const faces = await rollDice(combined, DICE);
-  const result = scoreFarkle(faces);
+  // Partial credit: keep the best scoring subset (real Farkle). Bust only on a TRUE farkle (no subset scores).
+  const best = bestSubsetScore(faces);
   return {
     round,
     faces,
-    roundScore: result.score,
+    roundScore: best.score,
     multiplier: multiplierFor(round),
-    isFarkle: result.isFarkle,
+    isFarkle: best.isFarkle,
   };
 }
 

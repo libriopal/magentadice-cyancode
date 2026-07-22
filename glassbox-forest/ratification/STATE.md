@@ -34,9 +34,28 @@
 - 64 unit tests green (engine parity, 4 experiments incl. Hold the Crown, generator, ledger, rule
   layers); strict type-check clean. Web bundle (vite build) lands in Stage 3 with the playable UI.
 
+## Stage 3 — Playable ecosystem + catalog + King of Tokyo discovery (DONE, awaiting go for Stage 4)
+- KING OF TOKYO — searched the D2 corpus, falsified + discovered its experience (discovery/KING_OF_TOKYO_D2.md):
+  * FALSIFIED: "escalation" is not a novel depth primitive — it collapses to rising-variance-under-commitment,
+    already instantiated by the hold-multiplier ladder. KoT = commitment + calibration + intervention + consequence.
+  * DISCOVERED: its distinctive essence is the SPOTLIGHT / witnessed-risk + audience → the `social-witness`
+    info-surface, which is inherently multiplayer/spectator → routed to a GATE (G2, +G1/G4 if real value). Kept dormant.
+- REAL BUG FOUND BY TESTING + FIXED: scoreFarkle scores a set only if EVERY die contributes, so a full 6-die roll
+  "Farkled" ~91.6% of the time — Hold the Crown was near-unplayable. Added a best-scoring-subset scorer
+  (src/engine/bestSubset.ts, does NOT touch the sacred scorer); Hold the Crown now keeps the best subset and busts
+  only on a TRUE farkle. Per-round bust risk is the real ~2.31% (the calibration read the corpus names).
+- Canonical catalog wired: buildCanonicalCatalog(seed-42) registers all 28 branches into a FOREST ledger and seeds
+  the playable subset (Hold the Crown [emphasized] + the 3 anchors); ids resolved by coordinate (seed-dependent).
+- Playable web app (vite build passes, 176 KB): consent+region gate, Play (Hold the Crown default + 3 recreated),
+  Library (geometrical-memory table of all 28 branches + live lifecycle state), Verify (all 4 experiment types).
+  Every real play feeds the FOREST ledger via recordRealPlay (observed-only). Smoke-tested in Chromium:
+  gate → Hold the Crown played (banked 450 across 2 rounds) → Library shows the branch 'played', no errors.
+- 68 unit tests green; strict type-check clean; forbidden-field scan clean.
+
 ## Not yet built (later stages, gated by your go)
-- Stage 3: generate the 28-branch catalog from seed-42; seed the playable subset (emphasis: the King
-  of Tokyo family / Hold the Crown); build the playable UI + web bundle.
+- Stage 4: nutrient loop — evidence store + opt-in survey + Sparks; nourish/archive from real evidence only;
+  ecosystem execution audit (forced mistakes + provenance + forbidden-field over the whole ecosystem).
+- Stage 5: close — ledger + STATE + audit artifact; push. Real-money/PvP/deploy/secrets/geo remain gated.
 - Stage 4: nutrient loop — play+survey → ledger; nourish/archive from real evidence; ecosystem audit.
 - Stage 5: close — ledger + STATE + audit artifact; push.
 
