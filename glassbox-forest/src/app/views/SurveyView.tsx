@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { recordSurvey, sparksBalance, getUserId } from '../forestApp';
+import { recordSurvey, sparksBalance, getUserId, surveyMood } from '../forestApp';
 import { SPARKS } from '../../sparks/wallet';
+import { audio } from '../../audio/audioEngine';
 
 // Opt-in rewarded reflection survey (lean, native — no heavy dep). The bonus is FLAT for completion,
 // never scaled by the content of answers (anti-circularity: we never grade the human). Fully skippable.
@@ -13,6 +14,9 @@ export function SurveyView({ sessionId, experimentId, onDone }: { sessionId: str
 
   function submit() {
     recordSurvey(sessionId, experimentId, { engagement, again }, reflection.trim());
+    // The new survey shifts the aggregate mood → the ambient music brightens/darkens (adornment only).
+    audio.setMood(surveyMood());
+    audio.trigger('survey');
     setState('done');
     onDone();
   }

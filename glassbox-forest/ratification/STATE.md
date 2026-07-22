@@ -84,6 +84,23 @@ Human directive: proceed autonomously on everything non-gated. Gates remain inta
   across the full play→journal→ledger→evidence path; verifies fairness + capture + survey + no-forbidden + ledger. (#7)
 - 86 unit tests green; type-check clean; web build passes; Cohere secret ABSENT from client bundle (G3).
 
+## Themed HD 2D visual system + audio (L5 adornment; OSS reuse + credits)
+Human directive: reuse OSS github code with credits; remove 3D/Rapier (never present in forest — it's the
+FAR_NZY core); pure-TS 2D mobile-only; beautiful HD themed visuals; per-experiment audio subtly driven by survey nutrient.
+- **Theme system** (src/theme/themes.ts) — 4 cosmetic themes (Matter/Wave/Gem/Color) as CSS-variable skins;
+  the merged plan's Theme axis. Pure CSS/SVG, no 3D/physics. Theme swap changes zero outcomes (test-locked).
+- **HD SVG dice** (src/app/components/Die.tsx) — themed gradient dice with real pip layouts, glow, pop animation;
+  replaces unicode glyphs across all four experiments.
+- **Mobile-first HD design system** (styles.css) — glassmorphism panels, gradient bg, thumb-reachable 40px targets,
+  safe-area insets, 560px max width. data-theme on :root.
+- **Audio/music** (src/audio/audioEngine.ts) — built on **Tone.js (MIT)**, DYNAMICALLY imported only on
+  audio-enable (separate 340KB chunk; initial bundle stays ~196KB). Per-experiment ambient motif + event SFX
+  (roll/score/bust/bank/hold/survey). Brightness SUBTLY follows the survey-nutrient mood (avg engagement, read-only).
+  Off by default; degrades silently if Tone unavailable. L5: observes evidence, never mutates it (test-locked no-op when off).
+- **Settings menu** (src/app/views/Settings.tsx) — theme picker, audio toggle, and CREDITS / source appreciation
+  (src/credits.ts): React, Vite, TypeScript, Tone.js, Vitest, tsx + provenance (FAR_NZY farkle-engine, D2 corpus).
+- 91 tests green; type-check clean; web build passes; Chromium smoke: HD dice render, theme switch works, audio loads, no errors.
+
 ## Still open (non-gated; next)
 - #4 realize more of the geometry (info-surface variants + intervention/transformation families).
 - #5 fully merge glassbox-labs → glassbox-forest (retire the duplicate) — labs subsystems now largely reimplemented in forest.

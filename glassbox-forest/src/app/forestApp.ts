@@ -126,6 +126,23 @@ export function sparksBalance(userId: string = getUserId()): number {
   return evidence.sparks_ledger.filter((s) => s.user_id === userId).reduce((sum, s) => sum + s.delta, 0);
 }
 
+/**
+ * Read-only "mood" derived from survey nutrient: the average engagement rating (1–5) across all captured
+ * surveys, default 3 when none. The audio layer (L5 adornment) reads this to subtly brighten/darken the
+ * music — it OBSERVES evidence, never mutates it, and never feeds back into scoring or the ledger (C3).
+ */
+export function surveyMood(): number {
+  const ratings: number[] = [];
+  for (const s of evidence.surveys) {
+    try {
+      const a = JSON.parse(s.answers_json) as { engagement?: number };
+      if (typeof a.engagement === 'number') ratings.push(a.engagement);
+    } catch { /* ignore malformed */ }
+  }
+  if (ratings.length === 0) return 3;
+  return ratings.reduce((x, y) => x + y, 0) / ratings.length;
+}
+
 /** Admin evidence export with the forbidden-field strip (skill_score/was_optimal can never leave). */
 export function exportEvidence(): EvidenceStoreShape {
   return strip(evidence);

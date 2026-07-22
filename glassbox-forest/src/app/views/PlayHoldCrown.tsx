@@ -5,9 +5,9 @@ import {
 } from '../../experiments/hold-crown/holdCrown';
 import { generateClientSeed } from '../../engine/farkle-engine';
 import { recordPlaySession, sparksBalance } from '../forestApp';
+import { audio } from '../../audio/audioEngine';
+import { DiceRow } from '../components/Die';
 import { SurveyView } from './SurveyView';
-
-const GLYPH = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 
 // The emphasized King of Tokyo family experiment. Interactive push-your-luck: each round keeps its best
 // scoring subset; HOLD to grow the multiplier at a constant ~2.3% bust risk that would wipe the pot, or
@@ -52,13 +52,14 @@ export function PlayHoldCrown() {
     if (!commitData || done) return;
     const nextDecisions = [...decisions, choice];
     setDecisions(nextDecisions);
+    audio.trigger(choice === 'bank' ? 'bank' : 'hold');
     if (choice === 'bank') { await finalize(commitData, clientSeed, nextDecisions); return; }
     const nextRound = rounds.length;
     if (nextRound >= MAX_ROUNDS) { await finalize(commitData, clientSeed, nextDecisions); return; }
     const rr = await playRound(commitData, clientSeed, nextRound);
     setRounds((rs) => [...rs, rr]);
-    if (rr.isFarkle) { setPot(0); await finalize(commitData, clientSeed, nextDecisions); }
-    else setPot((p) => p + Math.round(rr.roundScore * rr.multiplier));
+    if (rr.isFarkle) { audio.trigger('bust'); setPot(0); await finalize(commitData, clientSeed, nextDecisions); }
+    else { audio.trigger('score'); setPot((p) => p + Math.round(rr.roundScore * rr.multiplier)); }
   }
 
   const cur = rounds[rounds.length - 1];
@@ -78,7 +79,7 @@ export function PlayHoldCrown() {
       {cur && (
         <>
           <div className="muted">Round {rounds.length} · multiplier ×{cur.multiplier}</div>
-          <div className="dice">{cur.faces.map((f, i) => <div className="die" key={i}>{GLYPH[f]}</div>)}</div>
+          <DiceRow faces={cur.faces} />
           <p>{cur.roundScore ? <span className="ok">kept {cur.roundScore}.</span> : <span className="no">no score.</span>}</p>
         </>
       )}
