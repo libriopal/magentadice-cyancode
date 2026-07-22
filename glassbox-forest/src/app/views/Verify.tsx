@@ -5,6 +5,7 @@ import { verifyOutcome as vTgt, type TargetOutcome } from '../../experiments/tar
 import { verifyOutcome as vHold, type HoldCrownOutcome } from '../../experiments/hold-crown/holdCrown';
 import { verifyOutcome as vAuthor, type AuthorGambitOutcome } from '../../experiments/author-gambit/authorGambit';
 import { verifyOutcome as vTrans, type TransmuteOutcome } from '../../experiments/transmute/transmute';
+import { evidence } from '../forestApp';
 
 interface Check { label: string; ok: boolean }
 
@@ -78,12 +79,23 @@ export function Verify() {
     try { setRes(await verifyAny(parsed)); } catch (e) { setErr(`Verification error: ${(e as Error).message}`); }
   }
 
+  function loadLast() {
+    setErr(null); setRes(null);
+    const sessions = evidence.sessions;
+    const last = sessions[sessions.length - 1];
+    if (!last) { setErr('No sessions yet — play a round first.'); return; }
+    setRaw(last.outcome_json);
+  }
+
   return (
     <div className="panel">
       <h2>Verify a session</h2>
-      <p className="muted">Paste the fairness JSON from any experiment (the "Fairness data" block). Anyone can recompute the dice from the revealed seeds and confirm the published commitment.</p>
+      <p className="muted">Paste the fairness JSON from any experiment (the "Fairness data" block), or load your last one. Anyone can recompute the dice from the revealed seeds and confirm the published commitment.</p>
       <textarea value={raw} onChange={(e) => setRaw(e.target.value)} placeholder='{"experiment_id":"hold-crown", ...}' />
-      <div className="row" style={{ marginTop: 8 }}><button className="btn primary" onClick={() => void run()} disabled={!raw.trim()}>Verify</button></div>
+      <div className="row" style={{ marginTop: 8 }}>
+        <button className="btn" onClick={loadLast}>Load my last session</button>
+        <button className="btn primary" onClick={() => void run()} disabled={!raw.trim()}>Verify</button>
+      </div>
       {err && <p className="no">{err}</p>}
       {res && (
         <div className="panel">

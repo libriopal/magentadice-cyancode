@@ -113,9 +113,18 @@ FAR_NZY core); pure-TS 2D mobile-only; beautiful HD themed visuals; per-experime
   (avoids an irreversible mass-delete; git preserves it; removable on request).
 - 100 tests green; type-check clean; web build passes.
 
-## Still open (non-gated; smaller)
-- #9 Hold-the-Crown async-closure hardening (low; record is authoritative). Info-surface variants
-  (partial/social-witness) beyond authored/full-read remain planned (social-witness is multiplayer → G2).
+## Falsification & discovery audit + fixes + polish (audit/FALSIFICATION_AND_DISCOVERY_AUDIT.md)
+- Re-proved the core: all 6 experiments verify PROVABLY FAIR end-to-end through the real Verify UI (Chromium).
+- FIXED [HIGH] Target degenerate scoring (all-or-nothing → best-subset); root cause: bestSubset never retrofitted.
+- FIXED [HIGH] journal localStorage-quota crash → quota-tolerant persist (sheds low-value events, never throws).
+- FIXED [MED] Cohere→human-promote loop disconnected → browser-safe in-app proposer + Library "Propose variations".
+- RESOLVED [MED] two scoring regimes documented (One-Roll all-or-nothing is intentional/load-bearing).
+- POLISH: Verify "Load my last session"; Hold-the-Crown re-entrancy guard (#9 closed). +3 tests → 103 total.
+- Chromium: proposal→promote loop works in-app; verify-load-last PROVABLY FAIR; no errors. Client bundle secret-free.
+
+## Still open (all gated — need a human token + artifact)
+- Info-surface variant "social-witness" = multiplayer spotlight → G2. Real Cohere spend / real DB → G3.
+  Real-money value model → G1 + G4 + counsel. Graduation into FAR_NZY production → per the merged plan.
 
 ## Gated (unchanged; require a human token + artifact)
 - G1 real-money/value model · G2 deploy/multiplayer · G3 real Cohere key/real DB · G4 geo-legal · G5 irreversible.

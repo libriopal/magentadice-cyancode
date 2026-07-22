@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   commit, playRound, resolveSession, multiplierFor, bustProbabilityPerRound, MAX_ROUNDS,
   type HoldCrownCommit, type RoundResult, type Decision, type HoldCrownOutcome,
@@ -48,8 +48,14 @@ export function PlayHoldCrown() {
 
   useEffect(() => { void start(); }, [start]);
 
+  const busyRef = useRef(false);
   async function decide(choice: Decision) {
-    if (!commitData || done) return;
+    if (!commitData || done || busyRef.current) return; // re-entrancy guard: ignore taps mid-resolve
+    busyRef.current = true;
+    try { await decideInner(choice); } finally { busyRef.current = false; }
+  }
+  async function decideInner(choice: Decision) {
+    if (!commitData) return;
     const nextDecisions = [...decisions, choice];
     setDecisions(nextDecisions);
     audio.trigger(choice === 'bank' ? 'bank' : 'hold');
