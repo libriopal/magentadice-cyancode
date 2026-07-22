@@ -23,9 +23,15 @@ npm run audit:ai  # advisory Claude-API auditor (no-op without ANTHROPIC_API_KEY
 - **P1** One-Roll (ported FAR_NZY farkle-engine, commit-reveal + public Verify), opt-in SurveyJS survey +
   reflection, closed-loop non-redeemable Sparks, admin export with forbidden-field strip.
 - **P2** (sandbox form) 18+/consent + hard region gate at entry and before every play/earn, region checks logged.
+- **P3** experiment library growth — 3 experiments (One-Roll, Keeper's Dilemma, Call Your Shot) rendered from the
+  registry, shared commit-reveal primitives, widened evidence capture (`decision_json`), multi-experiment Verify.
 - **P4** advisory AI-audit loop wired (non-ratifying).
 
+The three experiments total **49 unit tests**; all closed-loop and provably fair.
+
 ## Gated — NOT built without a human token in `ratification/`
+- **Precise geofencing (Census TIGER)** — the remaining P3 item — is **halted at G4** (geo-legal eligibility logic).
+  See the ESCALATION note in `ratification/STATE.md`.
 - **P5** real-money / sweepstakes / PvP value model → **G1 + G4**.
 - Deploy → **G2**. Secrets / real DB (real auth, IP-geolocation, persistence) → **G3**.
 - Editing `config/blocked_regions.json` / value-model / geo-legal / age logic → **G4**.

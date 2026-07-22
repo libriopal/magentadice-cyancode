@@ -39,8 +39,8 @@ describe('region gate (C8)', () => {
 
 describe('sparks wallet (closed-loop)', () => {
   test('earn record carries a positive delta', () => {
-    const r = makeEarnRecord('u1', SPARKS.PLAY_ONE_ROLL, 'play:one-roll', 'se1');
-    expect(r.delta).toBe(SPARKS.PLAY_ONE_ROLL);
+    const r = makeEarnRecord('u1', SPARKS.PLAY, 'play:one-roll', 'se1');
+    expect(r.delta).toBe(SPARKS.PLAY);
     expect(r.delta).toBeGreaterThan(0);
   });
 

@@ -9,8 +9,8 @@ import {
   type OneRollOutcome,
 } from '../../experiments/one-roll/oneRoll';
 import { generateClientSeed } from '../../engine/farkle-engine';
-import { store, getUserId, getRegion, REGION_METHOD, assertPlayAllowed } from '../labStore';
-import { makeEarnRecord, SPARKS } from '../../sparks/wallet';
+import { store, getUserId, recordPlaySession } from '../labStore';
+import { SPARKS } from '../../sparks/wallet';
 import { SurveyView } from './SurveyView';
 
 const FACE_GLYPH = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
@@ -42,35 +42,16 @@ export function PlayOneRoll() {
     setBusy(true);
     setError(null);
     try {
-      // Hard region gate before the play/earn action.
-      const decision = assertPlayAllowed();
-      if (!decision.allowed) {
-        setError(`Play blocked: region "${decision.region ?? 'unknown'}" is not eligible.`);
+      const { outcome: oc } = await reveal(commitData, clientSeed, diceCount);
+      // Hard region gate + session persistence + flat reward (shared across experiments).
+      const { sessionId: sid, region } = recordPlaySession(EXPERIMENT_ID, oc, { dice_count: diceCount, client_seed: clientSeed });
+      if (!sid) {
+        setError(`Play blocked: region "${region.region ?? 'unknown'}" is not eligible.`);
         return;
       }
-      const uid = getUserId();
-      const { outcome: oc } = await reveal(commitData, clientSeed, diceCount);
-      const now = new Date().toISOString();
-      const sid = crypto.randomUUID();
-      store.addSession({
-        id: sid,
-        user_id: uid,
-        experiment_id: EXPERIMENT_ID,
-        detected_region: getRegion(),
-        region_method: REGION_METHOD,
-        region_allowed: true,
-        server_seed: oc.server_seed,
-        server_seed_hash: oc.commitment,
-        revealed_at: now,
-        outcome_json: JSON.stringify(oc),
-        sparks_awarded: SPARKS.PLAY_ONE_ROLL,
-        created_at: now,
-      });
-      // Flat play reward — never tied to how well the human did (anti-circularity).
-      store.addSparks(makeEarnRecord(uid, SPARKS.PLAY_ONE_ROLL, 'play:one-roll', sid, now));
       setOutcome(oc);
       setSessionId(sid);
-      setBalance(store.sparksBalance(uid));
+      setBalance(store.sparksBalance(getUserId()));
     } finally {
       setBusy(false);
     }
@@ -130,7 +111,7 @@ export function PlayOneRoll() {
             ) : (
               <span className="ok">{outcome.combo} — {outcome.score} points.</span>
             )}{' '}
-            <span className="muted">+{SPARKS.PLAY_ONE_ROLL} Sparks. Balance: {balance}.</span>
+            <span className="muted">+{SPARKS.PLAY} Sparks. Balance: {balance}.</span>
           </p>
           <details>
             <summary className="muted">Fairness data (verify in the Verify tab)</summary>

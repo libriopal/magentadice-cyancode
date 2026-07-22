@@ -12,24 +12,15 @@
 // We record ONLY the raw decision + raw outcome. We NEVER compute or store skill_score /
 // was_optimal (C7 / anti-circularity) — the app captures, it never grades the human.
 import type { DieFace } from '../../engine/farkle-engine';
-import {
-  CSPRNG,
-  generateServerSeed,
-  hashServerSeed,
-  deriveCombinedSeed,
-  verifyServerSeed,
-  scoreFarkle,
-  type FarkleResult,
-} from '../../engine/farkle-engine';
+import { scoreFarkle, type FarkleResult } from '../../engine/farkle-engine';
+import { commit as sharedCommit, rollDice as sharedRollDice, deriveCombinedSeed, verifyServerSeed, clampInt, type CommitData } from '../shared/fairness';
 
 export const EXPERIMENT_ID = 'one-roll';
 export const MIN_DICE = 1;
 export const MAX_DICE = 6;
 
-export interface OneRollCommit {
-  serverSeed: string;      // kept private until reveal
-  commitment: string;      // sha256(serverSeed) — shown before the roll
-}
+// Kept as a named alias for backwards-compatible imports.
+export type OneRollCommit = CommitData;
 
 export interface OneRollOutcome {
   experiment_id: 'one-roll';
@@ -47,24 +38,16 @@ export interface OneRollOutcome {
 
 /** Step 1 — commit. Produces the server seed (private) and its published commitment. */
 export async function commit(): Promise<OneRollCommit> {
-  const serverSeed = await generateServerSeed();
-  const commitment = await hashServerSeed(serverSeed);
-  return { serverSeed, commitment };
+  return sharedCommit();
 }
 
 function clampDiceCount(n: number): number {
-  if (!Number.isFinite(n)) return MIN_DICE;
-  return Math.max(MIN_DICE, Math.min(MAX_DICE, Math.floor(n)));
+  return clampInt(n, MIN_DICE, MAX_DICE);
 }
 
 /** Deterministically roll `diceCount` faces from a combined seed (uniform d6). */
 export async function rollDice(combinedSeed: string, diceCount: number): Promise<DieFace[]> {
-  const rng = new CSPRNG(combinedSeed);
-  const faces: DieFace[] = [];
-  for (let i = 0; i < diceCount; i++) {
-    faces.push((await rng.nextInt(1, 6)) as DieFace);
-  }
-  return faces;
+  return sharedRollDice(combinedSeed, diceCount);
 }
 
 /** Step 3 — reveal + resolve. Given the committed seed, the player's clientSeed and

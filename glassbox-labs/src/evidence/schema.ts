@@ -24,6 +24,7 @@ export interface SessionRecord {
   server_seed_hash: string;         // commitment shown before the roll
   revealed_at: string | null;
   outcome_json: string;             // stringified experiment outcome (no forbidden fields)
+  decision_json: string | null;    // P3 widened capture: the player's pre-commit decision (no forbidden fields)
   sparks_awarded: number;
   created_at: string;
 }

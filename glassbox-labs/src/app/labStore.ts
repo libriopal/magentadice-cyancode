@@ -4,6 +4,7 @@
 import { EvidenceStore } from '../evidence/store';
 import { toExperimentRecords } from '../experiments/registry';
 import { decideRegion, toRegionCheckRecord, type RegionDecision } from '../region/regionGate';
+import { makeEarnRecord, SPARKS } from '../sparks/wallet';
 import type { RegionMethod } from '../evidence/schema';
 
 const USER_KEY = 'glassbox.user.v1';
@@ -88,4 +89,39 @@ export function assertPlayAllowed(): RegionDecision {
   const decision = decideRegion(getRegion(), REGION_METHOD);
   store.addRegionCheck(toRegionCheckRecord(decision, getUserId()));
   return decision;
+}
+
+/**
+ * Central play/earn path shared by every experiment. Runs the hard region gate, persists
+ * the session (with the raw outcome + the player's pre-commit decision), and awards the
+ * FLAT play reward. Returns the new session id, or null when the region gate blocks play.
+ */
+export function recordPlaySession(
+  experimentId: string,
+  outcome: { server_seed: string; commitment: string },
+  decision: unknown
+): { sessionId: string | null; region: RegionDecision } {
+  const regionDecision = assertPlayAllowed();
+  if (!regionDecision.allowed) return { sessionId: null, region: regionDecision };
+  const uid = getUserId();
+  const now = new Date().toISOString();
+  const sid = typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `se_${Date.now()}`;
+  store.addSession({
+    id: sid,
+    user_id: uid,
+    experiment_id: experimentId,
+    detected_region: getRegion(),
+    region_method: REGION_METHOD,
+    region_allowed: true,
+    server_seed: outcome.server_seed,
+    server_seed_hash: outcome.commitment,
+    revealed_at: now,
+    outcome_json: JSON.stringify(outcome),
+    decision_json: decision === undefined ? null : JSON.stringify(decision),
+    sparks_awarded: SPARKS.PLAY,
+    created_at: now,
+  });
+  // Flat play reward — identical for every experiment, never tied to outcome quality.
+  store.addSparks(makeEarnRecord(uid, SPARKS.PLAY, `play:${experimentId}`, sid, now));
+  return { sessionId: sid, region: regionDecision };
 }

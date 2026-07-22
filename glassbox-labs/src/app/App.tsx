@@ -1,15 +1,27 @@
 import { useState } from 'react';
 import { hasConsent } from './labStore';
+import { EXPERIMENTS } from '../experiments/registry';
 import { Gate } from './views/Gate';
 import { PlayOneRoll } from './views/PlayOneRoll';
+import { PlayKeeper } from './views/PlayKeeper';
+import { PlayTarget } from './views/PlayTarget';
 import { Verify } from './views/Verify';
 import { Admin } from './views/Admin';
 
-type Tab = 'play' | 'verify' | 'admin';
+type Tab = 'library' | 'verify' | 'admin';
+
+const PLAY_VIEWS: Record<string, () => JSX.Element> = {
+  'one-roll': PlayOneRoll,
+  keeper: PlayKeeper,
+  target: PlayTarget,
+};
 
 export function App() {
   const [consented, setConsented] = useState<boolean>(hasConsent());
-  const [tab, setTab] = useState<Tab>('play');
+  const [tab, setTab] = useState<Tab>('library');
+  const [experimentId, setExperimentId] = useState<string>('one-roll');
+
+  const ActiveView = PLAY_VIEWS[experimentId];
 
   return (
     <div className="wrap">
@@ -17,7 +29,7 @@ export function App() {
       <p className="muted">
         Evidence-first, closed-loop skill-game experiments. No real money. Geo-gated. Provably fair.
         <br />
-        <span className="pill">P0–P1 sandbox</span> <span className="pill">Sparks are non-redeemable</span>{' '}
+        <span className="pill">P0–P3 sandbox</span> <span className="pill">Sparks are non-redeemable</span>{' '}
         <span className="pill">NOT legal advice</span>
       </p>
 
@@ -26,11 +38,33 @@ export function App() {
       ) : (
         <>
           <nav>
-            <button className={tab === 'play' ? 'active' : ''} onClick={() => setTab('play')}>Play · One-Roll</button>
+            <button className={tab === 'library' ? 'active' : ''} onClick={() => setTab('library')}>Experiments</button>
             <button className={tab === 'verify' ? 'active' : ''} onClick={() => setTab('verify')}>Verify</button>
             <button className={tab === 'admin' ? 'active' : ''} onClick={() => setTab('admin')}>Admin · Evidence</button>
           </nav>
-          {tab === 'play' && <PlayOneRoll />}
+
+          {tab === 'library' && (
+            <>
+              <div className="panel">
+                <h2>Experiment library</h2>
+                <p className="muted">Rendered from config/experiments.registry.json. Each row is a closed-loop, provably-fair skill experiment.</p>
+                <nav>
+                  {EXPERIMENTS.map((e) => (
+                    <button
+                      key={e.id}
+                      className={experimentId === e.id ? 'active' : ''}
+                      onClick={() => setExperimentId(e.id)}
+                      disabled={!PLAY_VIEWS[e.id]}
+                      title={e.hypothesis}
+                    >
+                      {e.name} <span className="pill">{e.phase}</span>
+                    </button>
+                  ))}
+                </nav>
+              </div>
+              {ActiveView ? <ActiveView /> : <p className="muted">No player UI for “{experimentId}” yet.</p>}
+            </>
+          )}
           {tab === 'verify' && <Verify />}
           {tab === 'admin' && <Admin />}
         </>

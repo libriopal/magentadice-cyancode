@@ -43,3 +43,35 @@ reversible, closed-loop. NO gate was crossed; NO ratification token was created 
 - Pending human tokens (none created by agent): G1 (real-money, for P5), G2 (deploy), G3 (secrets/real DB, for real
   auth + IP-geo + persistence), G4 (any change to blocked_regions / value-model / geo-legal / age logic).
 - Forbidden-field invariant (C7) and closed-loop invariant (C6/C10) hold and are test-enforced.
+
+## 2026-07-22 — P3 (library growth) built; precise geofencing HALTED at G4
+Non-gated portion of P3 built on the same branch. Still closed-loop, sandboxed, reversible. No gate crossed.
+
+### P3 — Experiment library growth (DONE, non-gated portion)
+- Shared commit-reveal fairness primitives extracted (src/experiments/shared/fairness.ts); One-Roll refactored to
+  consume them (public API + outcome shape unchanged; its parity + verify tests still green).
+- Experiment #2 "Keeper's Dilemma" (src/experiments/keeper): reveal 6 provably-fair faces → player keeps a subset →
+  score the kept faces. Records kept_indices + raw score; keep-choice never touches randomness. +5 tests.
+- Experiment #3 "Call Your Shot" (src/experiments/target): pre-commit self-set target + dice count → reveal → score →
+  met_target (the player's OWN goal outcome, not a skill grade). +5 tests.
+- Both added as registry rows (config/experiments.registry.json); the app renders the library from the registry and
+  the Verify view now dispatches across all three experiment types.
+- Widened evidence capture: SessionRecord gained `decision_json` (the player's pre-commit decision), captured for
+  every experiment. Still no forbidden fields (C7 enforced by tests + export strip).
+- Central play/earn path (labStore.recordPlaySession) shared by all experiments: runs the hard region gate, persists
+  the session, awards the FLAT play reward. Sparks reward is identical across experiments (never outcome-scaled).
+- Suite now 49 tests, all green; strict type-check clean; production build passes.
+
+### ESCALATION — precise geofencing (Census TIGER) routed to Gate G4 (NOT built)
+BUILD_DIRECTIVE lists "precise geofencing (Census TIGER boundaries)" under P3, but AUTONOMY_POLICY.md and
+HUMAN_GATES G4 place ANY geo/legal eligibility logic behind a human token "regardless of session mode." Precise
+geofencing determines who may play/earn — that is geo-legal logic. Per CLAUDE.md ("On reaching a gate, halt and
+escalate"), I did NOT build it and did NOT alter any region/eligibility logic.
+- To proceed, a human must place `ratification/G4_LEGAL_CONFIG.granted` (GRANTED BY <name> ON <date> FOR
+  "precise TIGER-based geofencing") + the approved boundary-resolution approach + counsel confirmation that the
+  boundary data and method are legally sufficient.
+- Until then, region eligibility remains the coarse, human-owned US-state blocklist (unchanged, read-only, frozen).
+
+### Gates (updated)
+- Crossed: NONE. Escalated this pass: G4 (precise geofencing) — awaiting human token.
+- Still pending (none created by agent): G1, G2, G3, G4.

@@ -8,11 +8,12 @@ import type { SparksLedgerRecord } from '../evidence/schema';
 /** Fixed, content-independent award amounts. Surveys pay a FLAT bonus for completion,
  *  never for the content of answers (anti-circularity: we never grade the human). */
 export const SPARKS = {
-  PLAY_ONE_ROLL: 10,
+  PLAY: 10,
   SURVEY_COMPLETION: 25,
 } as const;
 
-export type SparksReason = 'play:one-roll' | 'survey:completion';
+/** Flat play reward is the same across every experiment (never tied to outcome quality). */
+export type SparksReason = `play:${string}` | 'survey:completion';
 
 export function makeEarnRecord(
   user_id: string,
