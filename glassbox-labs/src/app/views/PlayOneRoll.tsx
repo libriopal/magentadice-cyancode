@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   commit,
   reveal,
@@ -24,6 +24,7 @@ export function PlayOneRoll() {
   const [balance, setBalance] = useState(store.sparksBalance(getUserId()));
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const startedAt = useRef<number>(Date.now());
 
   const newRound = useCallback(async () => {
     setOutcome(null);
@@ -31,6 +32,7 @@ export function PlayOneRoll() {
     setError(null);
     setClientSeed(generateClientSeed());
     setCommitData(await commit());
+    startedAt.current = Date.now();
   }, []);
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export function PlayOneRoll() {
     try {
       const { outcome: oc } = await reveal(commitData, clientSeed, diceCount);
       // Hard region gate + session persistence + flat reward (shared across experiments).
-      const { sessionId: sid, region } = recordPlaySession(EXPERIMENT_ID, oc, { dice_count: diceCount, client_seed: clientSeed });
+      const { sessionId: sid, region } = recordPlaySession(EXPERIMENT_ID, oc, { dice_count: diceCount, client_seed: clientSeed, decision_ms: Date.now() - startedAt.current });
       if (!sid) {
         setError(`Play blocked: region "${region.region ?? 'unknown'}" is not eligible.`);
         return;

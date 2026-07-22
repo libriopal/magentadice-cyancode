@@ -75,3 +75,32 @@ escalate"), I did NOT build it and did NOT alter any region/eligibility logic.
 ### Gates (updated)
 - Crossed: NONE. Escalated this pass: G4 (precise geofencing) — awaiting human token.
 - Still pending (none created by agent): G1, G2, G3, G4.
+
+## 2026-07-22 — Playtest-readiness + full-play execution audit (advisory, non-ratifying)
+Prep for ACTUAL human playtesting + rewarded-survey nutrient ingestion. Still closed-loop, sandboxed, no gate crossed.
+
+### Observation of current state (honest)
+- The three experiments run end-to-end through the real commit-reveal engine; evidence capture, closed-loop Sparks,
+  and the opt-in survey all work. Suite is 54 tests green; type-check clean; production build passes.
+- Known limitations (NOT defects — routed to gates, see findings): in-browser-only persistence (G3), coarse manual
+  region entry (G3/G4), thin reflection signal. None block a single-facilitator playtest.
+
+### Readiness changes (non-gated)
+- Widened the reflection nutrient: every experiment now captures `decision_ms` (deliberation latency) in
+  `decision_json`. It is a raw reflection signal, NOT a skill grade — no forbidden field added (C7 still holds).
+- Added an execution-audit engine (src/audit/executionAudit.ts) + CI test (executionAudit.test.ts, +5 tests) +
+  runnable CLI (`npm run audit:play` → scripts/run_execution_audit.mjs) that writes evidence/audits/<ts>-execution-audit.md.
+
+### Full-play execution audit — "assure mistakes were made"
+The audit drives the FULL play→survey→evidence pipeline and DELIBERATELY forces player mistakes, then verifies the
+system captured imperfect play faithfully:
+- One-Roll → a real Farkle (score 0); Keeper → banked nothing (kept 0 dice, score 0); Target → missed a self-set
+  impossible target (met_target=false). All three provably fair on independent recompute.
+- Rewarded-survey nutrient ingests (reflection text stored, flat 25-Spark bonus, content-independent).
+- No forbidden field (skill_score / was_optimal) enters the store OR the export, even under losing play.
+- The audit CLASSIFIES findings (VF/SI/AS/SP/SC) and ROUTES limitations to G3/G4. It is explicitly NON-RATIFYING:
+  "self-audit passed" is never ratification (C3). First artifact committed under evidence/audits/.
+
+### Gates (unchanged)
+- Crossed: NONE. Pending (none created by agent): G1, G2, G3, G4. Playtest is single-facilitator local sandbox
+  (no deploy/secrets) — no gate required; a PUBLIC playtest would be G2.

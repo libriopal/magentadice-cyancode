@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   commit,
   reveal,
@@ -26,6 +26,7 @@ export function PlayTarget() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [balance, setBalance] = useState(store.sparksBalance(getUserId()));
   const [error, setError] = useState<string | null>(null);
+  const startedAt = useRef<number>(Date.now());
 
   const newRound = useCallback(async () => {
     setOutcome(null);
@@ -33,6 +34,7 @@ export function PlayTarget() {
     setError(null);
     setClientSeed(generateClientSeed());
     setCommitData(await commit());
+    startedAt.current = Date.now();
   }, []);
 
   useEffect(() => { void newRound(); }, [newRound]);
@@ -40,7 +42,7 @@ export function PlayTarget() {
   async function doReveal() {
     if (!commitData) return;
     const oc = await reveal(commitData, clientSeed, diceCount, target);
-    const { sessionId: sid, region } = recordPlaySession(EXPERIMENT_ID, oc, { dice_count: diceCount, target_score: target, client_seed: clientSeed });
+    const { sessionId: sid, region } = recordPlaySession(EXPERIMENT_ID, oc, { dice_count: diceCount, target_score: target, client_seed: clientSeed, decision_ms: Date.now() - startedAt.current });
     if (!sid) {
       setError(`Play blocked: region "${region.region ?? 'unknown'}" is not eligible.`);
       return;

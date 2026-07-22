@@ -7,16 +7,29 @@ geo-legal, irreversible) are blocked by human ratification tokens it cannot self
 Start: point Claude Code at this folder. It reads CLAUDE.md first. NOT legal advice; real-money
 features gated pending human decision + counsel.
 
-## Running the sandbox (P0–P1)
+## Running the sandbox
 ```bash
 cd glassbox-labs
 npm install
-npm test          # 39 unit tests: engine parity, commit-reveal, forbidden-field strip, region gate, wallet
+npm test           # 54 unit tests: engine parity, commit-reveal, forbidden-field strip, region gate,
+                   #   wallet, the 3 experiments, and the full-pipeline execution audit
 npm run type-check
-npm run dev       # http://localhost:5173 — consent+18+ gate → One-Roll → Verify → Admin export
-npm run build     # production build
-npm run audit:ai  # advisory Claude-API auditor (no-op without ANTHROPIC_API_KEY, a G3 secret)
+npm run dev        # http://localhost:5173 — consent+18+ gate → Experiments → Verify → Admin export
+npm run build      # production build
+npm run audit:play # advisory execution audit: drives the full play→survey→evidence pipeline with
+                   #   forced mistakes, checks fairness + forbidden-field + survey nutrient, and writes
+                   #   evidence/audits/<ts>-execution-audit.md. NON-RATIFYING.
+npm run audit:ai   # advisory Claude-API auditor (no-op without ANTHROPIC_API_KEY, a G3 secret)
 ```
+
+## Running a human playtest (single facilitator, local sandbox — no gate)
+```bash
+npm run dev        # tester clears the consent+18+ gate, enters a US state, plays rounds across the
+                   #   three experiments, optionally completes the rewarded reflection survey
+# then in the Admin · Evidence tab: Preview / Download JSON (forbidden fields stripped on export)
+npm run audit:play # sanity-check the capture pipeline before/after a session
+```
+A PUBLIC playtest (real external users) would be gate **G2**; multi-device evidence aggregation is **G3**.
 
 ## What's implemented (see ratification/STATE.md for the ledger)
 - **P0** scaffold, tests-only CI, governance in-app, evidence schema, registry, read-only blocked_regions.
@@ -25,9 +38,11 @@ npm run audit:ai  # advisory Claude-API auditor (no-op without ANTHROPIC_API_KEY
 - **P2** (sandbox form) 18+/consent + hard region gate at entry and before every play/earn, region checks logged.
 - **P3** experiment library growth — 3 experiments (One-Roll, Keeper's Dilemma, Call Your Shot) rendered from the
   registry, shared commit-reveal primitives, widened evidence capture (`decision_json`), multi-experiment Verify.
-- **P4** advisory AI-audit loop wired (non-ratifying).
+- **P4** advisory AI-audit loop wired (non-ratifying), plus an in-repo **execution audit** (`npm run audit:play`)
+  that drives full play with forced mistakes and verifies fairness / forbidden-field / survey-nutrient invariants.
 
-The three experiments total **49 unit tests**; all closed-loop and provably fair.
+Total **54 unit tests**; all experiments closed-loop and provably fair. Every play captures `decision_ms`
+(deliberation latency) as a raw reflection signal — never a skill grade.
 
 ## Gated — NOT built without a human token in `ratification/`
 - **Precise geofencing (Census TIGER)** — the remaining P3 item — is **halted at G4** (geo-legal eligibility logic).

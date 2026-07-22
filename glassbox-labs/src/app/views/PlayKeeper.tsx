@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   commit,
   revealFaces,
@@ -25,6 +25,7 @@ export function PlayKeeper() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [balance, setBalance] = useState(store.sparksBalance(getUserId()));
   const [error, setError] = useState<string | null>(null);
+  const startedAt = useRef<number>(Date.now());
 
   const newRound = useCallback(async () => {
     setFaces(null);
@@ -34,6 +35,7 @@ export function PlayKeeper() {
     setError(null);
     setClientSeed(generateClientSeed());
     setCommitData(await commit());
+    startedAt.current = Date.now();
   }, []);
 
   useEffect(() => { void newRound(); }, [newRound]);
@@ -54,7 +56,7 @@ export function PlayKeeper() {
   function scoreKept() {
     if (!commitData || !faces) return;
     const oc = resolve(commitData, clientSeed, combined, faces, [...kept]);
-    const { sessionId: sid, region } = recordPlaySession(EXPERIMENT_ID, oc, { kept_indices: oc.kept_indices, client_seed: clientSeed });
+    const { sessionId: sid, region } = recordPlaySession(EXPERIMENT_ID, oc, { kept_indices: oc.kept_indices, client_seed: clientSeed, decision_ms: Date.now() - startedAt.current });
     if (!sid) {
       setError(`Play blocked: region "${region.region ?? 'unknown'}" is not eligible.`);
       return;
