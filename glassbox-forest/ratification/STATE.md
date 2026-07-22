@@ -69,12 +69,28 @@
   signal can't nourish even with a high score; budget isolated + shutdown; nutrient counts observed plays only.
 - G3/G2 respected: the API key is a node secret (verified ABSENT from the client bundle); no key wired, no deploy.
 
-## Not yet built (later stages, gated by your go)
-- Stage 4: nutrient loop — evidence store + opt-in survey + Sparks; nourish/archive from real evidence only;
-  ecosystem execution audit. (The proposer will read this richer nutrient once it exists.)
-- Wiring: a human-review UI to see dormant Cohere proposals + promote one (markSeededPlayable); real Cohere key
-  is a G3 step the human provides; running in a deployed project is G2.
-- Stage 5: close. Real-money/PvP/deploy/secrets/geo remain gated.
+## Stage 4 — Persistent nutrient loop (DONE; fixes adversarial-audit BLOCKERs #1–#3, #6–#7)
+Human directive: proceed autonomously on everything non-gated. Gates remain intact (agent cannot remove them).
+- **Event-sourced journal** (src/forest/journal.ts) — append-only log persisted to localStorage; on load the
+  canonical seed-42 catalog is rebuilt and the journal replayed, so ledger state + evidence SURVIVE RELOADS.
+  Fixes BLOCKER #1 (amnesiac ledger). Verified in Chromium: play→survey→**reload**→evidence intact (1/1/1/2).
+- **Real survey nutrient** (src/app/views/SurveyView.tsx, lean native) — opt-in reflection (rating + free text),
+  FLAT bonus, content never graded. Wired into all 4 play views. Fixes BLOCKER #2.
+- **Region checks logged** (forestApp.assertPlayAllowed emits a persisted region-check event). Fixes #3.
+- **Closed-loop Sparks** ported; play=+10, survey=+25; earn-only, no redemption path.
+- **Evidence export** (Admin tab) with forbidden-field strip (skill_score/was_optimal can never leave).
+- **Human-promote UI** (Library "seed playable") — the selection step the Cohere proposer may never take (#6 partial).
+- **Ecosystem execution audit** (src/audit/ecosystemAudit.ts + test) — forced Farkle/zero-keep/missed-target/bust
+  across the full play→journal→ledger→evidence path; verifies fairness + capture + survey + no-forbidden + ledger. (#7)
+- 86 unit tests green; type-check clean; web build passes; Cohere secret ABSENT from client bundle (G3).
+
+## Still open (non-gated; next)
+- #4 realize more of the geometry (info-surface variants + intervention/transformation families).
+- #5 fully merge glassbox-labs → glassbox-forest (retire the duplicate) — labs subsystems now largely reimplemented in forest.
+- #8 epoch/archive policy (human-set thresholds; real-play-only). #9 Hold-the-Crown closure hardening. #10 single CLAUDE.md of record.
+
+## Gated (unchanged; require a human token + artifact)
+- G1 real-money/value model · G2 deploy/multiplayer · G3 real Cohere key/real DB · G4 geo-legal · G5 irreversible.
 - Stage 4: nutrient loop — play+survey → ledger; nourish/archive from real evidence; ecosystem audit.
 - Stage 5: close — ledger + STATE + audit artifact; push.
 

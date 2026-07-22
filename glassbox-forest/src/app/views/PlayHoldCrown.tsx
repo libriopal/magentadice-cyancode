@@ -4,10 +4,10 @@ import {
   type HoldCrownCommit, type RoundResult, type Decision, type HoldCrownOutcome,
 } from '../../experiments/hold-crown/holdCrown';
 import { generateClientSeed } from '../../engine/farkle-engine';
-import { assertPlayAllowed, recordRealPlay, catalog } from '../forestApp';
+import { recordPlaySession, sparksBalance } from '../forestApp';
+import { SurveyView } from './SurveyView';
 
 const GLYPH = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-const HOLD_BRANCH = catalog.experimentToBranch['hold-crown']!;
 
 // The emphasized King of Tokyo family experiment. Interactive push-your-luck: each round keeps its best
 // scoring subset; HOLD to grow the multiplier at a constant ~2.3% bust risk that would wipe the pot, or
@@ -20,24 +20,26 @@ export function PlayHoldCrown() {
   const [pot, setPot] = useState(0);
   const [done, setDone] = useState(false);
   const [outcome, setOutcome] = useState<HoldCrownOutcome | null>(null);
+  const [sid, setSid] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const bustPct = (bustProbabilityPerRound() * 100).toFixed(1);
 
   const finalize = useCallback(async (c: HoldCrownCommit, cs: string, decs: Decision[]) => {
     const o = await resolveSession(c, cs, decs);
+    // Record the full session through the persistent nutrient loop (region-gated + Sparks + ledger).
+    const id = recordPlaySession('hold-crown', o, { decisions: decs });
     setOutcome(o);
     setDone(true);
-    try { recordRealPlay(HOLD_BRANCH, false); } catch { /* ledger enforces observed-only */ }
+    if (id) setSid(id);
+    else setError('Play not eligible in this region — no Sparks awarded.');
   }, []);
 
   const start = useCallback(async () => {
     setError(null);
-    const decision = assertPlayAllowed();
-    if (!decision.allowed) { setError(`Play blocked: region "${decision.region ?? 'unknown'}" not eligible.`); return; }
     const cs = generateClientSeed();
     const c = await commit();
     setClientSeed(cs); setCommitData(c);
-    setDecisions([]); setDone(false); setOutcome(null);
+    setDecisions([]); setDone(false); setOutcome(null); setSid(null);
     const r0 = await playRound(c, cs, 0);
     setRounds([r0]);
     if (r0.isFarkle) { setPot(0); await finalize(c, cs, []); }
@@ -100,7 +102,11 @@ export function PlayHoldCrown() {
               : `Banked ${outcome?.final_total ?? pot} points across ${rounds.length} round(s).`}
           </p>
           {outcome && <details><summary className="muted">Fairness data (verify in the Verify tab)</summary><pre>{JSON.stringify(outcome, null, 2)}</pre></details>}
-          <div className="row" style={{ marginTop: 12 }}><button className="btn primary" onClick={() => void start()}>New game</button></div>
+          {sid && <SurveyView sessionId={sid} experimentId="hold-crown" onDone={() => setDone(true)} />}
+          <div className="row" style={{ marginTop: 12 }}>
+            <button className="btn primary" onClick={() => void start()}>New game</button>
+            <span className="muted">Balance: {sparksBalance()} Sparks</span>
+          </div>
         </>
       )}
     </div>

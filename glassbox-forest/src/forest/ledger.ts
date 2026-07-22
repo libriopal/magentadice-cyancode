@@ -98,6 +98,14 @@ export class ForestLedger {
     return e;
   }
 
+  /** Record that a REAL survey (reflection nutrient) was completed for a branch. Increments surveyCount
+   *  only; it does NOT count as an extra play. Survey is human-produced evidence, never synthetic. */
+  recordSurvey(branchId: string): LedgerEntry {
+    const e = this.require(branchId);
+    e.surveyCount += 1;
+    return e;
+  }
+
   /** Promote to 'nourished' (continue growth/development). Structurally requires real play evidence —
    *  a branch with zero real sessions can NEVER be nourished, no matter what any simulation says. */
   nourish(branchId: string, reason: string, at: string = new Date().toISOString()): LedgerEntry {

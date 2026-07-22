@@ -5,8 +5,9 @@ import { Library } from './views/Library';
 import { PlayHoldCrown } from './views/PlayHoldCrown';
 import { PlayOneRoll, PlayKeeper, PlayTarget } from './views/PlaySimple';
 import { Verify } from './views/Verify';
+import { Admin } from './views/Admin';
 
-type Tab = 'library' | 'play' | 'verify';
+type Tab = 'library' | 'play' | 'verify' | 'admin';
 
 const PLAY_VIEWS: Record<string, () => JSX.Element> = {
   'hold-crown': PlayHoldCrown,
@@ -40,6 +41,7 @@ export function App() {
             <button className={tab === 'play' ? 'active' : ''} onClick={() => setTab('play')}>Play</button>
             <button className={tab === 'library' ? 'active' : ''} onClick={() => setTab('library')}>Library</button>
             <button className={tab === 'verify' ? 'active' : ''} onClick={() => setTab('verify')}>Verify</button>
+            <button className={tab === 'admin' ? 'active' : ''} onClick={() => setTab('admin')}>Evidence</button>
           </nav>
 
           {tab === 'play' && (
@@ -54,6 +56,7 @@ export function App() {
           )}
           {tab === 'library' && <Library onPlay={(id) => { setExperimentId(id); setTab('play'); }} />}
           {tab === 'verify' && <Verify />}
+          {tab === 'admin' && <Admin />}
         </>
       )}
     </div>

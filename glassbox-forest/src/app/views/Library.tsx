@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { catalog } from '../forestApp';
+import { catalog, promoteBranch } from '../forestApp';
 import { coordinateLabel } from '../../geometry/d2geometry';
 import { branchIsPlayable } from '../../engine/ruleLayers';
 
@@ -41,7 +41,9 @@ export function Library({ onPlay }: { onPlay: (experimentId: string) => void }) 
                 <td>
                   {playableNow
                     ? <button className="btn" onClick={() => { onPlay(exp!); }}>play</button>
-                    : <span className="pill">dormant</span>}
+                    : e.state === 'generated'
+                      ? <button className="btn" title="human selection — the proposer may never do this" onClick={() => { promoteBranch(s.id); force((n) => n + 1); }}>seed playable</button>
+                      : <span className="pill">{e.state === 'seeded-playable' ? 'promoted (awaiting engine)' : 'dormant'}</span>}
                 </td>
               </tr>
             );
