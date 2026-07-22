@@ -11,7 +11,8 @@
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate:branches": "tsx scripts/generate_branches.mjs"
+    "generate:branches": "tsx scripts/generate_branches.mjs",
+    "propose": "tsx scripts/propose_experiences.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

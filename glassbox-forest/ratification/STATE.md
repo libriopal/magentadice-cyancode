@@ -52,10 +52,29 @@
   gate → Hold the Crown played (banked 450 across 2 rounds) → Library shows the branch 'played', no errors.
 - 68 unit tests green; strict type-check clean; forbidden-field scan clean.
 
+## Cohere credit-use — audit + compliant proposer (governance-critical; human-directed)
+- Audit: audit/COHERE_GOVERNANCE_AUDIT.md. Finding: a no-human-intervention self-constructing architect is
+  DENIED under the constitution (C1/C3/SOVEREIGNTY/AGENT_AUTHORITY_BOUNDARY + the ratified FOREST guard +
+  FAR_NZY "AI may never execute the loop"). Compliant path approved by the human: Cohere as a proposer.
+- Built the COMPLIANT proposer (human-directed: build proposer; local/sandbox, no key):
+  * src/cohere/config.ts — budget categories from the audit ($400/$250/$200/$100/$50), warn/restrict/shutdown;
+    reads COHERE_API_KEY from NODE env only (never the browser). NODE-SIDE ONLY.
+  * src/cohere/budget.ts — isolated SpendTracker, no cross-borrow, hard shutdown at 100%.
+  * src/cohere/provider.ts — Cohere /v2/chat call, degrades to {degraded:true} with no key (no network, no spend).
+  * src/cohere/proposalEngine.ts — reads REAL-play nutrient, PROPOSES new experience variations (Cohere or
+    deterministic fallback), registers them as DORMANT 'generated' branches tagged provenance='synthetic'.
+    It NEVER promotes/nourishes/deploys and cannot move ledger state. A human seeds playable; real play nourishes.
+  * scripts/propose_experiences.mjs (`npm run propose`) — sandbox run: degrades cleanly, 0 spend, dormant candidates.
+- GUARANTEES (test-locked, +11 tests → 76 total): generation ≠ selection; proposals land dormant; synthetic
+  signal can't nourish even with a high score; budget isolated + shutdown; nutrient counts observed plays only.
+- G3/G2 respected: the API key is a node secret (verified ABSENT from the client bundle); no key wired, no deploy.
+
 ## Not yet built (later stages, gated by your go)
 - Stage 4: nutrient loop — evidence store + opt-in survey + Sparks; nourish/archive from real evidence only;
-  ecosystem execution audit (forced mistakes + provenance + forbidden-field over the whole ecosystem).
-- Stage 5: close — ledger + STATE + audit artifact; push. Real-money/PvP/deploy/secrets/geo remain gated.
+  ecosystem execution audit. (The proposer will read this richer nutrient once it exists.)
+- Wiring: a human-review UI to see dormant Cohere proposals + promote one (markSeededPlayable); real Cohere key
+  is a G3 step the human provides; running in a deployed project is G2.
+- Stage 5: close. Real-money/PvP/deploy/secrets/geo remain gated.
 - Stage 4: nutrient loop — play+survey → ledger; nourish/archive from real evidence; ecosystem audit.
 - Stage 5: close — ledger + STATE + audit artifact; push.
 

@@ -107,6 +107,21 @@ export function generateCatalog(masterSeed: string): BranchSpec[] {
   return specs;
 }
 
+/** Build a generated-kind spec for an ARBITRARY coordinate, deterministically from a seed. Used by the
+ *  Cohere proposer to materialize a proposed variation as a registrable (dormant) branch spec. */
+export function specForCoordinate(coordinate: Coordinate, seed: string): BranchSpec {
+  const rng = new SeededRng(seed);
+  return {
+    id: specId(coordinate),
+    kind: 'generated',
+    coordinate,
+    traitVector: traitVectorFor(coordinate.family, rng),
+    ruleLayers: [...FAMILY_RULE_LAYERS[coordinate.family], ...INFO_RULE_LAYERS[coordinate.infoSurface]],
+    seed,
+    provenance: 'generated',
+  };
+}
+
 /** Convenience: human-readable one-line summary of a spec. */
 export function describeSpec(s: BranchSpec): string {
   const traits = Object.entries(s.traitVector).map(([t, w]) => `${t} ${w}`).join(', ');
