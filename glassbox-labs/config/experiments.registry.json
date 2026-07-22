@@ -1,0 +1,6 @@
+{
+  "_note": "Add experiments as rows; the app renders from this. New rows are non-gated (P3).",
+  "experiments": [
+    {"id":"one-roll","name":"One-Roll","hypothesis":"a minimal skill dice decision produces capturable reflection signal","status":"active","phase":"P1"}
+  ]
+}

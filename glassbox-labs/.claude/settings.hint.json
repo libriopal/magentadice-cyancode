@@ -1,0 +1,8 @@
+{
+  "_note": "Advisory hint for the human configuring Claude Code. Even with skip-permissions, gates are enforced structurally by token-absence.",
+  "recommended": {
+    "auto_accept_scope": "P0-P4 in an isolated sandbox only",
+    "never_auto": ["real-money (G1)","deploy (G2)","secrets/real-db (G3)","geo-legal config (G4)","irreversible (G5)"],
+    "deny_edits": ["config/blocked_regions.json","governance/**","ratification/**"]
+  }
+}
