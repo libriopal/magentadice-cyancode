@@ -1,0 +1,1 @@
+{"forbidden":["skill_score","was_optimal"],"rule":"never compute, store, or export these in any evidence/survey record"}

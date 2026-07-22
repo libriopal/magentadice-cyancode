@@ -1,0 +1,31 @@
+# GLASSBOX Labs CI — TESTS ONLY (BUILD_DIRECTIVE P0: "CI (tests only)").
+# No deploy, no publish, no secrets. Deploy is a G2-gated human action and lives elsewhere.
+# Scoped to the glassbox-labs/ subtree so it does not affect the rest of the monorepo.
+name: glassbox-labs-ci
+
+on:
+  push:
+    paths:
+      - 'glassbox-labs/**'
+      - '.github/workflows/glassbox-labs-ci.yml'
+  pull_request:
+    paths:
+      - 'glassbox-labs/**'
+      - '.github/workflows/glassbox-labs-ci.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: glassbox-labs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Type-check
+        run: npm run type-check
+      - name: Unit tests
+        run: npm test

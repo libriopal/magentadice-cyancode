@@ -1,0 +1,8 @@
+{
+  "_note": "Add experiments as rows; the app renders from this. New rows are non-gated (P3).",
+  "experiments": [
+    {"id":"one-roll","name":"One-Roll","hypothesis":"a minimal skill dice decision produces capturable reflection signal","status":"active","phase":"P1"},
+    {"id":"keeper","name":"Keeper's Dilemma","hypothesis":"a post-roll keep-subset decision surfaces reflection on risk vs. certainty","status":"active","phase":"P3"},
+    {"id":"target","name":"Call Your Shot","hypothesis":"a self-set pre-commit target produces reflection on goal calibration","status":"active","phase":"P3"}
+  ]
+}

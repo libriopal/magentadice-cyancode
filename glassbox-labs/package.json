@@ -1,0 +1,33 @@
+{
+  "name": "glassbox-labs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "GLASSBOX Labs — governed, evidence-first, closed-loop skill-game experiment ecosystem (P0-P1).",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "audit:play": "tsx scripts/run_execution_audit.mjs",
+    "audit:ai": "node scripts/ai_audit.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "survey-core": "^1.12.17",
+    "survey-react-ui": "^1.12.17"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^25.0.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
+  }
+}

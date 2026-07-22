@@ -1,0 +1,12 @@
+{
+  "_note": "HUMAN-OWNED (Gate G4). Starting conservative default; NOT legal clearance. Counsel must validate + keep current (laws change through 2026). Agents may READ this, never EDIT it.",
+  "source": "counsel-review-pending",
+  "active": true,
+  "blocked_us_states": ["AZ","AR","CA","CT","DE","IA","IN","LA","MD","ME","MI","MT","NE","NJ","NY","ND","OK","SC","SD","TN","VT"],
+  "reasons": {
+    "SC": "paid skill play prohibited regardless of skill (Dragon's Ascent, 2025)",
+    "NY,CA,NJ,CT,MT,IN,ME,OK,IA": "2025-26 sweepstakes-prohibition statutes",
+    "AZ,AR,DE,LA,MI,SD,TN": "skill-stakes restricted",
+    "CO,MD,NE,ND,VT": "consideration-elimination for skill contests"
+  }
+}
