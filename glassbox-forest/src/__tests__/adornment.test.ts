@@ -11,7 +11,7 @@ describe('theme system (cosmetic only)', () => {
     for (const t of Object.values(THEMES)) {
       for (const k of required) expect(t.vars[k]).toBeTruthy();
       expect(t.die.a).toMatch(/^#/);
-      expect(['round', 'gem', 'wave']).toContain(t.die.shape);
+      expect(['round', 'gem', 'orb']).toContain(t.die.shape);
     }
   });
 

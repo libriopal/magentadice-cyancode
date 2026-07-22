@@ -8,8 +8,13 @@ export interface Theme {
   label: string;
   blurb: string;
   vars: Record<string, string>;
-  /** die face gradient stops [top, bottom] and pip color; per-theme look. */
-  die: { a: string; b: string; pip: string; stroke: string; shape: 'round' | 'gem' | 'wave' };
+  /** die face gradient stops [top, bottom], pip colour, and per-theme token treatment. */
+  die: {
+    a: string; b: string; pip: string; stroke: string;
+    shape: 'round' | 'gem' | 'orb';
+    facet?: boolean;      // gem: draw crystalline facet lines
+    chromatic?: boolean;  // color: hue-shift the token per face value
+  };
 }
 
 export const THEMES: Record<ThemeName, Theme> = {
@@ -20,7 +25,7 @@ export const THEMES: Record<ThemeName, Theme> = {
       '--ink': '#f4ede4', '--muted': '#b7a894', '--accent': '#ffb454', '--accent2': '#ff7a45',
       '--good': '#7ee081', '--bad': '#ff6b6b', '--warn': '#f5c451', '--glow': 'rgba(255,180,84,0.35)',
     },
-    die: { a: '#f7e3c0', b: '#d99a6b', pip: '#2a1e12', stroke: '#a97b3f', shape: 'round' },
+    die: { a: '#fbeacb', b: '#cf9153', pip: '#2a1e12', stroke: '#a97b3f', shape: 'round' },
   },
   wave: {
     name: 'wave', label: 'Wave', blurb: 'Flowing aqua signal — teal & cyan.',
@@ -29,7 +34,7 @@ export const THEMES: Record<ThemeName, Theme> = {
       '--ink': '#e6fbff', '--muted': '#8fc7d1', '--accent': '#39e6d6', '--accent2': '#22b8ff',
       '--good': '#5ff0c0', '--bad': '#ff6b8a', '--warn': '#ffd166', '--glow': 'rgba(57,230,214,0.35)',
     },
-    die: { a: '#c9fbff', b: '#39c6d6', pip: '#062028', stroke: '#1f8fa0', shape: 'wave' },
+    die: { a: '#d6feff', b: '#2fbecf', pip: '#052028', stroke: '#1f8fa0', shape: 'orb' },
   },
   gem: {
     name: 'gem', label: 'Gem', blurb: 'Crystalline facets — violet & emerald.',
@@ -38,7 +43,7 @@ export const THEMES: Record<ThemeName, Theme> = {
       '--ink': '#f2ecff', '--muted': '#b4a3d9', '--accent': '#b98cff', '--accent2': '#57e0a8',
       '--good': '#6ef0b0', '--bad': '#ff6bb0', '--warn': '#ffcf6b', '--glow': 'rgba(185,140,255,0.4)',
     },
-    die: { a: '#efe0ff', b: '#a06bff', pip: '#1c1030', stroke: '#6b3fd0', shape: 'gem' },
+    die: { a: '#f3e6ff', b: '#9a5cff', pip: '#1c1030', stroke: '#6b3fd0', shape: 'gem', facet: true },
   },
   color: {
     name: 'color', label: 'Color', blurb: 'Full chromatic spectrum — vivid & bright.',
@@ -47,7 +52,7 @@ export const THEMES: Record<ThemeName, Theme> = {
       '--ink': '#f6f4ff', '--muted': '#b3aecb', '--accent': '#ff5db1', '--accent2': '#5dd6ff',
       '--good': '#7ef0a0', '--bad': '#ff6b6b', '--warn': '#ffd45d', '--glow': 'rgba(255,93,177,0.35)',
     },
-    die: { a: '#ffffff', b: '#ff5db1', pip: '#1a1020', stroke: '#c23f8f', shape: 'round' },
+    die: { a: '#ffffff', b: '#ff5db1', pip: '#12101a', stroke: '#c23f8f', shape: 'round', chromatic: true },
   },
 };
 

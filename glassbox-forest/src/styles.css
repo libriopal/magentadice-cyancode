@@ -16,7 +16,10 @@ body {
     linear-gradient(180deg, var(--bg2), var(--bg));
   background-attachment: fixed;
   min-height: 100vh;
+  transition: color .3s ease;
 }
+/* smooth reskin when the theme changes */
+.panel, nav button, .btn, .pill, .die-svg { transition: background-color .35s ease, border-color .35s ease, color .3s ease, box-shadow .3s ease; }
 .wrap { max-width: 560px; margin: 0 auto; padding: 20px 16px calc(64px + env(safe-area-inset-bottom)); }
 
 h1 { font-size: 22px; letter-spacing: 0.3px; margin: 4px 0 2px; }

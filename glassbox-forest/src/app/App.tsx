@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { hasConsent } from './forestApp';
-import { applyTheme, getThemeName } from '../theme/themes';
+import { applyTheme, getThemeName, THEMES } from '../theme/themes';
 import { audio } from '../audio/audioEngine';
 import { Gate } from './views/Gate';
 import { Library } from './views/Library';
@@ -40,7 +40,7 @@ export function App() {
         Evidence-first, closed-loop experience-discovery ecosystem. Branches sampled across the D2 field;
         growth by real human play only. No real money · geo-gated · provably fair.
         <br />
-        <span className="pill">seed-42</span> <span className="pill">Hold the Crown (King of Tokyo)</span> <span className="pill">NOT legal advice</span>
+        <span className="pill">seed-42</span> <span className="pill">🎨 {THEMES[getThemeName()].label}</span> {audio.isEnabled() && <span className="pill">♪ audio</span>} <span className="pill">NOT legal advice</span>
       </p>
 
       {!consented ? (

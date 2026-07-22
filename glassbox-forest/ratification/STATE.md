@@ -139,6 +139,13 @@ seam is inert. Structural enforcement is now EXECUTABLE, not just documented.
 - 108 tests green; type-check clean; web build passes; deploy:check HALTS at G2; client bundle has no secret
   VALUES / no api.cohere.com / no node:fs (only token-path + env-var-NAME label strings, intended).
 
+## Visual polish — per-theme token identity + UX
+- Each theme now renders a DISTINCT token (Die.tsx): Matter = solid amber block · Wave = aqua orb with a
+  signal curve · Gem = faceted violet crystal (facet lines) · Color = chromatic (per-face-value hue). Added
+  gloss highlight + shadow for HD depth. Still pure L5: a theme swap changes zero outcomes (test-locked).
+- Header shows current theme pill (🎨) + audio indicator; smooth CSS transition on theme reskin.
+- 108 tests green; type-check clean; web build passes. Verified via per-theme screenshots.
+
 ## To actually OPEN a gate (human-only)
 Place the token in ratification/ per PENDING_GATES.md + the artifact (G1 counsel; G2 target+rollback; G3 creds).
 The agent builds right up to it; it will not create the token.
