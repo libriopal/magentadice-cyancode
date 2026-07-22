@@ -33,7 +33,7 @@ export const RULE_LAYERS: Record<string, RuleLayerDescriptor> = {
   recombine: { name: 'recombine', scope: 'family', implemented: true, note: 'realized by Transmute (+1 upgrades)' },
   'unlock-eureka': { name: 'unlock-eureka', scope: 'family', implemented: true, note: 'discover a hidden combo' },
   // information-surface layers
-  'reveal-partial-distribution': { name: 'reveal-partial-distribution', scope: 'info', implemented: false, note: 'planned' },
+  'reveal-partial-distribution': { name: 'reveal-partial-distribution', scope: 'info', implemented: true, note: 'partial peek (Scout)' },
   'reveal-full-distribution': { name: 'reveal-full-distribution', scope: 'info', implemented: true, note: 'full-read shown (Keeper)' },
   'reveal-authored-state': { name: 'reveal-authored-state', scope: 'info', implemented: true, note: 'authored target shown' },
   'reveal-social-witness': { name: 'reveal-social-witness', scope: 'info', implemented: false, note: 'planned (needs multiplayer)' },
@@ -53,7 +53,10 @@ export const FAMILY_EXPERIMENTS: Partial<Record<Family, ExperimentBinding[]>> = 
     { experimentId: 'one-roll', family: 'shaping', label: 'One-Roll', provablyFair: true },
     { experimentId: 'keeper', family: 'shaping', label: "Keeper's Dilemma", provablyFair: true },
   ],
-  foresight: [{ experimentId: 'target', family: 'foresight', label: 'Call Your Shot', provablyFair: true }],
+  foresight: [
+    { experimentId: 'target', family: 'foresight', label: 'Call Your Shot', provablyFair: true },
+    { experimentId: 'scout', family: 'foresight', label: 'Scout', provablyFair: true },
+  ],
   commitment: [{ experimentId: 'hold-crown', family: 'commitment', label: 'Hold the Crown (King of Tokyo family)', provablyFair: true }],
   intervention: [{ experimentId: 'author-gambit', family: 'intervention', label: "Author's Gambit", provablyFair: true }],
   transformation: [{ experimentId: 'transmute', family: 'transformation', label: 'Transmute', provablyFair: true }],

@@ -27,6 +27,7 @@ export const PLAYABLE_BINDINGS: PlayableBinding[] = [
   { experimentId: 'target', label: 'Call Your Shot', anchorId: 'anchor:target' },
   { experimentId: 'author-gambit', label: "Author's Gambit", coord: { family: 'intervention', infoSurface: 'authored' } },
   { experimentId: 'transmute', label: 'Transmute', coord: { family: 'transformation', infoSurface: 'hidden' } },
+  { experimentId: 'scout', label: 'Scout', coord: { family: 'foresight', infoSurface: 'partial' } },
 ];
 
 function resolveBranchId(specs: BranchSpec[], b: PlayableBinding): string {

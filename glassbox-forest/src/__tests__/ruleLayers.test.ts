@@ -31,8 +31,8 @@ describe('rule-layer registry (L2 seam)', () => {
     const catalog = generateCatalog('seed-42');
     const commitmentBranch = catalog.find((s) => s.coordinate.family === 'commitment' && s.coordinate.infoSurface === 'hidden');
     expect(commitmentBranch && branchIsPlayable(commitmentBranch.ruleLayers)).toBe(true);
-    // a branch referencing a still-unimplemented info layer (partial reveal) is not playable
-    const partial = catalog.find((s) => s.coordinate.infoSurface === 'partial');
-    expect(partial && branchIsPlayable(partial.ruleLayers)).toBe(false);
+    // a branch referencing a still-unimplemented info layer (social-witness = multiplayer, G2) is not playable
+    const socialWitness = catalog.find((s) => s.coordinate.infoSurface === 'social-witness');
+    expect(socialWitness && branchIsPlayable(socialWitness.ruleLayers)).toBe(false);
   });
 });

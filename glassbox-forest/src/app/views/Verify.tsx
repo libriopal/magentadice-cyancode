@@ -5,6 +5,7 @@ import { verifyOutcome as vTgt, type TargetOutcome } from '../../experiments/tar
 import { verifyOutcome as vHold, type HoldCrownOutcome } from '../../experiments/hold-crown/holdCrown';
 import { verifyOutcome as vAuthor, type AuthorGambitOutcome } from '../../experiments/author-gambit/authorGambit';
 import { verifyOutcome as vTrans, type TransmuteOutcome } from '../../experiments/transmute/transmute';
+import { verifyOutcome as vScout, type ScoutOutcome } from '../../experiments/scout/scout';
 import { evidence } from '../forestApp';
 
 interface Check { label: string; ok: boolean }
@@ -55,6 +56,16 @@ async function verifyAny(raw: unknown): Promise<{ checks: Check[]; ok: boolean }
       { label: 'Commitment matches revealed server seed', ok: r.commitmentValid },
       { label: 'Raw roll recomputes', ok: r.rolledMatch },
       { label: 'Transformed final faces recompute', ok: r.finalMatch },
+      { label: 'Score recomputes', ok: r.scoreMatch },
+    ] };
+  }
+  if (o.experiment_id === 'scout') {
+    const r = await vScout(raw as ScoutOutcome);
+    return { ok: r.ok, checks: [
+      { label: 'Commitment matches revealed server seed', ok: r.commitmentValid },
+      { label: 'Combined seed recomputes', ok: r.combinedSeedMatch },
+      { label: 'Scout die matches the first committed die', ok: r.scoutMatch },
+      { label: 'Faces recompute', ok: r.facesMatch },
       { label: 'Score recomputes', ok: r.scoreMatch },
     ] };
   }

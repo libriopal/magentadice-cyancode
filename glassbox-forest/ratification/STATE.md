@@ -139,6 +139,15 @@ seam is inert. Structural enforcement is now EXECUTABLE, not just documented.
 - 108 tests green; type-check clean; web build passes; deploy:check HALTS at G2; client bundle has no secret
   VALUES / no api.cohere.com / no node:fs (only token-path + env-var-NAME label strings, intended).
 
+## Scout — partial info-surface experiment (closes the last non-gated geometry gap)
+- src/experiments/scout/scout.ts (foresight × PARTIAL): peek one die, then commit how many to roll on that
+  partial info. All-or-nothing scoring makes the peek load-bearing (scoring scout → bank safe or push;
+  blank scout → forced gamble). The scout is the first die of the same CSPRNG stream → provably consistent.
+- Realizes the 'reveal-partial-distribution' info-surface (now implemented); 7th playable experiment.
+- Wired: ruleLayers, catalog playable subset, Verify dispatch (scout-match check), App, PlayScout view (HD dice + audio).
+- Chromium: Scout plays and verifies PROVABLY FAIR; no errors. +6 tests → 114 total. Type-check clean; build passes.
+- Only unrealized info-surface left is 'social-witness' = multiplayer spotlight → G2 (gated).
+
 ## Visual polish — per-theme token identity + UX
 - Each theme now renders a DISTINCT token (Die.tsx): Matter = solid amber block · Wave = aqua orb with a
   signal curve · Gem = faceted violet crystal (facet lines) · Color = chromatic (per-face-value hue). Added
