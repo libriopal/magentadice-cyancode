@@ -337,37 +337,90 @@ cd core && pnpm type-check && pnpm test
 
 ---
 
-## ON HOLD — AWAITING APPROVAL: GAP-1b Fix, Option 1 (Server-Authoritative Board)
+## P7 — GAP-1b Fix (server DONE + tested) + 2D Pivot (client IN PROGRESS)
 
-**Status:** ON HOLD — paused by human request 2026-06-25, mid-session, before
-any code was written. Resume by reading the ADR below in full before
-continuing — do not resume from memory of a prior session summary alone.
+**Status:** IN PROGRESS — human-approved 2D-native variant of ADR-024
+(supersedes ADR-024 §3's Rapier3D-follow-mode idea; see ADR-025 below),
+started this session (2026-07-27). **Branch:** `feat/p7-gap1b-2d-board-authority`
+(both the superproject and `core` submodule). **⚠ The client and server are
+currently out of sync — see "Known-broken state" below before running
+multiplayer.**
 
-**ADR (architecture only, not yet approved):** `docs/adr/ADR-024-gap1b-option1-server-authoritative-board.md`
-**Underlying problem ADR:** `docs/adr/ADR-023-gap1b-server-face-validation.md` (PROPOSED)
-**Debt entry:** `docs/KNOWN_TECHNICAL_DEBT.md` — GAP-1b (HIGH priority)
+**ADRs:** `docs/adr/ADR-024-gap1b-option1-server-authoritative-board.md`
+(server design, adopted as-is) + a new **ADR-025 (grid-native entity model
+for mirror/ghost/catalyst/sphere/multiplier_orb — write this file from the
+plan at the session's `.claude/plans/noble-mapping-meadow.md` if formalizing
+it as a committed doc)**.
 
-**What is and isn't done:**
-- No sacred file has been touched. No branch has been created for this work.
-- ADR-024 documents a full architecture (server-side discrete deterministic
-  tick-based board engine replacing the one-shot `createGrid()`, merging
-  `processChainFaces()`'s bonus logic into the already-grid-validated
-  `processChain()`, switching the client off `SUBMIT_CHAIN_FACES` onto the
-  existing-but-unused `SUBMIT_CHAIN` path) plus a self-audit of residual
-  risks and open implementation questions (reconciliation/snap policy, tick
-  cadence, render-delay tuning — none measured yet).
-- **Waiting on:** human approval of the ADR-024 architecture itself. Once
-  approved, the plan is to implement as a single combined sacred diff
-  across `core/apps/server/src/gameRoom.ts` and
-  `core/apps/web/src/hooks/useFarkleGame.ts` (plus non-sacred changes to
-  `VoxelPhysicsSystem.ts` and `multiplayerStore.ts`), with Bito review of
-  the sacred diff happening **after** approval, not before (per explicit
-  human instruction).
+**DONE and verified this session:**
+- `packages/farkle-shared/src/types.ts` (SACRED): `Cell.type` gained
+  `SPHERE`/`MULTIPLIER_ORB`/`CATALYST`; `CellState` gained `MIRROR`/
+  `GHOST_PENDING`.
+- `packages/farkle-engine/src/gridUtils.ts` (SACRED): new
+  `resolveChainFaces(grid, chain)` (faithful port of the client's plurality +
+  raw-neighbor mirror resolution — NOT the same algorithm as the existing
+  `_resolveWilds`/`hasValidChain`, which maximizes score for dead-board
+  detection only); `SixPoolManager.drawWild(boostPct)` catalyst-bias
+  parameter; MIRROR added to gravity/chainable checks.
+- `packages/farkle-engine/src/boardEngine.ts` (new, NOT sacred):
+  `consumeChain`/`advanceBoard`/`resolveChainAndAdvance` — event-driven
+  (per scored chain, not a periodic tick), composes the existing
+  `stepGravity`/`spawnTiles`/`normalizeTiles` (which were themselves already
+  fully implemented and unused before this).
+- `apps/server/src/gameRoom.ts` (SACRED): `processChainFaces()` and the
+  `SUBMIT_CHAIN_FACES` handler are **deleted**. `processChain()` now calls
+  `resolveChainFaces()` (never trusts client faces), carries the full merged
+  bonus logic (heist/orb/doubler/archivist/catalyst), and refills the board
+  via `resolveChainAndAdvance()` after every non-farkle chain. New handlers:
+  `ANCHOR_GHOST`, `TAP_SPHERE`, `DETONATE_BOMB`, `DETONATE_RAINBOW_BOMB`;
+  `COLLECT_ORB` extended to `{row,col}`. `type-check`: 0 new errors (93
+  pre-existing `noUncheckedIndexedAccess` errors in `gridUtils.ts` confirmed
+  pre-existing via `git show HEAD:...` diff, unrelated to this work — same
+  root cause noted in a prior session, apps/server's tsconfig doesn't inherit
+  farkle-engine's own relaxed flags). `gameRoom.test.ts`: 3 real passing
+  tests (was a 2-test skeleton with 0 assertions) — forged
+  `SUBMIT_CHAIN_FACES` now produces no `CHAIN_RESULT`; a legitimate
+  grid-backed `SUBMIT_CHAIN` scores and refills correctly, confirmed stable
+  across repeated random-seed runs.
+- `apps/web/src/store/multiplayerStore.ts` (SURFACE): now stores the grid
+  from `ROOM_STATE`/`BOARD_UPDATE` (previously discarded); `submitChainFaces`
+  removed; added `anchorGhost`/`tapSphere`/`detonateBomb`/
+  `detonateRainbowBomb`, `collectOrb` now takes `(row, col)`.
 
-**To resume:** re-read ADR-024 in full, confirm nothing has changed in the
-files it cites since 2026-06-25, then either approve the architecture as
-written, request changes to it, or proceed to the combined diff if already
-approved.
+**NOT done yet (client side — genuinely large remaining scope):**
+- `apps/web/src/hooks/useFarkleGame.ts` (SACRED) — still calls the now-removed
+  `submitChainFaces`/old-signature `collectOrb`; still drives all chain
+  adjacency from `VoxelPhysicsSystem` body proximity, not grid row/col.
+  Needs the full grid-native rewrite described in the plan (adjacency via
+  `getNeighbors`, `submitChain`, tap handlers via the new multiplayerStore
+  actions, `hasValidChain` for dead-board check) — this is the single
+  largest remaining piece.
+- `apps/web/src/game/soloEngine.ts` (new, not sacred) — not started. Solo
+  mode has no server; needs a client-local `createGrid`+`SixPoolManager`
+  instance reusing the same `resolveChainFaces`/`scoreFarkle`/`boardEngine`
+  functions, since `VoxelPhysicsSystem` is being fully archived (not kept
+  around for solo).
+- PixiJS v8 + `@pixi/react` `Board2DScene.tsx` — not started.
+- `render2d-fx` package (vendoring `jurerotar/ts-seedrandom`,
+  `ShaiSrc/fixed-point`, `kevglass/propel-js`, all confirmed MIT-licensed and
+  real) — not started.
+- Archiving `VoxelPileScene.tsx`/`VoxelPhysicsSystem.ts` to
+  `core/dream/dead_code_archive/` — not started (they're both still live,
+  unarchived, and currently the only working renderer — do not delete them
+  before the above is done).
+- DevOS harvest (`forestAgent.ts`, `bitoAgent.ts` core, from `~/devos`) —
+  independent, not started.
+
+**Known-broken state right now:** the client (`useFarkleGame.ts`) still sends
+`SUBMIT_CHAIN_FACES`, which the server no longer handles — multiplayer chain
+submission is currently a silent no-op end-to-end (server logs nothing,
+client gets no `CHAIN_RESULT`). **Do not deploy/merge this branch until
+`useFarkleGame.ts` is updated** — the security fix is real and tested at the
+server layer, but gameplay is non-functional until the client catches up.
+
+**To resume:** read this entry, then the plan file referenced above (or the
+equivalent committed ADR-025 if written), then continue with
+`useFarkleGame.ts` — it's the blocking piece for a working multiplayer build.
 
 ---
 
